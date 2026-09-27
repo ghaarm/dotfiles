@@ -69,14 +69,50 @@ local function uncomment_line(line)
   return restored
 end
 
-local function find_float_end(lines, start_idx, env_name)
+local function find_env_end(lines, start_idx, env_name)
+  local depth = 0
+
   for i = start_idx, #lines do
-    if end_env(lines[i]) == env_name then
-      return i
+    local s = strip_comment_prefix(lines[i])
+
+    for command, env in s:gmatch("\\(%a+)%s*{%s*([^}]-)%s*}") do
+      if env == env_name then
+        if command == "begin" then
+          depth = depth + 1
+        elseif command == "end" then
+          depth = depth - 1
+          if depth == 0 then
+            return i
+          end
+        end
+      end
     end
   end
 
   return nil
+end
+
+local function is_comment_hint(line)
+  return line:lower():match("^%s*%%+%s*dies%s+kommentieren%s*$") ~= nil
+end
+
+local function find_requested_block(lines, hint_idx)
+  -- Der Hinweis gilt für die nächste nichtleere Zeile bzw. deren gesamte Umgebung.
+  local start_idx = hint_idx + 1
+  while start_idx <= #lines and is_blank(lines[start_idx]) do
+    start_idx = start_idx + 1
+  end
+
+  if start_idx > #lines then
+    return nil
+  end
+
+  local env = begin_env(lines[start_idx])
+  if env then
+    return start_idx, find_env_end(lines, start_idx, env)
+  end
+
+  return start_idx, start_idx
 end
 
 local function extend_block_up(lines, start_idx)
@@ -223,6 +259,13 @@ local function set_float_comments(comment)
   local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
+  if not comment then
+    -- Auch ausdrücklich markierte Textzeilen wiederherstellen; nur unsere Schicht entfernen.
+    uncomment_block(lines, 1, #lines)
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+    return
+  end
+
   local i = 1
 
   while i <= #lines do
@@ -233,9 +276,12 @@ local function set_float_comments(comment)
 
     local env = begin_env(lines[i])
 
-    if env and float_envs[env] then
+    if is_comment_hint(lines[i]) then
+      actual_start = i
+      block_start, block_end = find_requested_block(lines, i)
+    elseif env and float_envs[env] then
       local float_start = i
-      local float_end = find_float_end(lines, float_start, env)
+      local float_end = find_env_end(lines, float_start, env)
 
       if float_end then
         actual_start = float_start
@@ -273,12 +319,8 @@ local function set_float_comments(comment)
         skip_commenting = should_skip_float(lines, actual_start)
       end
 
-      if comment then
-        if not skip_commenting then
-          comment_block(lines, block_start, block_end)
-        end
-      else
-        uncomment_block(lines, block_start, block_end)
+      if not skip_commenting then
+        comment_block(lines, block_start, block_end)
       end
 
       i = block_end + 1
@@ -310,14 +352,14 @@ vim.api.nvim_create_user_command("LatexCommentFloats", function()
   set_float_comments(true)
 end, {
   force = true,
-  desc = "LaTeX figures and tables comment out",
+  desc = "LaTeX figures, tables and explicitly marked content comment out",
 })
 
 vim.api.nvim_create_user_command("LatexUncommentFloats", function()
   set_float_comments(false)
 end, {
   force = true,
-  desc = "LaTeX figures and tables uncomment",
+  desc = "LaTeX figures, tables and explicitly marked content uncomment",
 })
 
 vim.api.nvim_create_user_command("LatexUncommentSelection", function(opts)
