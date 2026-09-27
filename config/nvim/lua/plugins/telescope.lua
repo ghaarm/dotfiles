@@ -302,9 +302,9 @@ return {
       builtin.grep_string({
         prompt_title = "MEMOs in current file",
 
-        search = [[MEMO]],
+        search = [[\bMEMO:]],
 
-        use_regex = false,
+        use_regex = true,
 
         search_dirs = {
           vim.fn.expand("%:p"),
