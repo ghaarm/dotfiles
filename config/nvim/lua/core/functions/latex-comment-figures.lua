@@ -96,6 +96,10 @@ local function is_comment_hint(line)
   return line:lower():match("^%s*%%+%s*dies%s+kommentieren%s*$") ~= nil
 end
 
+local function is_uncomment_hint(line)
+  return line:lower():match("^%s*%%+%s*dies%s+unkommentieren%s*$") ~= nil
+end
+
 local function find_requested_block(lines, hint_idx)
   -- Der Hinweis gilt für die nächste nichtleere Zeile bzw. deren gesamte Umgebung.
   local start_idx = hint_idx + 1
@@ -255,13 +259,44 @@ local function uncomment_block(lines, block_start, block_end)
   end
 end
 
+local function activate_block(lines, block_start, block_end)
+  -- Bei manuell kommentierten Blöcken genau eine %-Schicht entfernen.
+  -- Ein bereits aktiver Block behält seine internen Kommentare auch bei Wiederholung.
+  local manually_commented = uncomment_line(lines[block_start]):match("^%s*%%") ~= nil
+
+  for i = block_start, block_end do
+    local line = uncomment_line(lines[i])
+    if manually_commented then
+      line = line:gsub("^(%s*)%%%s?", "%1", 1)
+    end
+    lines[i] = line
+  end
+end
+
 local function set_float_comments(comment)
   local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
   if not comment then
-    -- Auch ausdrücklich markierte Textzeilen wiederherstellen; nur unsere Schicht entfernen.
+    -- Bilder und ausdrücklich ausgeblendete Texte wiederherstellen.
     uncomment_block(lines, 1, #lines)
+
+    -- Inhalte mit diesem Hinweis gehören nur in die Version ohne Bilder.
+    -- Beim Zurückschalten werden sie wieder ausgeblendet.
+    local i = 1
+    while i <= #lines do
+      if is_uncomment_hint(lines[i]) then
+        local block_start, block_end = find_requested_block(lines, i)
+        if block_start and block_end then
+          if not lines[block_start]:match("^%s*%%") then
+            comment_block(lines, block_start, block_end)
+          end
+          i = block_end
+        end
+      end
+      i = i + 1
+    end
+
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
     return
   end
@@ -273,10 +308,11 @@ local function set_float_comments(comment)
     local block_end
     local actual_start
     local skip_commenting = false
+    local activate = is_uncomment_hint(lines[i])
 
     local env = begin_env(lines[i])
 
-    if is_comment_hint(lines[i]) then
+    if activate or is_comment_hint(lines[i]) then
       actual_start = i
       block_start, block_end = find_requested_block(lines, i)
     elseif env and float_envs[env] then
@@ -319,7 +355,9 @@ local function set_float_comments(comment)
         skip_commenting = should_skip_float(lines, actual_start)
       end
 
-      if not skip_commenting then
+      if activate then
+        activate_block(lines, block_start, block_end)
+      elseif not skip_commenting then
         comment_block(lines, block_start, block_end)
       end
 
@@ -352,14 +390,14 @@ vim.api.nvim_create_user_command("LatexCommentFloats", function()
   set_float_comments(true)
 end, {
   force = true,
-  desc = "LaTeX figures, tables and explicitly marked content comment out",
+  desc = "Comment out LaTeX floats and apply explicit comment/uncomment hints",
 })
 
 vim.api.nvim_create_user_command("LatexUncommentFloats", function()
   set_float_comments(false)
 end, {
   force = true,
-  desc = "LaTeX figures, tables and explicitly marked content uncomment",
+  desc = "Restore LaTeX floats and hide content marked for activation",
 })
 
 vim.api.nvim_create_user_command("LatexUncommentSelection", function(opts)
