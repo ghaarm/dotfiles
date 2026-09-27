@@ -3,6 +3,10 @@
 return {
   "jalvesaq/zotcite",
 
+  -- Bereits das Laden begrenzen: Zotcite initialisiert die Datenbank,
+  -- bevor es seine eigene filetypes-Einstellung prüft.
+  ft = { "markdown", "pandoc" },
+
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
     "nvim-telescope/telescope.nvim",
