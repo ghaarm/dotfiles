@@ -11,7 +11,17 @@
 \usepackage{titlesec} % kann z.B. subsubsubsubsections erstellen, kann Schriftgröße, Schriftart und Farbe von Titeln anpassen.
 
 \titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.3ex plus .2ex}
+% Formatierung für Paragraph (fett und neue Zeile)
+\titleformat{\paragraph}
+  {\normalfont\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
 
+\titlespacing*{\paragraph}
+  {0pt}
+  {1.5ex plus .5ex minus .2ex}
+  {.5ex}
 
 %========================== KOPF - UND FUßZEILE ============================
 \usepackage{fancyhdr} % für Fußzeilen
