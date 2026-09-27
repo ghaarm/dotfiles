@@ -55,7 +55,7 @@ local function build_beamer_handout()
   local basename = vim.fn.fnamemodify(texfile, ":t:r")
 
   local date = os.date("%Y-%m-%d")
-  local handout_name = basename .. "-handout-" .. date
+  local handout_name = basename .. "-" .. date .. "-handout"
 
   local handout_pdf = dir .. "/" .. handout_name .. ".pdf"
   local handout_tmp_pdf = dir .. "/" .. handout_name .. ".tmp.pdf"
