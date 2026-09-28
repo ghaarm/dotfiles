@@ -54,12 +54,12 @@ return {
     {
       trig = "citef",
       name = "Zitat foot",
-      wordTrig = false, -- cmtsub, O2tsub, ...
-      dscr = "Zitat als Fußnote: \\cite + Seite",
+      wordTrig = false,
+      dscr = "Zitat als Fußnote: \\footcite + Seite",
     },
-    fmt([[\footnote{{\cite{{{}}}, S. {}}}]], {
+    fmt([[\footcite[S.~{}]{{{}}}]], {
+      i(2, "seite"),
       i(1, "name"),
-      i(2, "Seite"),
     })
   ),
   -- andere Snippets

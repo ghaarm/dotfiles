@@ -273,10 +273,7 @@ local function activate_block(lines, block_start, block_end)
   end
 end
 
-local function set_float_comments(comment)
-  local bufnr = vim.api.nvim_get_current_buf()
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
+local function apply_float_comments(lines, comment)
   if not comment then
     -- Bilder und ausdrücklich ausgeblendete Texte wiederherstellen.
     uncomment_block(lines, 1, #lines)
@@ -297,7 +294,6 @@ local function set_float_comments(comment)
       i = i + 1
     end
 
-    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
     return
   end
 
@@ -367,7 +363,30 @@ local function set_float_comments(comment)
     end
   end
 
+end
+
+local function set_float_comments(comment)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  apply_float_comments(lines, comment)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+end
+
+local function toggle_float_comments()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local original = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local lines = vim.deepcopy(original)
+  apply_float_comments(lines, true)
+
+  -- Ist die Version ohne Bilder bereits aktiv, zur Version mit Bildern wechseln.
+  -- Auch die umgekehrten Hinweise „dies unkommentieren“ werden berücksichtigt.
+  if vim.deep_equal(lines, original) then
+    apply_float_comments(lines, false)
+  end
+
+  if not vim.deep_equal(lines, original) then
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+  end
 end
 
 local function uncomment_range(start_line, end_line)
@@ -406,6 +425,22 @@ end, {
   force = true,
   range = true,
   desc = "Selected LaTeX lines uncomment",
+})
+
+vim.api.nvim_create_user_command("LatexToggleFloats", toggle_float_comments, {
+  force = true,
+  desc = "Toggle LaTeX float comments and explicit comment/uncomment hints",
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "tex", "plaintex" },
+  callback = function(args)
+    vim.keymap.set("n", "<localleader>vx", toggle_float_comments, {
+      buffer = args.buf,
+      silent = true,
+      desc = "Toggle LaTeX figure/table comments",
+    })
+  end,
 })
 
 vim.keymap.set("x", "<localleader>gc", ":<C-u>'<,'>LatexUncommentSelection<CR>", {

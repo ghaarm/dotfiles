@@ -122,15 +122,15 @@ snippet enquote "Anführungszeichen"
 	\enquote{${1:name}}
 
 # zitat normal 
-snippet cite "Zitat normal" 
-	\cite{${1:name}}, S. ~${2:seite}}
+snippet cite "Zitat normal biblatex" 
+	\cite[S.~${2:seite}]{${1:name}}
 
 # snippet cite "Zitat mit Seite für biblatex"
 # 	\cite[S.~${2:seite}]{${1:name}}${0}
 
 
 snippet citen "Zitat normal" 
-	\cite{${1:name}}, S. ${2:seite}}${0}
+	\cite[S.~${2:seite}]{${1:name}}
 #
 
 # zitat foot 
@@ -139,8 +139,11 @@ snippet cf "Zitat foot" i
 #
 
 # zitat foot 
-snippet citef "Zitat foot" i
-	\footnote{\cite{${1:name}}, S. ${2:Seite}}
+# snippet citef "Zitat foot" i
+# 	\footnote{\cite{${1:name}}, S. ${2:Seite}}
+
+snippet citef "Zitat footnote" i
+	\footcite[S.~${2:seite}]{\cite{${1:name}}
 #
 
 
