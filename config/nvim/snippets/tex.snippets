@@ -832,18 +832,21 @@ snippet inpdf "include pdf"
 
 # Link
 snippet link "link tex ohne Namen"
-  \url{${1:url}${0}}
+  \url{${1}${0}}
 ##
 
+snippet link-name-datum " link tex mit namen und datum"
+	\href{${1}}{${2:beschreibung} (Stand ${3:datum}})
+
 snippet link-name " link tex mit Namen"
-	\href{${1:Link}}{${2:Beschreibung}, Stand ${3:Datum}}
+	\href{${1}}{${2:Beschreibung}}
 #
 
 snippet url "url tex ohne Namen"
-  \url{${1:url}${0}}
+  \url{${1}${0}}
 
 snippet url-name "url tex mit Namen"
-	\href{${1:Link}}{${2:Beschreibung}, Stand ${3:Datum}}
+	\href{${1}}{${2:Beschreibung}, Stand ${3:Datum}}
 #
 # toc Inhaltsverzeichnis
 snippet toc "toc und href"

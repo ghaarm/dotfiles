@@ -53,5 +53,8 @@ end
 vim.keymap.set("n", "<localleader>ld", M.tex_to_docx, {
   desc = "LaTeX → DOCX",
 })
+vim.keymap.set("n", "<localleader>vd", M.tex_to_docx, {
+  desc = "LaTeX → DOCX",
+})
 
 return M

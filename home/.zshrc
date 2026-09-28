@@ -140,7 +140,7 @@ alias cdnvim="cd ~/dotfiles/config/nvim && nvim"
 
 alias cdtemp="cd ~/dotfiles/config/nvim/templates && nvim"
 
-alias aero="cd ~/dotfiles/config/aerospace && nvim aerospace.toml"
+alias cdaero="cd ~/dotfiles/config/aerospace && nvim aerospace.toml"
 
 alias cdplug="cd ~/dotfiles/config/nvim/lua/plugins && nvim"
 
@@ -169,6 +169,8 @@ cddracoon() {
 
 alias cdic="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'" 
 
+alias cddocs="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'" 
+
 alias cdedit="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/Vorlagen && nvim vorlage-edit-nvim.md" 
 
 alias cdobsidian='builtin cd "/Users/g/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian-icloud" && nvim'
@@ -180,6 +182,15 @@ cd10o2root() {
 cd10o2proj() {
   builtin cd '/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/10o2-icloud/10o2-project-list' && nvim
 }
+#
+cdcodexproj() {
+  builtin cd '/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/codex-projects-icloud' && nvim
+}
+
+cdcodexprojlat() {
+  builtin cd '/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/codex-projects-icloud/codex-projects-latex/' && nvim
+}
+#
 #
 # alias cd10o2proj='builtin cd "/Users/g/Library/Mobile Documents/iCloud~md~obsidian/Documents/10o2-icloud/10o2-project-list" && nvim'
 

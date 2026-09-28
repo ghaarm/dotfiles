@@ -4,6 +4,8 @@ local t = ls.text_node
 local i = ls.insert_node
 local f = ls.function_node
 local c = ls.choice_node
+local fmt = require("luasnip.extras.fmt").fmt
+local fmta = require("luasnip.extras.fmt").fmta -- fmta für latex snippets
 
 return {
   -- Autosnippets
@@ -57,9 +59,9 @@ return {
       wordTrig = false,
       dscr = "Zitat als Fußnote: \\footcite + Seite",
     },
-    fmt([[\footcite[S.~{}]{{{}}}]], {
-      i(2, "seite"),
-      i(1, "name"),
+    fmta([[\footcite[S.~<>]{<>}]], {
+      i(1, "Seite"),
+      i(2, "name"),
     })
   ),
   -- andere Snippets
@@ -81,4 +83,18 @@ return {
     t(")"),
     i(0),
   }),
+  s(
+    {
+      trig = "link-name-datum-heute",
+      name = "Link mit Name und Datum heute",
+      wordTrig = false,
+    },
+    fmta([[\href{<>}{<> (Stand <>)}]], {
+      i(1),
+      i(2, "beschreibung"),
+      f(function()
+        return os.date("%d.%m.%Y")
+      end),
+    })
+  ),
 }
