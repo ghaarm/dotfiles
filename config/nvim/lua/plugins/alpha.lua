@@ -77,7 +77,8 @@ return {
         "  Sessions",
         "<cmd>lua require('telescope').extensions.possession.list({ only_cwd = true })<CR>"
       ),
-      dashboard.button("r", "󰈚  Recent", ":Telescope oldfiles <CR>"),
+      -- dashboard.button("r", "󰈚  Recent", ":Telescope oldfiles <CR>"),
+      dashboard.button("r", "󰈚  Recent", "<cmd>lua require('telescope.builtin').oldfiles({ cwd_only = true })<CR>"), -- nur Dateien aus dem working directory anzeigen
       dashboard.button("e", "󰱼  Explorer", "<cmd>NvimTreeToggle<CR>"),
       dashboard.button("f", "  Find", ":Telescope find_files <CR>"),
       -- dashboard.button("t, "Templates", "<leader> t <CR>"),
