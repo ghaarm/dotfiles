@@ -60,8 +60,8 @@ return {
       dscr = "Zitat als Fußnote: \\footcite + Seite",
     },
     fmta([[\footcite[S.~<>]{<>}]], {
-      i(1, "Seite"),
-      i(2, "name"),
+      i(2, "Seite"),
+      i(1, "name"),
     })
   ),
   -- andere Snippets

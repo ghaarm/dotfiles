@@ -139,11 +139,11 @@ snippet cf "Zitat foot" i
 #
 
 # zitat foot 
-# snippet citef "Zitat foot" i
-# 	\footnote{\cite{${1:name}}, S. ${2:Seite}}
+snippet citef-alt "Zitat foot" i
+	\footnote{\cite{${1:name}}, S. ${2:Seite}}
 
-snippet citef "Zitat footnote" i
-	\footcite[S.~${2:seite}]{\cite{${1:name}}
+# snippet citef "Zitat footnote" i
+# 	\footcite[S.~${2:seite}]{\cite{${1:name}}
 #
 
 
@@ -432,7 +432,7 @@ snippet example "Example" bi
 #     	\centering
 #       \begin{minipage}{1\textwidth}
 #         # \centering
-#     	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+#     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
 #     	  \caption{${2:Name}}
 #     	  \label{fig:$2}
 #         \par\smallskip
@@ -447,7 +447,7 @@ snippet pngfig "png bild" b
 	\begin{figure}[H]
     	\centering
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
@@ -460,7 +460,7 @@ snippet pngfig-tikz "png bild mit tikz annotation" b
 	\begin{figure}[H]
     	\centering
       \begin{minipage}{1\textwidth}
-      \annotatedimage[0.8\linewidth]{./bilder/${1:name}}
+      \annotatedimage[0.8\linewidth]{./bilder-latex/${1:name}}
        \imagegrid
       % Kreis: 
         % Mittelpunkt-x - Mittelpunkt-y - Radius
@@ -492,32 +492,32 @@ snippet pngtab "png Tabelle" b
     	\caption{${2:Name}}
     	\label{tab:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
 	\end{table}
 	${0}
 
-snippet pngfigup "png bilder im Überordner" b
+snippet pngfigup "png bilder-latex im Überordner" b
 	
 	\begin{figure}[H]
     	\centering
     	\caption{${2:Name}}
     	\label{fig:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
 	\end{figure}
-snippet pngfigdown "png bilder im Unterordner" b
+snippet pngfigdown "png bilder-latex im Unterordner" b
 	
 	\begin{figure}[H]
     	\centering
       \begin{minipage}{1\textwidth}
         # \centering
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
@@ -530,7 +530,7 @@ snippet pngfigcenter "png fig unterordner center für multicols"
   \begin{center}
     	\centering
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
@@ -541,7 +541,7 @@ snippet pngfigcenter "png fig unterordner center für multicols"
 snippet pngcenterFIG "png fig float 1 spalte, unterordner center für multicols"
    {\centering
       \begin{minipage}{1\columnwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
     	  \captionof{figure}{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
@@ -554,7 +554,7 @@ snippet pngcenterTAB "png fig float 1 spalte, unterordner center für multicols"
       \begin{minipage}{1\columnwidth}
     	  \captionof{table}{${2:Name}}
     	  \label{tab:$2}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -567,7 +567,7 @@ snippet pngtabup "png Tabelle im Überordner" b
     	\caption{${2:Name}}
     	\label{tab:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -581,7 +581,7 @@ snippet pngtabdown "png Tabelle im Unterordner" b
     	\caption{${2:Name}}
     	\label{tab:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -594,7 +594,7 @@ snippet pngtabcenter "png tabelle unterordner center für multicols"
     	\caption{${2:Name}}
     	\label{tab:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -607,7 +607,7 @@ snippet pppsame "png same folder" b
     	\caption{${2:Name}}
     	\label{fig:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -622,7 +622,7 @@ snippet pngsame "png same folder" b
     	\caption{${2:Name}}
     	\label{fig:$2}
       \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:Name}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -638,7 +638,7 @@ snippet pppmulti "png multi" b
     	\caption{${2:name-bild-links}}
     	\label{fig:$2}
        \begin{minipage}{1\textwidth}
-    	  \includegraphics[width=\linewidth]{./bilder/${1:name-bild-links}}
+    	  \includegraphics[width=\linewidth]{./bilder-latex/${1:name-bild-links}}
         \par\smallskip
         {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
       \end{minipage}
@@ -655,7 +655,7 @@ snippet pngmulti "pngmulti" b
    	\centering
      \begin{minipage}{1\linewidth}
    	  \begin{center}
-   	  \includegraphics[height=7cm,width=\linewidth,keepaspectratio]{./bilder/${1:name-bild-links}}
+   	  \includegraphics[height=7cm,width=\linewidth,keepaspectratio]{./bilder-latex/${1:name-bild-links}}
    	  \end{center}
    	\caption{${2:titel-bild-links}}
    	\label{fig:$2}
@@ -664,13 +664,13 @@ snippet pngmulti "pngmulti" b
      \end{minipage}
   \end{figure}
 
-  \columbreak
+  \columnbreak
 
   \begin{figure}[H]
    	\centering
      \begin{minipage}{1\linewidth}
    	  \begin{center}
-   	  \includegraphics[height=7cm,width=\linewidth,keepaspectratio]{./bilder/${6:name-bild-rechts}}
+   	  \includegraphics[height=7cm,width=\linewidth,keepaspectratio]{./bilder-latex/${6:name-bild-rechts}}
    	  \end{center}
    	\caption{${7:titel-bild-rechts}}
    	\label{fig:$7}
