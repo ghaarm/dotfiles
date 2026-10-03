@@ -325,16 +325,32 @@ return {
 
           local display = string.format("%s  %d:%d", text, entry.lnum or 0, entry.col or 0)
 
+          -- entry.display = function()
+          --   return display,
+          --     {
+          --       {
+          --         { 0, #text },
+          --         "TodoFgWARN",
+          --       },
+          --     }
+          -- end
           entry.display = function()
+            local highlight
+
+            if text:match("%f[%w]NOTE:") then
+              highlight = "TodoFgNOTE"
+            else
+              highlight = "TodoFgWARN"
+            end
+
             return display,
               {
                 {
                   { 0, #text },
-                  "TodoFgWARN",
+                  highlight,
                 },
               }
           end
-
           return entry
         end,
       })
