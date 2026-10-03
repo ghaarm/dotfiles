@@ -302,8 +302,8 @@ return {
       builtin.grep_string({
         prompt_title = "MEMOs in current file",
 
-        search = [[\bMEMO:]],
-
+        -- search = [[\bMEMO:]],
+        search = [[\b(MEMO|NOTE):]],
         use_regex = true,
 
         search_dirs = {
@@ -339,7 +339,7 @@ return {
         end,
       })
     end, {
-      desc = "Find MEMOs in current file",
+      desc = "Find MEMO and NOTEs in current file",
     })
     keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Fuzzy find open buffers" })
 
