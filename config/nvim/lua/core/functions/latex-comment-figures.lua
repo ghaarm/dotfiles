@@ -148,34 +148,29 @@ local function extend_block_down(lines, end_idx)
 end
 
 local function find_center_block(lines, idx)
-  local start_idx
+  local centers = {}
 
-  for i = idx, 1, -1 do
+  -- Offene center-Umgebungen verfolgen; innere minipages dürfen die Suche
+  -- nicht abbrechen, bereits geschlossene center-Blöcke aber nicht erfassen.
+  for i = 1, idx do
     local s = strip_comment_prefix(lines[i])
-
-    if s:match("\\begin%s*{%s*center%s*}") then
-      start_idx = i
-      break
-    end
-
-    if begin_env(lines[i]) or end_env(lines[i]) then
-      break
+    for command, env in s:gmatch("\\(%a+)%s*{%s*([^}]-)%s*}") do
+      if env == "center" then
+        if command == "begin" then
+          centers[#centers + 1] = i
+        elseif command == "end" then
+          table.remove(centers)
+        end
+      end
     end
   end
 
+  local start_idx = centers[#centers]
   if not start_idx then
     return nil
   end
 
-  for i = idx, #lines do
-    local s = strip_comment_prefix(lines[i])
-
-    if s:match("\\end%s*{%s*center%s*}") then
-      return start_idx, i
-    end
-  end
-
-  return nil
+  return start_idx, find_env_end(lines, start_idx, "center")
 end
 
 local function find_brace_block(lines, idx)
@@ -255,6 +250,49 @@ end
 local function comment_block(lines, block_start, block_end)
   for i = block_start, block_end do
     lines[i] = add_marker(lines[i])
+  end
+end
+
+local function comment_empty_multicols(lines)
+  -- Von innen nach außen prüfen, nachdem die Bildblöcke ausgeblendet wurden.
+  for start_idx = #lines, 1, -1 do
+    if is_multicols_begin(lines[start_idx]) and not should_skip_float(lines, start_idx) then
+      local end_idx = find_env_end(lines, start_idx, begin_env(lines[start_idx]))
+      if end_idx and end_idx > start_idx then
+        local has_hidden_content = false
+        -- Optionale Überschriften oder Text auf den Begrenzungszeilen erhalten.
+        local opening_tail = strip_comment_prefix(lines[start_idx]):match(
+          "^%s*\\begin%s*{%s*multicols%*?%s*}%s*{%s*%d+%s*}%s*(.*)$"
+        )
+        local closing_tail = strip_comment_prefix(lines[end_idx]):match(
+          "^%s*\\end%s*{%s*multicols%*?%s*}%s*(.*)$"
+        )
+        local has_active_content = not opening_tail or not closing_tail
+          or (opening_tail ~= "" and not opening_tail:match("^%%"))
+          or (closing_tail ~= "" and not closing_tail:match("^%%"))
+
+        for i = start_idx + 1, end_idx - 1 do
+          local line = lines[i]
+          if line:match("^%s*%% LATEX_FLOAT_OFF ") then
+            has_hidden_content = true
+          elseif not line:match("^%s*$") and not line:match("^%s*%%") then
+            -- Nur alleinstehende Spaltenumbrüche gehören zum leeren Rahmen.
+            local rest = line:match("^%s*\\columnbreak%s*(.*)$")
+            if rest then
+              rest = rest:gsub("^%[[0-4]%]%s*", "", 1)
+            end
+            if not rest or (rest ~= "" and not rest:match("^%%")) then
+              has_active_content = true
+              break
+            end
+          end
+        end
+
+        if has_hidden_content and not has_active_content then
+          comment_block(lines, start_idx, end_idx)
+        end
+      end
+    end
   end
 end
 
@@ -368,6 +406,7 @@ local function apply_float_comments(lines, comment)
     end
   end
 
+  comment_empty_multicols(lines)
 end
 
 local function set_float_comments(comment)
