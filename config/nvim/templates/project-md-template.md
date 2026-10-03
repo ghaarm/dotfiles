@@ -15,15 +15,17 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 ## Projektziel und Rahmen
 
-- Allgemeine Absicht: Eine wissenschaftlich belegte Stellungnahme zur Begründung der Thrombaspiration gegenüber dem Medizinischen Dienst erstellen, der MDK will die Kosten nicht erstatten. Die Argumentation anhand der Literatur prüfen und relevante Evidenzlücken oder widersprüchliche Befunde kenntlich machen.
+- Allgemeine Absicht: ____
 
-- Zielgruppe: Medizinischer Dienst.
+- Zielgruppe: ärztliche Kolleg:innen
 
-- Gewünschtes Ergebnis: Fertige Stellungnahme als LaTeX-Dokument und geprüftes PDF.
+- Gewünschtes Ergebnis: ____
 
-- Vorhandenes Dokument: „Antwort MDK Thrombaspiration“.
+- Vorhandenes Dokument: „____“.
 
-- Arbeitsgrundlage: bestehender LaTeX-Entwurf und die Markdown-Dateien unter `research/`.
+<!-- - Arbeitsgrundlage: bestehender LaTeX-Entwurf und die Markdown-Dateien unter `research/`. -->
+
+- Arbeitsgrundlage: bestehender LaTeX-Entwurf. 
 
 - Rahmenbedingungen: Bestehende Gliederung, Gestaltung und Zitierweise erhalten, sofern der konkrete Auftrag keine Änderung vorsieht.
 
@@ -31,7 +33,7 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 - Sprache: Deutsch.
 
-- Relevante Zotero-Collections: `lae` und insbesondere `lae-inari`.
+- Relevante Zotero-Collections: `____` und insbesondere `____`.
 
 Es gelten die allgemeinen Anweisungen im Arbeitsbereich: `../../AGENTS.md`, `../../RESEARCH.md`, `../../ZOTERO.md` und `../../LATEX.md`.
 
@@ -49,32 +51,34 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
   <!-- * Alle `% TODO:`-Kommentare im Manuskript gemäß `LATEX.md` bearbeiten. -->
 
-  * beim sPESI ist der Cutoff für die Herzfrequenz größer gleich 110 /min, für den PESI und sPESI bitte die originalliteratur als Referenz angeben
-
-  * ggf. ist es sinnvoll auch die Widersprüchlichkeit bei hochrisiko lae mit Lyse vs. V-A ECMO kurz zu benennen
-
-  * in einem absatz auf die deutlich veralterte Leitlinie eingehen die der MDK angibt, ich glaube von 2009 und zeigen warum das veraltert ist
-
-  * in der aktuellen AHA Leitlinie 2026 von Creagar et al. gibt es auch eine Risikobewertung des reitenden Thrombus 2026 AHA/ACC/ACCP/ACEP/CHEST/SCAI/SHM/SIR/SVM/SVN Guideline for the Evaluation and Management of Acute Pulmonary Embolism in Adults: A Report of the American College of Cardiology/American Heart Association Joint Committee on Clinical Practice Guidelines, die guideline ist in der zotero datenbank und storage zum lesen vorhanden
-
-  * die AHA 2026 Leitlinie prüfen ob es neue Informationen für die Antwort der MDK Antwort gibt
+  * ____
 
 
-- Verbindliches Ausgangsmaterial: Die Ablehnungsbegründung in `research/mdk-grund-ablehnung.md` gemeinsam mit der Fallbeschreibung in `research/fallbeschreibung-mdk.md` berücksichtigen. Vor der inhaltlichen Überarbeitung beide Dateien lesen und die konkreten MDK-Einwände mit den dokumentierten Falldaten und der Literatur abgleichen.
+<!-- - Verbindliches Ausgangsmaterial: Die Ablehnungsbegründung in `research/mdk-grund-ablehnung.md` gemeinsam mit der Fallbeschreibung in `research/fallbeschreibung-mdk.md` berücksichtigen. Vor der inhaltlichen Überarbeitung beide Dateien lesen und die konkreten MDK-Einwände mit den dokumentierten Falldaten und der Literatur abgleichen. -->
+
+- Verbindliches Ausgangsmaterial: ____. 
+
 - Umfang / betroffene Abschnitte: noch nicht festgelegt.
+
 - Erledigt, wenn: noch nicht festgelegt.
 
 ## Dateien
 
-- Hauptdatei: [manuscript/thrombaspiration-antwort-mdk.tex](manuscript/thrombaspiration-antwort-mdk.tex).
-- Projektlokale Präambel: [manuscript/preamble-project.tex](manuscript/preamble-project.tex).
-- Fallbeschreibung: [research/fallbeschreibung-mdk.md](research/fallbeschreibung-mdk.md).
-- MDK-Ablehnungsbegründung: [research/mdk-grund-ablehnung.md](research/mdk-grund-ablehnung.md).
-- Ergänzendes Ausgangsmaterial: [research/thrombaspiration-inari.md](research/thrombaspiration-inari.md).
+<!-- - Hauptdatei: [manuscript/thrombaspiration-antwort-mdk.tex](manuscript/thrombaspiration-antwort-mdk.tex). -->
+- Hauptdatei: [manuscript/____.tex](manuscript/____.tex).
+
+<!-- - Ergänzendes Ausgangsmaterial: [research/thrombaspiration-inari.md](research/thrombaspiration-inari.md). -->
+
+<!-- - Ergänzendes Ausgangsmaterial: [research/____.md](research/____.md). -->
+
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
+
 - Aussagen und Belege: [research/evidence.md](research/evidence.md).
+
 - Abbildungen: `manuscript/figures/`.
-- Vorhandenes PDF: [manuscript/thrombaspiration-antwort-mdk.pdf](manuscript/thrombaspiration-antwort-mdk.pdf).
+
+- Vorhandenes PDF: [manuscript/____.pdf](manuscript/____.pdf).
+
 - Übernommene Build-Hilfsdateien: `manuscript/auxiliary_files/` sowie SyncTeX-Dateien direkt in `manuscript/`.
 
 ## Manuskript-TODOs
