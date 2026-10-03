@@ -2,6 +2,49 @@ require("core.functions.latex-comment-figures")
 
 local running = {}
 
+local function stop_vimtex()
+  local function is_running()
+    return vim.fn.eval("exists('b:vimtex.compiler') && b:vimtex.compiler.is_running()") == 1
+  end
+
+  if is_running() then
+    vim.cmd("VimtexStop")
+    -- jobstop arbeitet asynchron; erst nach dem Ende die Quelldatei verändern.
+    if not vim.wait(2000, function()
+      return not is_running()
+    end, 20) then
+      error("VimTeX-Compiler wurde nicht rechtzeitig beendet")
+    end
+  end
+end
+
+local function write_without_texlab_build()
+  local uri = vim.uri_from_bufnr(0)
+  local notifications = {}
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0, name = "texlab" })) do
+    local rpc = client.rpc
+    local notify = rpc.notify
+    notifications[#notifications + 1] = { rpc = rpc, notify = notify }
+    -- Nur die Speichermeldung dieser Datei unterdrücken. didChange, andere
+    -- Dateien und andere LSP-Server bleiben unverändert.
+    rpc.notify = function(method, params)
+      if method == "textDocument/didSave" and params.textDocument.uri == uri then
+        return true
+      end
+      return notify(method, params)
+    end
+  end
+
+  local ok, err = pcall(vim.cmd, "write")
+  -- Auch nach einem Schreibfehler das normale Speicherverhalten wiederherstellen.
+  for _, entry in ipairs(notifications) do
+    entry.rpc.notify = entry.notify
+  end
+  if not ok then
+    error(err)
+  end
+end
+
 local function show_build_error(message, output)
   vim.notify(message, vim.log.levels.ERROR)
   vim.cmd("botright new")
@@ -35,8 +78,9 @@ local function build_public_pdf(compressor)
 
   -- Die vorhandene Kommentierfunktion beachtet auch den Hinweis „nicht kommentieren“.
   local ok, err = pcall(function()
+    stop_vimtex()
     vim.cmd("LatexCommentFloats")
-    vim.cmd("write")
+    write_without_texlab_build()
   end)
   if not ok then
     vim.notify("TeX-Datei konnte nicht vorbereitet werden:\n" .. tostring(err), vim.log.levels.ERROR)

@@ -173,6 +173,11 @@ alias cddocs="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'"
 
 alias cdedit="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/Vorlagen && nvim vorlage-edit-nvim.md" 
 
+alias cdwork="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud && nvim"
+
+alias cdwork-proj="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud/projects-work-gpt && nvim"
+
+
 alias cdobsidian='builtin cd "/Users/g/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian-icloud" && nvim'
 
 cd10o2root() {
