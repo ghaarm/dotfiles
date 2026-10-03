@@ -1,5 +1,9 @@
 local marker = "% LATEX_FLOAT_OFF "
 
+local function is_float_off(line)
+  return line:match("^%s*%% LATEX_FLOAT_OFF ") ~= nil
+end
+
 local float_envs = {
   figure = true,
   ["figure*"] = true,
@@ -26,18 +30,8 @@ local function begin_env(line)
   return s:match("\\begin%s*{%s*([^}]+)%s*}")
 end
 
-local function end_env(line)
-  local s = strip_comment_prefix(line)
-  return s:match("\\end%s*{%s*([^}]+)%s*}")
-end
-
 local function is_multicols_begin(line)
   local env = begin_env(line)
-  return env == "multicols" or env == "multicols*"
-end
-
-local function is_multicols_end(line)
-  local env = end_env(line)
   return env == "multicols" or env == "multicols*"
 end
 
@@ -55,7 +49,7 @@ end
 
 local function add_marker(line)
   -- Jede Zeile bekommt eine eigene Schicht; vorhandene Kommentare bleiben erhalten.
-  if line:match("^%s*%% LATEX_FLOAT_OFF ") then
+  if is_float_off(line) then
     return line
   end
 
@@ -69,11 +63,14 @@ local function uncomment_line(line)
   return restored
 end
 
-local function find_env_end(lines, start_idx, env_name)
+local function find_env_end(lines, start_idx, env_name, active_only)
   local depth = 0
 
   for i = start_idx, #lines do
     local s = strip_comment_prefix(lines[i])
+    if active_only and lines[i]:match("^%s*%%") then
+      s = ""
+    end
 
     for command, env in s:gmatch("\\(%a+)%s*{%s*([^}]-)%s*}") do
       if env == env_name then
@@ -120,30 +117,11 @@ local function find_requested_block(lines, hint_idx)
 end
 
 local function extend_block_up(lines, start_idx)
-  local i = start_idx - 1
-
-  while i >= 1 and is_blank(lines[i]) do
-    i = i - 1
-  end
-
-  if i >= 1 and is_multicols_end(lines[i]) then
-    return i
-  end
-
+  -- Spaltengrenzen werden ausschließlich von comment_empty_multicols behandelt.
   return start_idx
 end
 
 local function extend_block_down(lines, end_idx)
-  local i = end_idx + 1
-
-  while i <= #lines and is_blank(lines[i]) do
-    i = i + 1
-  end
-
-  if i <= #lines and is_multicols_begin(lines[i]) then
-    return i
-  end
-
   return end_idx
 end
 
@@ -256,8 +234,11 @@ end
 local function comment_empty_multicols(lines)
   -- Von innen nach außen prüfen, nachdem die Bildblöcke ausgeblendet wurden.
   for start_idx = #lines, 1, -1 do
-    if is_multicols_begin(lines[start_idx]) and not should_skip_float(lines, start_idx) then
-      local end_idx = find_env_end(lines, start_idx, begin_env(lines[start_idx]))
+    if not is_float_off(lines[start_idx])
+      and is_multicols_begin(lines[start_idx])
+      and not should_skip_float(lines, start_idx) then
+      -- Bereits ausgeblendete innere Umgebungen zählen nicht zur aktiven Struktur.
+      local end_idx = find_env_end(lines, start_idx, begin_env(lines[start_idx]), true)
       if end_idx and end_idx > start_idx then
         local has_hidden_content = false
         -- Optionale Überschriften oder Text auf den Begrenzungszeilen erhalten.
@@ -273,7 +254,7 @@ local function comment_empty_multicols(lines)
 
         for i = start_idx + 1, end_idx - 1 do
           local line = lines[i]
-          if line:match("^%s*%% LATEX_FLOAT_OFF ") then
+          if is_float_off(line) then
             has_hidden_content = true
           elseif not line:match("^%s*$") and not line:match("^%s*%%") then
             -- Nur alleinstehende Spaltenumbrüche gehören zum leeren Rahmen.
