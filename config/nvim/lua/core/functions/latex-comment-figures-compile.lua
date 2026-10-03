@@ -13,7 +13,8 @@ local function show_build_error(message, output)
   vim.bo[buf].modifiable = false
 end
 
-local function build_public_pdf()
+local function build_public_pdf(compressor)
+  local compressor_name = compressor == "gs" and "Ghostscript" or "qpdf"
   local texfile = vim.api.nvim_buf_get_name(0)
   if not texfile:match("%.tex$") then
     vim.notify("Bitte eine benannte .tex-Datei öffnen", vim.log.levels.WARN)
@@ -25,7 +26,7 @@ local function build_public_pdf()
     return
   end
 
-  for _, executable in ipairs({ "latexmk", "qpdf" }) do
+  for _, executable in ipairs({ "latexmk", compressor }) do
     if vim.fn.executable(executable) ~= 1 then
       vim.notify(executable .. " wurde nicht gefunden", vim.log.levels.ERROR)
       return
@@ -46,6 +47,7 @@ local function build_public_pdf()
   local basename = vim.fn.fnamemodify(texfile, ":t:r")
   local public_name = basename .. "-" .. os.date("%Y-%m-%d") .. "-public"
   local public_pdf = dir .. "/" .. public_name .. ".pdf"
+  local public_synctex = dir .. "/" .. public_name .. ".synctex.gz"
   local temporary_pdf = dir .. "/" .. public_name .. ".tmp.pdf"
   local current_line = vim.api.nvim_win_get_cursor(0)[1]
   local inverse_search = '"' .. vim.v.progpath .. '" --headless -c "VimtexInverseSearch %2 \'%1\'"'
@@ -66,7 +68,7 @@ local function build_public_pdf()
 
   vim.notify("Kompiliere Public-PDF: " .. public_name .. ".pdf")
 
-  run({
+  local compile_command = {
     "latexmk",
     "-xelatex",
     "-interaction=nonstopmode",
@@ -76,26 +78,42 @@ local function build_public_pdf()
     "-emulate-aux-dir",
     "-jobname=" .. public_name,
     vim.fn.fnamemodify(texfile, ":t"),
-  }, function(result)
+  }
+  -- Eine fehlende SyncTeX-Datei löst bei latexmk allein keinen neuen TeX-Lauf aus.
+  if vim.fn.filereadable(public_synctex) ~= 1 then
+    table.insert(compile_command, 2, "-g")
+  end
+
+  run(compile_command, function(result)
     if result.code ~= 0 or vim.fn.filereadable(public_pdf) ~= 1 then
       running[texfile] = nil
       show_build_error("Public-Kompilierung fehlgeschlagen", (result.stdout or "") .. (result.stderr or ""))
       return
     end
 
-    vim.notify("Public-PDF kompiliert – komprimiere mit qpdf ...")
-    run({
+    local compression_command = compressor == "gs" and {
+      "gs",
+      "-sDEVICE=pdfwrite",
+      "-dCompatibilityLevel=1.7",
+      "-dNOPAUSE",
+      "-dBATCH",
+      "-dQUIET",
+      "-sOutputFile=" .. temporary_pdf,
+      public_pdf,
+    } or {
       "qpdf",
       "--stream-data=compress",
       "--recompress-flate",
       public_pdf,
       temporary_pdf,
-    }, function(compression)
+    }
+    vim.notify("Public-PDF kompiliert – komprimiere mit " .. compressor_name .. " ...")
+    run(compression_command, function(compression)
       running[texfile] = nil
       if compression.code ~= 0 then
         vim.fn.delete(temporary_pdf)
         show_build_error(
-          "qpdf-Kompression fehlgeschlagen; unkomprimierte Public-PDF bleibt erhalten",
+          compressor_name .. "-Kompression fehlgeschlagen; unkomprimierte Public-PDF bleibt erhalten",
           (compression.stdout or "") .. (compression.stderr or "")
         )
         return
@@ -111,7 +129,7 @@ local function build_public_pdf()
       end
 
       vim.notify("Public-PDF erstellt und komprimiert:\n" .. public_pdf)
-      if vim.fn.filereadable(dir .. "/" .. public_name .. ".synctex.gz") ~= 1 then
+      if vim.fn.filereadable(public_synctex) ~= 1 then
         vim.notify("Keine SyncTeX-Datei für die Public-PDF gefunden", vim.log.levels.WARN)
       end
 
@@ -137,12 +155,23 @@ local function build_public_pdf()
   end)
 end
 
-vim.api.nvim_create_user_command("LatexCommentCompile", build_public_pdf, {
+vim.api.nvim_create_user_command("LatexCommentCompile", function()
+  build_public_pdf("qpdf")
+end, {
   force = true,
   desc = "LaTeX floats comment out and build public PDF",
 })
 
-vim.keymap.set("n", "<localleader>lx", build_public_pdf, {
+vim.keymap.set("n", "<localleader>lx", function()
+  build_public_pdf("qpdf")
+end, {
   silent = true,
   desc = "Build public PDF without commented figures and tables",
+})
+
+vim.keymap.set("n", "<localleader>lz", function()
+  build_public_pdf("gs")
+end, {
+  silent = true,
+  desc = "Build public PDF without commented figures and tables using Ghostscript",
 })

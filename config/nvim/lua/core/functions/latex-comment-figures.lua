@@ -211,7 +211,12 @@ local function find_brace_block(lines, idx)
     end
 
     if started and depth == 0 then
-      return start_idx, i
+      -- Der Block muss die Caption enthalten. Ein früher abgeschlossener Block
+      -- würde den aufrufenden Durchlauf zurücksetzen und endlos wiederholen.
+      if i >= idx then
+        return start_idx, i
+      end
+      return nil
     end
   end
 
@@ -357,7 +362,7 @@ local function apply_float_comments(lines, comment)
         comment_block(lines, block_start, block_end)
       end
 
-      i = block_end + 1
+      i = math.max(i + 1, block_end + 1)
     else
       i = i + 1
     end
