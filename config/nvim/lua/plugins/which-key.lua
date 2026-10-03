@@ -183,9 +183,16 @@ return {
         remap = false,
       },
       {
-        "<leader>tt2",
+        "<leader>tmm",
         "<cmd>read ~/.config/nvim/templates/markdown.md<CR>",
         desc = "markdown.md",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>tmp",
+        "<cmd>read ~/.config/nvim/templates/project-md-template.md<CR>",
+        desc = "project.md",
         nowait = true,
         remap = false,
       },
