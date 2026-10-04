@@ -46,6 +46,35 @@ local function get_oil_source()
 end
 
 -- ---------------------------------------------------------
+-- Pfad für Telescope-Anzeige kürzen
+-- ---------------------------------------------------------
+
+local function shorten_path(path, max_parts)
+  -- Abschließende Slashes für die Zerlegung entfernen
+  local clean_path = path:gsub("/+$", "")
+
+  local parts = {}
+
+  for part in clean_path:gmatch("[^/]+") do
+    table.insert(parts, part)
+  end
+
+  -- Kurze Pfade unverändert anzeigen
+  if #parts <= max_parts then
+    return clean_path .. "/"
+  end
+
+  -- Nur die letzten max_parts Verzeichnisse anzeigen
+  local visible_parts = {}
+
+  for i = #parts - max_parts + 1, #parts do
+    table.insert(visible_parts, parts[i])
+  end
+
+  return table.concat(visible_parts, "/") .. "/"
+end
+
+-- ---------------------------------------------------------
 -- Telescope-Picker
 -- ---------------------------------------------------------
 
@@ -75,6 +104,19 @@ local function select_target_dir(index_name, callback)
 
       finder = finders.new_table({
         results = dirs,
+
+        entry_maker = function(path)
+          return {
+            -- Vollständiger relativer Pfad bleibt erhalten
+            value = path,
+
+            -- Fuzzy-Suche durchsucht weiterhin den ganzen Pfad
+            ordinal = path,
+
+            -- Angezeigt werden nur die letzten drei Verzeichnisse
+            display = shorten_path(path, 3),
+          }
+        end,
       }),
 
       sorter = conf.generic_sorter({}),
