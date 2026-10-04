@@ -11,7 +11,7 @@ wenn sich die Aufgabe ändert; eine neue Sitzung kann denselben Auftrag fortsetz
 Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Entscheidungen in DECISIONS.md festhalten.
 -->
 
-# Projekt: MDK Thrombaspiration
+# Projekt: ____
 
 ## Projektziel und Rahmen
 
@@ -110,24 +110,6 @@ Nach der Bearbeitung das Dokument gemäß `LATEX.md` kompilieren und das erzeugt
 
 ## Aktueller Stand
 
-Stand: 2026-10-03.
-
-- Projektstruktur eingerichtet; vorhandene Arbeitsdateien ohne Inhaltsänderungen einsortiert.
-- Auf Nutzerwunsch PDF, SyncTeX und den Ordner `auxiliary_files/` nach `manuscript/` verschoben; den anschließend leeren Ordner `output/` entfernt.
-- Die Prüfsummen der verschobenen Dateien wurden kontrolliert.
-- Das Dokument wurde mit XeLaTeX und Biber erfolgreich neu kompiliert. Das Ergebnis umfasst fünf Seiten; es bestehen keine undefinierten Zitate, keine leere Bibliographie und keine übervollen Textzeilen.
-- Das vollständige PDF wurde seitenweise gerendert und visuell auf Beschnitt, Überlagerungen, Verweisrahmen, Tabellenlesbarkeit, Fußnoten und Literaturverzeichnis geprüft.
-- In `research/thrombaspiration-inari.md` steht weiterhin `bibliography: zotcite.bib`; eine solche Datei ist hier nicht vorhanden. Vor einer Verarbeitung dieser Markdown-Datei die Bibliographie-Einbindung klären. Die vorhandene Angabe wurde nicht verändert.
-- Fallbeschreibung und MDK-Ablehnungsbegründung wurden vollständig abgeglichen.
-- Der LaTeX-Entwurf wurde neu strukturiert und um eine direkte Beantwortung aller MDK-Fragen ergänzt.
-- PESI/sPESI wurden korrigiert: präklinisch PESI 119/Klasse IV und sPESI 2; in ZNA und ITS unter Sauerstoffgabe PESI 99/Klasse III und sPESI 1. Der sPESI-Grenzwert für die Herzfrequenz beträgt 100/min.
-- Die formale Risikokategorie zum Interventionszeitpunkt wird als am ehesten intermediär-niedrig eingeordnet; die ausgeprägte initiale klinische Gefährdung wird getrennt dargestellt.
-- Die G-BA-Entscheidung, die AWMF-/ESC-Leitlinien, das FLASH-Register, die PEERLESS-RCT und eine Kostenanalyse wurden geprüft und in `research/evidence.md` sowie `research/search-log.md` dokumentiert.
-- Die Argumentation stellt klar, dass eine primäre systemische Lyse bei normotensivem intermediärem Risiko nicht routinemäßig empfohlen ist. Zugleich bleibt transparent, dass die Akte die individualisierte Entscheidung gegen alleinige Antikoagulation nicht vollständig dokumentiert.
-- Kostenfolgen von Komplikationen und verlängertem Intensivaufenthalt sind qualitativ eingeordnet; eine nicht belegte deutsche Kostenersparnis wird nicht behauptet.
-- Weil der Compiler auf die außerhalb des Projektbereichs liegende externe Präambel nicht zugreifen konnte, wurde eine projektlokale Präambel mit den im letzten erfolgreichen Build nachweisbaren Kernpaketen, dem Letter-Layout und derselben zentralen Zotero-Bibliographie angelegt.
-
-Nächster Schritt: Nach Möglichkeit Originalbefunde bzw. eine ergänzende Erklärung des Behandlungsteams einarbeiten, insbesondere zur präinterventionellen Verschlechterung, zur konkreten Wahl der Thrombaspiration gegenüber alleiniger Antikoagulation und zu den erwogenen Alternativen.
 
 Bei wesentlichen Arbeitsschritten diesen Stand aktualisieren; dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
