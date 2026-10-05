@@ -73,7 +73,7 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
 
-- Aussagen und Belege: [research/evidence.md](research/evidence.md).
+- Aussagen und Belege: [research/EVIDENCE.md](research/EVIDENCE.md).
 
 - Abbildungen: `manuscript/figures/`.
 
