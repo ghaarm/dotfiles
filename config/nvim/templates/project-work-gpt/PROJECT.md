@@ -19,11 +19,11 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 - Allgemeine Absicht: {{INPUT}}
 
-- Zielgruppe: ärztliche Kolleg:innen
+- Zielgruppe: {{INPUT}}
 
 - Gewünschtes Ergebnis: {{INPUT}}
 
-- Vorhandenes Dokument: „{{INPUT}}“.
+<!-- - Vorhandenes Dokument: „{{INPUT}}“. -->
 
 <!-- - Arbeitsgrundlage: bestehender LaTeX-Entwurf und die Markdown-Dateien unter `research/`. -->
 
@@ -35,7 +35,7 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 - Sprache: Deutsch.
 
-- Relevante Zotero-Collections: `{{INPUT}}` und insbesondere `{{INPUT}}`.
+- Relevante Zotero-Collections: `{{INPUT}}` und insbesondere `{{INPUT}}` oder die Unterordner der zuvor genannten Zotero-Collection.
 
 Es gelten die allgemeinen Anweisungen im Arbeitsbereich: `../../AGENTS.md`, `../../RESEARCH.md`, `../../ZOTERO.md` und `../../LATEX.md`.
 

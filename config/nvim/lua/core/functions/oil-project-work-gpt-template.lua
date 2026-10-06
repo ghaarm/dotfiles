@@ -6,6 +6,7 @@
 -- ├── PROJECT.md
 -- ├── DECISIONS.md
 -- ├── manuscript/
+-- │   └── bilder-latex -> .../gmics-latex/bilder-latex  [nur G'MICS]
 -- └── research/
 --     ├── EVIDENCE.md
 --     └── sources/
@@ -15,6 +16,7 @@
 --   :OilNewProject
 --
 -- Offene PROJECT.md-Felder ausfüllen:
+--   <localleader>cq
 --   :ProjectFill
 --
 -- Persistente Template-Marker:
@@ -33,7 +35,14 @@
 
 local M = {}
 
+-- ---------------------------------------------------------
+-- Pfade
+-- ---------------------------------------------------------
+
 local template_dir = vim.fs.joinpath(vim.fn.expand("~"), ".config", "nvim", "templates", "project-work-gpt")
+
+local bilder_latex_source =
+  "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/R Statistik, icloud/Latex, icloud/Latex Projekte/icu-latex/gmics-latex/bilder-latex"
 
 -- ---------------------------------------------------------
 -- Aktuelles Oil-Verzeichnis
@@ -135,7 +144,6 @@ function M.fill_project()
   end
 
   local nodes = {}
-
   local input_number = 1
 
   -- Name -> LuaSnip-Node-Nummer
@@ -227,11 +235,9 @@ function M.fill_project()
               })
             )
           else
-            -- Der zugehörige INPUT wurde bereits in einer
-            -- früheren Sitzung ausgefüllt oder befindet sich
-            -- nicht mehr in der Datei.
-            --
-            -- In diesem Fall bleibt der Mirror unverändert.
+            -- Der zugehörige INPUT befindet sich nicht
+            -- vor diesem MIRROR oder ist nicht mehr als
+            -- offener Marker vorhanden.
             table.insert(nodes, t(marker))
           end
         else
@@ -273,7 +279,7 @@ end
 -- Projekt erstellen
 -- ---------------------------------------------------------
 
-local function create_project(project_name)
+local function create_project(project_name, project_template, create_bilder_latex)
   local current_dir = get_oil_dir()
 
   if not current_dir then
@@ -306,7 +312,7 @@ local function create_project(project_name)
   -- Templates zuerst lesen
   -- -------------------------------------------------------
 
-  local project_content, project_err = read_template("PROJECT.md")
+  local project_content, project_err = read_template(project_template)
 
   if not project_content then
     vim.notify(project_err, vim.log.levels.ERROR)
@@ -363,6 +369,29 @@ local function create_project(project_name)
   end
 
   -- -------------------------------------------------------
+  -- bilder-latex-Symlink
+  --
+  -- Wird nur für Projektarten angelegt, bei denen
+  -- create_bilder_latex = true gesetzt ist.
+  -- -------------------------------------------------------
+
+  if create_bilder_latex then
+    if vim.fn.isdirectory(bilder_latex_source) ~= 1 then
+      vim.notify("Zentrales bilder-latex-Verzeichnis nicht gefunden:\n" .. bilder_latex_source, vim.log.levels.ERROR)
+      return
+    end
+
+    local bilder_latex_link = vim.fs.joinpath(project_dir, "manuscript", "bilder-latex")
+
+    local ok, err = vim.uv.fs_symlink(bilder_latex_source, bilder_latex_link)
+
+    if not ok then
+      vim.notify("Symlink bilder-latex konnte nicht erstellt werden:\n" .. tostring(err), vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  -- -------------------------------------------------------
   -- Dateien erstellen
   -- -------------------------------------------------------
 
@@ -412,14 +441,40 @@ end
 -- ---------------------------------------------------------
 
 function M.new_project()
-  vim.ui.input({
-    prompt = "Projektname: ",
-  }, function(project_name)
-    if not project_name then
+  local project_types = {
+    {
+      label = "Allgemein",
+      template = "PROJECT.md",
+      bilder_latex = false,
+    },
+
+    {
+      label = "G'MICS",
+      template = "PROJECT-gmics.md",
+      bilder_latex = true,
+    },
+  }
+
+  vim.ui.select(project_types, {
+    prompt = "Projektart: ",
+
+    format_item = function(item)
+      return item.label
+    end,
+  }, function(choice)
+    if not choice then
       return
     end
 
-    create_project(project_name)
+    vim.ui.input({
+      prompt = "Projektname: ",
+    }, function(project_name)
+      if not project_name then
+        return
+      end
+
+      create_project(project_name, choice.template, choice.bilder_latex)
+    end)
   end)
 end
 
