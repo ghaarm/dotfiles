@@ -443,14 +443,18 @@ end
 function M.new_project()
   local project_types = {
     {
-      label = "Allgemein",
-      template = "PROJECT.md",
+      label = "PROJECT-allgemein.md",
+      template = "PROJECT-ALLGEMEIN.md",
       bilder_latex = false,
     },
-
     {
-      label = "G'MICS",
-      template = "PROJECT-gmics.md",
+      label = "PROJECT-G'MICS.md",
+      template = "PROJECT-GMICS.md",
+      bilder_latex = true,
+    },
+    {
+      label = "PROJECT-LATEX.md",
+      template = "PROJECT-LATEX.md",
       bilder_latex = true,
     },
   }
