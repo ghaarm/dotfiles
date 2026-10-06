@@ -77,14 +77,18 @@ Bei Arbeiten am Manuskript:
 - TODOs im Kontext ihrer jeweiligen Position im Text bearbeiten,
 - relevante `% MEMO:`-Kommentare als Kontext berücksichtigen,
 - die Regeln für `TODO:`, `NOTE:` und `MEMO:` aus `../../LATEX.md` anwenden,
-- nach Bearbeitung einen `% TODO:` gemäß `../../LATEX.md` durch einen aussagekräftigen `% NOTE:` ersetzen,
+- bearbeitete `% TODO:`-Kommentare gemäß `../../LATEX.md` unverändert stehen lassen und das Ergebnis unmittelbar darunter mit einem aussagekräftigen `% NOTE:` dokumentieren,
 - bei wissenschaftlichen TODOs zusätzlich `../../RESEARCH.md` und `../../ZOTERO.md` beachten.
 
-TODOs dürfen selbstständig bearbeitet werden, wenn sie zum aktuellen Arbeitsauftrag gehören oder der Nutzer ausdrücklich die Bearbeitung aller TODOs im Manuskript verlangt.
+TODOs dürfen selbstständig bearbeitet werden, wenn sie zum aktuellen Arbeitsauftrag gehören oder der Nutzer ausdrücklich die Bearbeitung aller bearbeitbaren TODOs im Manuskript verlangt.
+
+`% TODO: [USER]` ist gemäß `../../LATEX.md` von einer allgemeinen Aufforderung zur Bearbeitung aller TODOs ausgenommen.
 
 TODOs außerhalb des aktuellen Arbeitsauftrags nicht allein deshalb bearbeiten, weil sie im Manuskript vorhanden sind.
 
 Nach der Bearbeitung das Dokument gemäß `../../LATEX.md` kompilieren und das erzeugte PDF prüfen.
+
+
 
 ## LaTeX und Bibliographie
 

@@ -18,11 +18,11 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 ## Projektziel und Rahmen
 
-- Allgemeine Absicht: Dies ist ein G'MICS – mein persönlicher Standard für die praktische Anwendung und klinische Einordnung von {{INPUT:TOPIC}}.
+- Allgemeine Absicht: Dies ist ein G'MICS – mein persönlicher Standard für die praktische Anwendung und klinische Einordnung von {{INPUT:TOPIC}}. Es soll Neugier wecken, zum Nachfragen und Nachdenken anregen und dazu ermutigen, auch etablierte Routinen und vermeintliche Selbstverständlichkeiten kritisch zu hinterfragen. Interessante, überraschende oder auch nur als „Partywissen“ nützliche Hintergrundinformationen dürfen ausdrücklich einfließen.
 
 - Zielgruppe: ärztliche Kolleg:innen.
 
-- Gewünschtes Ergebnis: Eine verständliche und praxisorientierte Anleitung für ärztliche Kolleg:innen zur Anwendung und klinischen Einordnung von {{MIRROR:TOPIC}}.
+- Gewünschtes Ergebnis: Eine verständliche und praxisorientierte Anleitung für ärztliche Kolleg:innen zur Anwendung und klinischen Einordnung von {{MIRROR:TOPIC}}, die neben konkretem Handlungswissen auch Hintergründe, kritische Einordnung und interessante Zusatzinformationen vermittelt.
 
 - Rahmenbedingungen: Bestehende Gliederung, Gestaltung und Zitierweise erhalten, sofern der konkrete Auftrag keine Änderung vorsieht.
 
@@ -79,10 +79,12 @@ Bei Arbeiten am Manuskript:
 - TODOs im Kontext ihrer jeweiligen Position im Text bearbeiten,
 - relevante `% MEMO:`-Kommentare als Kontext berücksichtigen,
 - die Regeln für `TODO:`, `NOTE:` und `MEMO:` aus `../../LATEX.md` anwenden,
-- nach Bearbeitung einen `% TODO:` gemäß `../../LATEX.md` durch einen aussagekräftigen `% NOTE:` ersetzen,
+- bearbeitete `% TODO:`-Kommentare gemäß `../../LATEX.md` unverändert stehen lassen und das Ergebnis unmittelbar darunter mit einem aussagekräftigen `% NOTE:` dokumentieren,
 - bei wissenschaftlichen TODOs zusätzlich `../../RESEARCH.md` und `../../ZOTERO.md` beachten.
 
-TODOs dürfen selbstständig bearbeitet werden, wenn sie zum aktuellen Arbeitsauftrag gehören oder der Nutzer ausdrücklich die Bearbeitung aller TODOs im Manuskript verlangt.
+TODOs dürfen selbstständig bearbeitet werden, wenn sie zum aktuellen Arbeitsauftrag gehören oder der Nutzer ausdrücklich die Bearbeitung aller bearbeitbaren TODOs im Manuskript verlangt.
+
+`% TODO: [USER]` ist gemäß `../../LATEX.md` von einer allgemeinen Aufforderung zur Bearbeitung aller TODOs ausgenommen.
 
 TODOs außerhalb des aktuellen Arbeitsauftrags nicht allein deshalb bearbeiten, weil sie im Manuskript vorhanden sind.
 
