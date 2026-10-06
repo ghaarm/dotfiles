@@ -34,6 +34,19 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 Es gelten die allgemeinen Anweisungen im Arbeitsbereich aus `../../AGENTS.md` sowie die dort für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen.
 
+## Abgrenzung
+<!--
+Optional. Hier festhalten, was ausdrücklich nicht Ziel dieses Projekts ist.
+Nur ausfüllen, wenn eine bewusste Abgrenzung für die weitere Arbeit relevant ist.
+-->
+
+## Qualitätskriterien
+<!--
+Optional. Projektspezifische Kriterien festhalten, anhand derer das Ergebnis als ausreichend oder fertig beurteilt werden kann.
+Nur projektspezifische Kriterien festhalten; allgemeine Qualitätsanforderungen aus `AGENTS.md` nicht wiederholen.
+-->
+
+
 ## Aktueller Arbeitsauftrag
 
 <!--

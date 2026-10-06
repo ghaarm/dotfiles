@@ -34,6 +34,18 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 Es gelten die allgemeinen Anweisungen im Arbeitsbereich aus `../../AGENTS.md` sowie die dort für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen. Für LaTeX-Arbeiten gilt insbesondere `../../LATEX.md`.
 
+## Abgrenzung
+<!--
+Optional. Hier festhalten, was ausdrücklich nicht Ziel dieses Projekts ist.
+Nur ausfüllen, wenn eine bewusste Abgrenzung für die weitere Arbeit relevant ist.
+-->
+
+## Qualitätskriterien
+<!--
+Optional. Projektspezifische Kriterien festhalten, anhand derer das Ergebnis als ausreichend oder fertig beurteilt werden kann.
+Nur projektspezifische Kriterien festhalten; allgemeine Qualitätsanforderungen aus `AGENTS.md` nicht wiederholen.
+-->
+
 ## Aktueller Arbeitsauftrag
 
 <!--
@@ -70,19 +82,19 @@ Beispiel:
 
 ## Manuskript-TODOs
 
-Die `% TODO:`-Kommentare in `manuscript/{{MIRROR:MAINFILE}}.tex` sind als konkrete Arbeitsaufträge innerhalb des Manuskripts zu behandeln.
+Die `%TODO:`-Kommentare in `manuscript/{{MIRROR:MAINFILE}}.tex` sind als konkrete Arbeitsaufträge innerhalb des Manuskripts zu behandeln.
 
 Bei Arbeiten am Manuskript:
 
 - TODOs im Kontext ihrer jeweiligen Position im Text bearbeiten,
-- relevante `% MEMO:`-Kommentare als Kontext berücksichtigen,
+- relevante `%MEMO:`-Kommentare als Kontext berücksichtigen,
 - die Regeln für `TODO:`, `NOTE:` und `MEMO:` aus `../../LATEX.md` anwenden,
-- bearbeitete `% TODO:`-Kommentare gemäß `../../LATEX.md` unverändert stehen lassen und das Ergebnis unmittelbar darunter mit einem aussagekräftigen `% NOTE:` dokumentieren,
+- bearbeitete `%TODO:`-Kommentare gemäß `../../LATEX.md` unverändert stehen lassen und das Ergebnis unmittelbar darunter mit einem aussagekräftigen `%NOTE:` dokumentieren,
 - bei wissenschaftlichen TODOs zusätzlich `../../RESEARCH.md` und `../../ZOTERO.md` beachten.
 
 TODOs dürfen selbstständig bearbeitet werden, wenn sie zum aktuellen Arbeitsauftrag gehören oder der Nutzer ausdrücklich die Bearbeitung aller bearbeitbaren TODOs im Manuskript verlangt.
 
-`% TODO: [USER]` ist gemäß `../../LATEX.md` von einer allgemeinen Aufforderung zur Bearbeitung aller TODOs ausgenommen.
+`%TODO: [USER]` ist gemäß `../../LATEX.md` von einer allgemeinen Aufforderung zur Bearbeitung aller TODOs ausgenommen.
 
 TODOs außerhalb des aktuellen Arbeitsauftrags nicht allein deshalb bearbeiten, weil sie im Manuskript vorhanden sind.
 

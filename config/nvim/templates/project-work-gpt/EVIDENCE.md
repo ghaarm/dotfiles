@@ -1,4 +1,4 @@
-# EVIDENCE - {{PROJECT_NAME}}
+# EVIDENCE - {{PROJECT-NAME}}
 <!--
 Zweck: Verbindung zwischen wissenschaftlichen Aussagen und geprüften Belegen.
 Hier hinein gehören:
