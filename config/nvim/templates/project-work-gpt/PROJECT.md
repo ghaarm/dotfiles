@@ -17,17 +17,17 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 ## Projektziel und Rahmen
 
-- Allgemeine Absicht: ____
+- Allgemeine Absicht: {{INPUT}}
 
 - Zielgruppe: ärztliche Kolleg:innen
 
-- Gewünschtes Ergebnis: ____
+- Gewünschtes Ergebnis: {{INPUT}}
 
-- Vorhandenes Dokument: „____“.
+- Vorhandenes Dokument: „{{INPUT}}“.
 
 <!-- - Arbeitsgrundlage: bestehender LaTeX-Entwurf und die Markdown-Dateien unter `research/`. -->
 
-- Arbeitsgrundlage: bestehender LaTeX-Entwurf. 
+- Arbeitsgrundlage: bestehender LaTeX-Entwurf.
 
 - Rahmenbedingungen: Bestehende Gliederung, Gestaltung und Zitierweise erhalten, sofern der konkrete Auftrag keine Änderung vorsieht.
 
@@ -35,7 +35,7 @@ Den aktuellen Stand bei wesentlichen Fortschritten aktualisieren; dauerhafte Ent
 
 - Sprache: Deutsch.
 
-- Relevante Zotero-Collections: `____` und insbesondere `____`.
+- Relevante Zotero-Collections: `{{INPUT}}` und insbesondere `{{INPUT}}`.
 
 Es gelten die allgemeinen Anweisungen im Arbeitsbereich: `../../AGENTS.md`, `../../RESEARCH.md`, `../../ZOTERO.md` und `../../LATEX.md`.
 
@@ -53,12 +53,11 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
   <!-- * Alle `% TODO:`-Kommentare im Manuskript gemäß `LATEX.md` bearbeiten. -->
 
-  * ____
-
+  * {{INPUT}}
 
 <!-- - Verbindliches Ausgangsmaterial: Die Ablehnungsbegründung in `research/mdk-grund-ablehnung.md` gemeinsam mit der Fallbeschreibung in `research/fallbeschreibung-mdk.md` berücksichtigen. Vor der inhaltlichen Überarbeitung beide Dateien lesen und die konkreten MDK-Einwände mit den dokumentierten Falldaten und der Literatur abgleichen. -->
 
-- Verbindliches Ausgangsmaterial: ____. 
+- Verbindliches Ausgangsmaterial: {{INPUT}}.
 
 - Umfang / betroffene Abschnitte: noch nicht festgelegt.
 
@@ -67,7 +66,8 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 ## Dateien
 
 <!-- - Hauptdatei: [manuscript/thrombaspiration-antwort-mdk.tex](manuscript/thrombaspiration-antwort-mdk.tex). -->
-- Hauptdatei: [manuscript/____.tex](manuscript/____.tex).
+
+- Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
 
 <!-- - Ergänzendes Ausgangsmaterial: [research/thrombaspiration-inari.md](research/thrombaspiration-inari.md). -->
 
@@ -79,13 +79,13 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 - Abbildungen: `manuscript/figures/`.
 
-- Vorhandenes PDF: [manuscript/____.pdf](manuscript/____.pdf).
+<!-- - Vorhandenes PDF: [manuscript/{{MIRROR:MAINFILE}}.pdf](manuscript/{{MIRROR:MAINFILE}}.pdf). -->
 
-- Übernommene Build-Hilfsdateien: `manuscript/auxiliary_files/` sowie SyncTeX-Dateien direkt in `manuscript/`.
+<!-- - Übernommene Build-Hilfsdateien: `manuscript/auxiliary_files/` sowie SyncTeX-Dateien direkt in `manuscript/`. -->
 
 ## Manuskript-TODOs
 
-Die `% TODO:`-Kommentare in `manuscript/thrombaspiration-antwort-mdk.tex` sind als konkrete Arbeitsaufträge innerhalb des Manuskripts zu behandeln.
+Die `% TODO:`-Kommentare in `manuscript/{{MIRROR:MAINFILE}}.tex` sind als konkrete Arbeitsaufträge innerhalb des Manuskripts zu behandeln.
 
 Bei Arbeiten am Manuskript:
 
@@ -108,10 +108,8 @@ Nach der Bearbeitung das Dokument gemäß `LATEX.md` kompilieren und das erzeugt
   `/users/g/library/mobile documents/com~apple~clouddocs/!docs icloud/r statistik, icloud/latex, icloud/latex projekte/@vorlagen-latex/preamble-footnotes-bibliographie-neu.tex`.
 - Für einen reproduzierbaren Build innerhalb des Projektbereichs wird `manuscript/preamble-project.tex` verwendet. Sie bindet `/Users/g/Library/texmf/bibtex/bib/Zotero.bib` ein. Dieselbe Datei ist im Arbeitsbereich als `../../Zotero.bib` erreichbar und strikt READ-ONLY.
 - Es wird keine zusätzliche `references.bib` angelegt.
-- Getesteter Build-Befehl aus `manuscript/`: `latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -auxdir=auxiliary_files -outdir=. thrombaspiration-antwort-mdk.tex`. PDF und SyncTeX gehören neben die Hauptdatei in `manuscript/`, Hilfsdateien nach `manuscript/auxiliary_files/`.
+- Getesteter Build-Befehl aus `manuscript/`: `latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -auxdir=auxiliary_files -outdir=. {{MIRROR:MAINFILE}}.tex`. PDF und SyncTeX gehören neben die Hauptdatei in `manuscript/`, Hilfsdateien nach `manuscript/auxiliary_files/`.
 
 ## Aktueller Stand
 
-
 Bei wesentlichen Arbeitsschritten diesen Stand aktualisieren; dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
-

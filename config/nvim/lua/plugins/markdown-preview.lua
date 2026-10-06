@@ -60,7 +60,7 @@ return {
     -- )
     vim.keymap.set(
       "n",
-      "<localleader>lu",
+      "<localleader>mu",
       ":MarkdownPreviewToggle<CR>",
       { noremap = true, silent = true, desc = "Toggle Markdown Preview" }
     )
