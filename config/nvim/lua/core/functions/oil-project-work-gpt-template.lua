@@ -10,7 +10,26 @@
 --     ├── EVIDENCE.md
 --     └── sources/
 --
--- <leader>cp = neues Projekt erstellen
+-- Projekt erstellen:
+--   <leader>cw
+--   :OilNewProject
+--
+-- Offene PROJECT.md-Felder ausfüllen:
+--   :ProjectFill
+--
+-- Persistente Template-Marker:
+--
+--   {{PROJECT-NAME}}
+--       wird beim Erstellen automatisch ersetzt
+--
+--   {{INPUT}}
+--       normale Eingabestelle
+--
+--   {{INPUT:NAME}}
+--       benannte Eingabestelle
+--
+--   {{MIRROR:NAME}}
+--       übernimmt den Inhalt von {{INPUT:NAME}}
 
 local M = {}
 
@@ -33,10 +52,10 @@ local function get_oil_dir()
 end
 
 -- ---------------------------------------------------------
--- Template lesen und Platzhalter ersetzen
+-- Template lesen
 -- ---------------------------------------------------------
 
-local function render_template(template_name, project_name)
+local function read_template(template_name)
   local template_path = vim.fs.joinpath(template_dir, template_name)
 
   local file, err = io.open(template_path, "rb")
@@ -48,11 +67,17 @@ local function render_template(template_name, project_name)
   local content = file:read("*a")
   file:close()
 
-  content = content:gsub("{{PROJECT_NAME}}", function()
+  return content
+end
+
+-- ---------------------------------------------------------
+-- Projektname einsetzen
+-- ---------------------------------------------------------
+
+local function render_project_name(content, project_name)
+  return content:gsub("{{PROJECT%-NAME}}", function()
     return project_name
   end)
-
-  return content
 end
 
 -- ---------------------------------------------------------
@@ -73,6 +98,178 @@ local function write_file(path, content)
 end
 
 -- ---------------------------------------------------------
+-- PROJECT.md prüfen
+-- ---------------------------------------------------------
+
+local function is_project_file()
+  return vim.fn.expand("%:t") == "PROJECT.md"
+end
+
+-- ---------------------------------------------------------
+-- PROJECT.md-Formular aktivieren
+-- ---------------------------------------------------------
+
+function M.fill_project()
+  if not is_project_file() then
+    vim.notify("ProjectFill ist nur für PROJECT.md vorgesehen.", vim.log.levels.WARN)
+    return
+  end
+
+  local ls = require("luasnip")
+
+  local s = ls.snippet
+  local i = ls.insert_node
+  local f = ls.function_node
+  local t = ls.text_node
+
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+  local content = table.concat(lines, "\n")
+
+  -- Gibt es überhaupt noch offene Eingaben?
+  if not content:find("{{INPUT", 1, true) then
+    vim.notify("Keine offenen PROJECT.md-Eingabefelder.", vim.log.levels.INFO)
+    return
+  end
+
+  local nodes = {}
+
+  local input_number = 1
+
+  -- Name -> LuaSnip-Node-Nummer
+  local named_inputs = {}
+
+  local position = 1
+
+  while true do
+    local start_pos, end_pos, marker = content:find("({{.-}})", position)
+
+    if not start_pos then
+      local remaining = content:sub(position)
+
+      if remaining ~= "" then
+        table.insert(
+          nodes,
+          t(vim.split(remaining, "\n", {
+            plain = true,
+          }))
+        )
+      end
+
+      break
+    end
+
+    -- -----------------------------------------------------
+    -- Text vor dem Marker
+    -- -----------------------------------------------------
+
+    local before = content:sub(position, start_pos - 1)
+
+    if before ~= "" then
+      table.insert(
+        nodes,
+        t(vim.split(before, "\n", {
+          plain = true,
+        }))
+      )
+    end
+
+    -- -----------------------------------------------------
+    -- {{INPUT}}
+    -- -----------------------------------------------------
+
+    if marker == "{{INPUT}}" then
+      table.insert(nodes, i(input_number, "{{INPUT}}"))
+
+      input_number = input_number + 1
+    else
+      -- ---------------------------------------------------
+      -- {{INPUT:NAME}}
+      -- ---------------------------------------------------
+
+      local input_name = marker:match("^{{INPUT:([^}]+)}}$")
+
+      if input_name then
+        local node_number = input_number
+
+        named_inputs[input_name] = node_number
+
+        table.insert(nodes, i(node_number, marker))
+
+        input_number = input_number + 1
+      else
+        -- -------------------------------------------------
+        -- {{MIRROR:NAME}}
+        -- -------------------------------------------------
+
+        local mirror_name = marker:match("^{{MIRROR:([^}]+)}}$")
+
+        if mirror_name then
+          local source_node = named_inputs[mirror_name]
+
+          if source_node then
+            table.insert(
+              nodes,
+              f(function(args)
+                local value = args[1][1] or ""
+
+                -- Solange das Feld noch nicht ausgefüllt
+                -- wurde, bleibt der Mirror persistent.
+                if value == "" or value:match("^{{INPUT:") then
+                  return "{{MIRROR:" .. mirror_name .. "}}"
+                end
+
+                return value
+              end, {
+                source_node,
+              })
+            )
+          else
+            -- Der zugehörige INPUT wurde bereits in einer
+            -- früheren Sitzung ausgefüllt oder befindet sich
+            -- nicht mehr in der Datei.
+            --
+            -- In diesem Fall bleibt der Mirror unverändert.
+            table.insert(nodes, t(marker))
+          end
+        else
+          -- Unbekannte {{...}}-Marker unverändert lassen
+          table.insert(nodes, t(marker))
+        end
+      end
+    end
+
+    position = end_pos + 1
+  end
+
+  -- -------------------------------------------------------
+  -- Finaler Exit-Node
+  -- -------------------------------------------------------
+
+  table.insert(nodes, i(0))
+
+  -- -------------------------------------------------------
+  -- Buffer durch Snippet ersetzen
+  -- -------------------------------------------------------
+
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+    "",
+  })
+
+  vim.api.nvim_win_set_cursor(0, {
+    1,
+    0,
+  })
+
+  ls.snip_expand(s({
+    trig = "",
+    name = "PROJECT.md Formular",
+  }, nodes))
+end
+
+-- ---------------------------------------------------------
 -- Projekt erstellen
 -- ---------------------------------------------------------
 
@@ -89,8 +286,6 @@ local function create_project(project_name)
     return
   end
 
-  -- Verhindert, dass versehentlich ein Pfad
-  -- statt eines Projektnamens eingegeben wird.
   if project_name:find("/", 1, true) then
     vim.notify("Der Projektname darf keinen / enthalten.", vim.log.levels.ERROR)
     return
@@ -98,36 +293,51 @@ local function create_project(project_name)
 
   local project_dir = vim.fs.joinpath(current_dir, project_name)
 
+  -- -------------------------------------------------------
   -- Bestehende Projekte niemals überschreiben
+  -- -------------------------------------------------------
+
   if vim.uv.fs_stat(project_dir) then
     vim.notify("Verzeichnis existiert bereits:\n" .. project_dir, vim.log.levels.WARN)
     return
   end
 
   -- -------------------------------------------------------
-  -- Templates zuerst prüfen
+  -- Templates zuerst lesen
   -- -------------------------------------------------------
 
-  local project_content, project_err = render_template("PROJECT.md", project_name)
+  local project_content, project_err = read_template("PROJECT.md")
 
   if not project_content then
     vim.notify(project_err, vim.log.levels.ERROR)
     return
   end
 
-  local decisions_content, decisions_err = render_template("DECISIONS.md", project_name)
+  local decisions_content, decisions_err = read_template("DECISIONS.md")
 
   if not decisions_content then
     vim.notify(decisions_err, vim.log.levels.ERROR)
     return
   end
 
-  local evidence_content, evidence_err = render_template("EVIDENCE.md", project_name)
+  local evidence_content, evidence_err = read_template("EVIDENCE.md")
 
   if not evidence_content then
     vim.notify(evidence_err, vim.log.levels.ERROR)
     return
   end
+
+  -- -------------------------------------------------------
+  -- Nur PROJECT-NAME sofort ersetzen
+  --
+  -- INPUT und MIRROR bleiben persistent in den Dateien.
+  -- -------------------------------------------------------
+
+  project_content = render_project_name(project_content, project_name)
+
+  decisions_content = render_project_name(decisions_content, project_name)
+
+  evidence_content = render_project_name(evidence_content, project_name)
 
   -- -------------------------------------------------------
   -- Verzeichnisse erstellen
@@ -156,9 +366,11 @@ local function create_project(project_name)
   -- Dateien erstellen
   -- -------------------------------------------------------
 
+  local project_file = vim.fs.joinpath(project_dir, "PROJECT.md")
+
   local files = {
     {
-      path = vim.fs.joinpath(project_dir, "PROJECT.md"),
+      path = project_file,
       content = project_content,
     },
 
@@ -188,11 +400,15 @@ local function create_project(project_name)
 
   vim.notify("Projekt erstellt:\n" .. project_name, vim.log.levels.INFO)
 
-  require("oil.actions").refresh.callback()
+  -- PROJECT.md öffnen
+  vim.cmd.edit(vim.fn.fnameescape(project_file))
+
+  -- Formular direkt aktivieren
+  M.fill_project()
 end
 
 -- ---------------------------------------------------------
--- Öffentliche Funktion
+-- Neues Projekt
 -- ---------------------------------------------------------
 
 function M.new_project()
@@ -208,13 +424,19 @@ function M.new_project()
 end
 
 -- ---------------------------------------------------------
--- Command
+-- Commands
 -- ---------------------------------------------------------
 
 vim.api.nvim_create_user_command("OilNewProject", function()
   M.new_project()
 end, {
-  desc = "Neue Projektstruktur im aktuellen Oil-Verzeichnis",
+  desc = "Neues Work-Projekt erstellen",
+})
+
+vim.api.nvim_create_user_command("ProjectFill", function()
+  M.fill_project()
+end, {
+  desc = "Offene PROJECT.md-Felder ausfüllen",
 })
 
 -- ---------------------------------------------------------
@@ -229,7 +451,24 @@ vim.api.nvim_create_autocmd("FileType", {
       M.new_project()
     end, {
       buffer = args.buf,
-      desc = "Oil: New project",
+      desc = "Oil: New Work project",
+    })
+  end,
+})
+
+-- ---------------------------------------------------------
+-- PROJECT.md-Keymap
+-- ---------------------------------------------------------
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "PROJECT.md",
+
+  callback = function(args)
+    vim.keymap.set("n", "<localleader>cq", function()
+      M.fill_project()
+    end, {
+      buffer = args.buf,
+      desc = "Project: Fill open fields",
     })
   end,
 })
