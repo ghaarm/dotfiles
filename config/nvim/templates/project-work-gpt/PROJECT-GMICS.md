@@ -54,6 +54,71 @@ Didaktische Vereinfachungen dürfen die fachliche Aussage nicht verfälschen. Ei
 
 Interessante Zusatzinformationen gemäß `../../RESEARCH.md` sind ausdrücklich erwünscht. Informationen mit besonderem didaktischem Wert können in den G'MICS-Text aufgenommen werden, wenn sie das Verständnis fördern, zum Nachfragen oder kritischen Hinterfragen anregen oder einen anderen erkennbaren didaktischen Mehrwert bieten.
 
+## Grundstruktur des G'MICS
+
+Das G'MICS folgt grundsätzlich dieser Struktur:
+
+1. **Kernpunkte (TL;DR)**
+   - Die wichtigsten Aussagen und praktischen Konsequenzen des G'MICS
+     kompakt voranstellen.
+   - Die Kernpunkte sollen einen schnellen Überblick ermöglichen, ohne die
+     ausführliche Herleitung im folgenden Text zu ersetzen.
+   - Obwohl die Kernpunkte im fertigen G'MICS am Anfang stehen, werden sie
+     erst erstellt bzw. abschließend überarbeitet, nachdem der übrige
+     G'MICS-Text inhaltlich fertiggestellt wurde.
+   - Die Kernpunkte aus dem fertigen Text ableiten und keine Aussagen
+     aufnehmen, die im nachfolgenden Text nicht nachvollziehbar hergeleitet
+     oder erläutert werden.1. **Kernpunkte**
+   - Die wichtigsten Aussagen und praktischen Konsequenzen des G'MICS
+     kompakt voranstellen.
+   - Die Kernpunkte sollen einen schnellen Überblick ermöglichen, ohne die
+     ausführliche Herleitung im folgenden Text zu ersetzen.
+   - Obwohl die Kernpunkte im fertigen G'MICS am Anfang stehen, werden sie
+     erst erstellt bzw. abschließend überarbeitet, nachdem der übrige
+     G'MICS-Text inhaltlich fertiggestellt wurde.
+   - Die Kernpunkte aus dem fertigen Text ableiten und keine Aussagen
+     aufnehmen, die im nachfolgenden Text nicht nachvollziehbar hergeleitet
+     oder erläutert werden.
+
+2. **Allgemein**
+   - Als Einführung in das Thema dienen und Interesse wecken.
+   - Das Thema in einen größeren Zusammenhang einordnen.
+   - Je nach Thema können hier insbesondere historische Hintergründe,
+     interessante oder überraschende Fakten, begriffliche Besonderheiten,
+     anschauliche Zusammenhänge oder andere geeignete Einstiege aufgegriffen
+     werden.
+   - Der Abschnitt muss nicht unmittelbar mit konkreten
+     Handlungsempfehlungen beginnen.
+
+3. **Thematische Abschnitte**
+   - Die für das Thema notwendigen fachlichen Inhalte, Hintergründe,
+     Evidenz, Vorgehensweisen und Einschränkungen nachvollziehbar entwickeln.
+   - Anzahl, Benennung und Reihenfolge richten sich nach dem jeweiligen Thema.
+
+4. **Für die Praxis**
+   - Am Ende die für die praktische Anwendung wesentlichen Konsequenzen aus
+     den vorherigen Abschnitten zusammenführen.
+   - Herausarbeiten, was die dargestellten Zusammenhänge für das konkrete
+     klinische Vorgehen, die Beurteilung oder Entscheidungsfindung bedeuten.
+   - Keine neuen zentralen Argumente einführen, die zuvor nicht erläutert
+     wurden.
+
+Diese Grundstruktur beibehalten, sofern für ein konkretes G'MICS kein
+sachlicher Grund für eine Abweichung besteht.
+
+### Arbeitsreihenfolge
+
+Bei der Erstellung eines neuen G'MICS zunächst `Allgemein`, die thematischen
+Abschnitte und `Für die Praxis` ausarbeiten.
+
+Die `Kernpunkte` erst erstellen oder abschließend überarbeiten, wenn die
+inhaltliche Ausarbeitung des übrigen G'MICS abgeschlossen ist.
+
+Während der laufenden inhaltlichen Bearbeitung vorhandene Kernpunkte nicht
+fortlaufend anpassen, sofern dies nicht ausdrücklich Teil des aktuellen
+Arbeitsauftrags ist.
+
+
 ## Abgrenzung
 
 <!--
@@ -86,13 +151,11 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 - Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
 
-<!--
-Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript
-weitere projektinterne Dateien verbindlich berücksichtigt werden sollen.
-
-Beispiel:
-- Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md).
--->
+<!-- Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript -->
+<!-- weitere projektinterne Dateien verbindlich berücksichtigt werden sollen. -->
+<!---->
+<!-- Beispiel: -->
+<!-- - Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md). -->
 
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
 

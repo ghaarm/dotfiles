@@ -62,13 +62,11 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 - Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
 
-<!--
-Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript
-weitere projektinterne Dateien verbindlich berücksichtigt werden sollen.
-
-Beispiel:
-- Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md).
--->
+<!-- Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript -->
+<!-- weitere projektinterne Dateien verbindlich berücksichtigt werden sollen. -->
+<!---->
+<!-- Beispiel: -->
+<!-- - Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md). -->
 
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
 
