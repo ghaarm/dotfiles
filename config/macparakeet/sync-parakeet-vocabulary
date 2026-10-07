@@ -1,0 +1,65 @@
+#!/bin/zsh
+
+set -e
+
+DIR="$HOME/dotfiles/config/macparakeet"
+OUTPUT="$DIR/vocabulary.json"
+CLI="/Applications/MacParakeet.app/Contents/MacOS/macparakeet-cli"
+
+python3 - "$DIR" "$OUTPUT" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+directory = Path(sys.argv[1])
+output = Path(sys.argv[2])
+
+files = [
+    directory / "medical-vocabulary.txt",
+    directory / "allgemein-vocabulary.txt",
+    directory / "englisch-vocabulary.txt",
+]
+
+words = {}
+
+for file in files:
+    for line in file.read_text(encoding="utf-8").splitlines():
+        word = line.strip()
+
+        if not word or word.startswith("#"):
+            continue
+
+        # MacParakeet behandelt Wörter case-insensitiv.
+        words.setdefault(word.casefold(), word)
+
+bundle = {
+    "schema": "macparakeet.vocabulary",
+    "version": 1,
+    "exportedAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    "appVersion": "0.8.9",
+    "customWords": [
+        {
+            "word": word,
+            "isEnabled": True,
+        }
+        for word in words.values()
+    ],
+    "textSnippets": [],
+}
+
+output.write_text(
+    json.dumps(bundle, ensure_ascii=False, indent=2) + "\n",
+    encoding="utf-8",
+)
+
+print(f"{len(words)} Wörter → {output}")
+PY
+
+echo
+echo "Prüfe Import ..."
+"$CLI" vocab import --input "$OUTPUT" --dry-run --policy replace-all
+
+echo
+echo "Synchronisiere Vocabulary ..."
+"$CLI" vocab import --input "$OUTPUT" --policy replace-all

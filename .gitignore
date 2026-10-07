@@ -38,3 +38,6 @@ avante.md
 
 # Migration backups created while adopting GNU Stow
 .migration-backup/
+
+# Generated MacParakeet vocabulary
+config/macparakeet/vocabulary.json
