@@ -32,7 +32,8 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 - Relevante Zotero-Collection: `{{INPUT}}`; relevante Unterordner dieser Collection sind einzubeziehen.
 
-Es gelten die allgemeinen Anweisungen im Arbeitsbereich: `../../AGENTS.md`, `../../RESEARCH.md`, `../../ZOTERO.md` und `../../LATEX.md`.
+Es gelten die allgemeinen Anweisungen aus `../../AGENTS.md` sowie die dort
+für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen.
 
 Für G'MICS-Texte gelten zusätzlich die G'MICS-spezifischen Stilvorgaben aus `../../STYLE_GUIDE_GMICS.md`.
 
@@ -68,7 +69,7 @@ Das G'MICS folgt grundsätzlich dieser Struktur:
      G'MICS-Text inhaltlich fertiggestellt wurde.
    - Die Kernpunkte aus dem fertigen Text ableiten und keine Aussagen
      aufnehmen, die im nachfolgenden Text nicht nachvollziehbar hergeleitet
-     oder erläutert werden.1. **Kernpunkte**
+     oder erläutert werden.
    - Die wichtigsten Aussagen und praktischen Konsequenzen des G'MICS
      kompakt voranstellen.
    - Die Kernpunkte sollen einen schnellen Überblick ermöglichen, ohne die
@@ -149,13 +150,41 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 ## Dateien
 
-- Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
+### Ausgangsmaterial
 
-<!-- Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript -->
-<!-- weitere projektinterne Dateien verbindlich berücksichtigt werden sollen. -->
-<!---->
-<!-- Beispiel: -->
-<!-- - Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md). -->
+Bereitgestellte Notizen, kopierte Chats, Rechercheergebnisse und andere
+Arbeitsmaterialien dienen als inhaltliches Ausgangsmaterial für das Projekt.
+
+Sie können insbesondere genutzt werden, um:
+
+- relevante Fragestellungen und Aspekte zu identifizieren,
+- vorhandene Überlegungen und Argumentationslinien aufzugreifen,
+- genannte Studien, Leitlinien und andere Quellen für die weitere Recherche
+  zu identifizieren,
+- interessante Zusammenhänge oder offene Fragen weiterzuverfolgen.
+
+Das Ausgangsmaterial ist nicht automatisch als wissenschaftlich geprüft oder
+zitierfähig zu behandeln.
+
+Bei wissenschaftlichen und medizinischen Aussagen nach Möglichkeit die
+zugrunde liegende Originalpublikation, Leitlinie oder andere maßgebliche
+Quelle gemäß `../../RESEARCH.md` aufsuchen und selbst prüfen.
+
+Insbesondere Literaturangaben, Zahlen, Studienergebnisse und konkrete
+Aussagen aus KI-generierten oder anderweitig zusammengefassten
+Rechercheergebnissen nicht ungeprüft übernehmen.
+
+Klar unterscheiden zwischen dem bereitgestellten Ausgangsmaterial, selbst
+geprüften Quellen und daraus abgeleiteten Schlussfolgerungen.
+
+<!-- Hier vorhandenes Ausgangsmaterial eintragen, zum Beispiel: -->
+- [research/notizen.md](research/notizen.md)
+- [research/openevidence.md](research/openevidence.md)
+
+
+### Projektdateien
+
+- Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
 
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
 

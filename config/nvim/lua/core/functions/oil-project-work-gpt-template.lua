@@ -9,6 +9,8 @@
 -- │   └── bilder-latex -> .../gmics-latex/bilder-latex  [nur G'MICS]
 -- └── research/
 --     ├── EVIDENCE.md
+--     ├── notizen.md
+--     ├── openevidence.md
 --     └── sources/
 --
 -- Projekt erstellen:
@@ -411,6 +413,15 @@ local function create_project(project_name, project_template, create_bilder_late
     {
       path = vim.fs.joinpath(project_dir, "research", "EVIDENCE.md"),
       content = evidence_content,
+    },
+    {
+      path = vim.fs.joinpath(project_dir, "research", "notizen.md"),
+      content = "# Notizen\n\n",
+    },
+
+    {
+      path = vim.fs.joinpath(project_dir, "research", "openevidence.md"),
+      content = "# OpenEvidence\n\n",
     },
   }
 

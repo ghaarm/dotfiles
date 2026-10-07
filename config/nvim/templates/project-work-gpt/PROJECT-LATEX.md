@@ -32,7 +32,8 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 - Sprache: Deutsch.
 
-Es gelten die allgemeinen Anweisungen im Arbeitsbereich aus `../../AGENTS.md` sowie die dort für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen. Für LaTeX-Arbeiten gilt insbesondere `../../LATEX.md`.
+Es gelten die allgemeinen Anweisungen aus `../../AGENTS.md` sowie die dort
+für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen.
 
 ## Abgrenzung
 <!--
@@ -60,19 +61,44 @@ Fortschritte und nächste Schritte unter „Aktueller Stand“ festhalten.
 
 ## Dateien und Ressourcen
 
+### Ausgangsmaterial
+
+Bereitgestellte Notizen, kopierte Chats, Rechercheergebnisse und andere
+Arbeitsmaterialien dienen als inhaltliches Ausgangsmaterial für das Projekt.
+
+Sie können insbesondere genutzt werden, um:
+
+- relevante Fragestellungen und Aspekte zu identifizieren,
+- vorhandene Überlegungen und Argumentationslinien aufzugreifen,
+- genannte Studien, Leitlinien und andere Quellen für die weitere Recherche
+  zu identifizieren,
+- interessante Zusammenhänge oder offene Fragen weiterzuverfolgen.
+
+Das Ausgangsmaterial ist nicht automatisch als wissenschaftlich geprüft oder
+zitierfähig zu behandeln.
+
+Bei wissenschaftlichen und medizinischen Aussagen nach Möglichkeit die
+zugrunde liegende Originalpublikation, Leitlinie oder andere maßgebliche
+Quelle gemäß `../../RESEARCH.md` aufsuchen und selbst prüfen.
+
+Insbesondere Literaturangaben, Zahlen, Studienergebnisse und konkrete
+Aussagen aus KI-generierten oder anderweitig zusammengefassten
+Rechercheergebnissen nicht ungeprüft übernehmen.
+
+Klar unterscheiden zwischen dem bereitgestellten Ausgangsmaterial, selbst
+geprüften Quellen und daraus abgeleiteten Schlussfolgerungen.
+
+<!-- Hier vorhandenes Ausgangsmaterial eintragen, zum Beispiel: -->
+- [research/notizen.md](research/notizen.md)
+- [research/openevidence.md](research/openevidence.md)
+
+
+### Projektdateien
+
 - Hauptdatei: [manuscript/{{INPUT:MAINFILE}}.tex](manuscript/{{MIRROR:MAINFILE}}.tex).
-
-<!-- Optionales ergänzendes Ausgangsmaterial hier eintragen, wenn neben dem Manuskript -->
-<!-- weitere projektinterne Dateien verbindlich berücksichtigt werden sollen. -->
-<!---->
-<!-- Beispiel: -->
-<!-- - Ergänzendes Ausgangsmaterial: [research/notizen.md](research/notizen.md). -->
-
 - Suchprotokoll: [research/search-log.md](research/search-log.md).
-
 - Aussagen und Belege: [research/EVIDENCE.md](research/EVIDENCE.md).
-
-- Abbildungen: `manuscript/figures/`.
+- Abbildungen: `manuscript/bilder-latex/` (Symlink auf das zentrale Abbildungsverzeichnis).
 
 <!-- - Vorhandenes PDF: [manuscript/{{MIRROR:MAINFILE}}.pdf](manuscript/{{MIRROR:MAINFILE}}.pdf). -->
 
