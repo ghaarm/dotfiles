@@ -7,7 +7,7 @@ WORKSPACES="$(aerospace list-workspaces --all 2>/dev/null)"
 # AeroSpace might not be ready yet when the login service starts SketchyBar.
 # These are the workspaces referenced by the current AeroSpace config.
 if [ -z "$WORKSPACES" ]; then
-  WORKSPACES="1 2 3 5 B E G I M P R S T V W X Y Z"
+  WORKSPACES="B C E G I M P R S T V W X Y Z"
 fi
 
 for sid in $WORKSPACES; do
