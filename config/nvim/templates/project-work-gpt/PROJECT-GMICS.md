@@ -218,11 +218,13 @@ Nach der Bearbeitung das Dokument gemäß `../../LATEX.md` kompilieren und das e
 
 ## LaTeX und Bibliographie
 
-- Präambel: Die vom Dokument eingebundene zentrale Präambel verwenden; sie ist über `../../@Vorlagen-Latex/` erreichbar.
-- Bibliographie: Die zentrale Bibliographie ist über `../../Zotero.bib` erreichbar.
+- Präambeln für ChatGPT Work: Für die Bearbeitung und Kompilierung die Präambeln aus ../../@Vorlagen-Latex-gpt/ verwenden. Dieser Ordner ist die für ChatGPT Work vorgesehene Arbeitskopie der zentralen LaTeX-Präambeln und darf gemäß den Regeln aus ../../AGENTS.md und ../../LATEX.md verwendet und verändert werden.
+- Zentrale Präambeln: ../../@Vorlagen-Latex/ bleibt als Symlink auf die zentralen LaTeX-Präambeln bestehen und ist gemäß ../../AGENTS.md strikt als READ-ONLY-Ressource zu behandeln. Die dortigen Dateien dürfen gelesen und als Referenz verwendet, aber nicht verändert, überschrieben, verschoben oder gelöscht werden.
+- Verhältnis der Präambelordner: Für Arbeiten durch ChatGPT Work ist ../../@Vorlagen-Latex-gpt/ die operative Präambelquelle. ../../@Vorlagen-Latex/ dient als READ-ONLY-Referenz und ist nicht als Voraussetzung für die Kompilierung durch ChatGPT Work zu behandeln.
+- Bibliographie: Die zentrale Bibliographie ist über ../../Zotero.bib erreichbar.
 - Engine: XeLaTeX.
-- Build aus `manuscript/`: `latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -auxdir=auxiliary_files -outdir=. {{MIRROR:MAINFILE}}.tex`.
-- Build-Artefakte: PDF und SyncTeX liegen neben der Hauptdatei in `manuscript/`; Hilfsdateien liegen in `manuscript/auxiliary_files/`.
+- Build aus manuscript/: latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -auxdir=auxiliary_files -outdir=. {{MIRROR:MAINFILE}}.tex.
+- Build-Artefakte: PDF und SyncTeX liegen neben der Hauptdatei in manuscript/; Hilfsdateien liegen in manuscript/auxiliary_files/.
 
 ## Aktueller Stand
 
