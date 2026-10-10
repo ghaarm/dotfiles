@@ -7,12 +7,20 @@ return {
       -- Neovim-Tabs statt einzelner Buffer anzeigen
       mode = "tabs",
 
-      -- Tabnummer in den Namen integrieren, damit die Darstellung
-      -- Icon → Nummer → Dateiname ist.
-      -- Die Nummer entspricht der Tabnummer für 1gt, 2gt, ...
+      -- Eingebaute Nummerierung deaktivieren, da sie vor dem Icon
+      -- dargestellt wird.
       numbers = "none",
+
+      -- Aktuelle Tabposition in den Namen integrieren:
+      -- Icon → Nummer → Dateiname.
+      -- Die Nummer entspricht der Position für 1gt, 2gt, ...
       name_formatter = function(tab)
-        return tab.tabnr .. " " .. tab.name
+        for i, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+          if tabpage == tab.tabnr then
+            return i .. " " .. tab.name
+          end
+        end
+        return tab.name
       end,
 
       -- Schräge Trennlinien zwischen den Tabs
