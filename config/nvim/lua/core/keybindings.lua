@@ -211,11 +211,11 @@ vim.keymap.set("c", "<C-k>", function()
 end, { expr = true })
 ---
 -- Keymaps um direkt zum Tab zu gehen
-vim.keymap.set("n", "<leader>1", "1gt", { desc = "Tab 1" })
-vim.keymap.set("n", "<leader>2", "2gt", { desc = "Tab 2" })
-vim.keymap.set("n", "<leader>3", "3gt", { desc = "Tab 3" })
-vim.keymap.set("n", "<leader>1", "4gt", { desc = "Tab 4" })
-vim.keymap.set("n", "<leader>2", "5gt", { desc = "Tab 5" })
+vim.keymap.set("n", "<leader><leader>1", "1gt", { desc = "Tab 1" })
+vim.keymap.set("n", "<leader><leader>2", "2gt", { desc = "Tab 2" })
+vim.keymap.set("n", "<<leader>leader>3", "3gt", { desc = "Tab 3" })
+vim.keymap.set("n", "<leader><leader>4", "4gt", { desc = "Tab 4" })
+vim.keymap.set("n", "<leader><leader>5", "5gt", { desc = "Tab 5" })
 --- HACK: How I navigate between buffers in neovim
 -- https://youtu.be/ldfxEda_mzc
 --
