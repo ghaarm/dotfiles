@@ -173,6 +173,9 @@ alias cddocs="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'"
 
 alias cdedit="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/Vorlagen && nvim vorlage-edit-nvim.md" 
 
+
+alias cdcolemak-train="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/keyboard-icloud/colemak-training && nvim" 
+
 alias cdtodo="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/todo-icloud && nvim" 
 
 alias cdwork="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud && nvim"
