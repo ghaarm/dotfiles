@@ -534,7 +534,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
   pattern = "PROJECT.md",
 
   callback = function(args)
-    vim.keymap.set("n", "<localleader>cq", function()
+    vim.keymap.set("n", "<localleader>f", function()
       M.fill_project()
     end, {
       buffer = args.buf,
