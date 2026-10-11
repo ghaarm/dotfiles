@@ -32,6 +32,8 @@ Dauerhafte Entscheidungen in `DECISIONS.md` festhalten.
 
 - Sprache: Deutsch.
 
+- Relevante Zotero-Collection: `{{INPUT}}`; relevante Unterordner dieser Collection sind einzubeziehen.
+
 Es gelten die allgemeinen Anweisungen aus `../../AGENTS.md` sowie die dort
 für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen.
 
