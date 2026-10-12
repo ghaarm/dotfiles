@@ -70,7 +70,7 @@ a4paper, % Setzt das Papierformat auf A4
 \pagestyle{fancy} % definiert den style "fancy"
 \fancyhf{} % Löscht die aktuellen Einstellungen für Kopf- und Fußzeile
 
-\rfoot{\hfill ____, G. Haarmeyer, Stand: \today, S.  \thepage} % Zentrale Fußzeile mit Datum und Seitenzahl rechts
+\rfoot{\hfill {{INPUT:FOOTER}}, G. Haarmeyer, Stand: \today, S.  \thepage} % Zentrale Fußzeile mit Datum und Seitenzahl rechts
 \lfoot{\hyperlink{toc}{Zurück zum Inhaltsverzeichnis}} % Linke Seite der Fußzeile
 
 %========================== TITEL ============================
@@ -83,9 +83,9 @@ a4paper, % Setzt das Papierformat auf A4
 %     }
 % }
 
-\title{____}
-% \title{____\vspace{-0.5cm}} %vspace rücht Datum näher an den Titel
-% \subtitle{____}
+\title{{{INPUT:TITLE}}}
+% \title{{{MIRROR:TITLE}}\vspace{-0.5cm}} %vspace rücht Datum näher an den Titel
+% \subtitle{{{INPUT:SUBTITLE}}}
 
 \date{} % wenn leer kein Datum
 

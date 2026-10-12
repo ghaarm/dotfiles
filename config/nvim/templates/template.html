@@ -1,56 +1,53 @@
 <html>
-
   <head>
-
     <style>
-    /* Tabelle mit spezifischer Klasse formatieren */
-    .custom-table {
-      border-collapse: collapse; /* Verhindert doppelte Linien */
-      width: 100%; /* Optional: Breite der Tabelle */
-    }
-    .custom-table th, .custom-table td {
-      border: 1px solid black; /* Dünne, schwarze Linien */
-      padding: 8px; /* Abstand im Inneren der Zellen */
-      text-align: left; /* Textausrichtung */
-    }
-    .custom-table caption {
-      caption-side: top; /* Positioniert die Caption oberhalb der Tabelle */
-      font-weight: bold; /* Überschrift fett */
-      text-align: center; /* Zentriert */
-      margin-bottom: 8px; /* Abstand zwischen der Überschrift und der Tabelle */
-      font-size: 1.2em; /* Optional: Schriftgröße */
-    }
-    .footnote {
-      margin-top: 12px; /* Abstand zur Tabelle */
-      font-size: 0.9em; /* Kleinere Schrift für die Fußnote */
-      color: #555; /* Optionale Farbgestaltung (grau) */
-    }
-    ul.custom-list {
-      list-style-type: none; /* Entfernt das Standard-Symbol */
-      padding-left: 1em; /* Abstand für das neue Symbol */
-      margin-top: 0px; /* Reduzierter Abstand oberhalb der Liste */
-
-    }
-    ul.custom-list li {
+      /* Tabelle mit spezifischer Klasse formatieren */
+      .custom-table {
+        border-collapse: collapse; /* Verhindert doppelte Linien */
+        width: 100%; /* Optional: Breite der Tabelle */
+      }
+      .custom-table th,
+      .custom-table td {
+        border: 1px solid black; /* Dünne, schwarze Linien */
+        padding: 8px; /* Abstand im Inneren der Zellen */
+        text-align: left; /* Textausrichtung */
+      }
+      .custom-table caption {
+        caption-side: top; /* Positioniert die Caption oberhalb der Tabelle */
+        font-weight: bold; /* Überschrift fett */
+        text-align: center; /* Zentriert */
+        margin-bottom: 8px; /* Abstand zwischen der Überschrift und der Tabelle */
+        font-size: 1.2em; /* Optional: Schriftgröße */
+      }
+      .footnote {
+        margin-top: 12px; /* Abstand zur Tabelle */
+        font-size: 0.9em; /* Kleinere Schrift für die Fußnote */
+        color: #555; /* Optionale Farbgestaltung (grau) */
+      }
+      ul.custom-list {
+        list-style-type: none; /* Entfernt das Standard-Symbol */
+        padding-left: 1em; /* Abstand für das neue Symbol */
+        margin-top: 0px; /* Reduzierter Abstand oberhalb der Liste */
+      }
+      ul.custom-list li {
         margin-bottom: 5px; /* Reduzierter Abstand zwischen den Listenelementen */
-    }
-    ul.custom-list li::before {
-      content: "– "; /* Definiert den Spiegelstrich */
-      color: black; /* Farbe des Spiegelstrichs */
-      font-weight: normal; /* Schriftart bleibt normal */
-    }
-    .custom-h6 {
-      margin-bottom: 0px; /* Reduzierter Abstand unter der Überschrift */
-      margin-top: 10px; /* Optional: Abstand oberhalb der Überschrift */
-    }
-    .half-br {
-            line-height: 0.3; /* Reduzierter Zeilenabstand */
-        }
-    </style>     
+      }
+      ul.custom-list li::before {
+        content: "– "; /* Definiert den Spiegelstrich */
+        color: black; /* Farbe des Spiegelstrichs */
+        font-weight: normal; /* Schriftart bleibt normal */
+      }
+      .custom-h6 {
+        margin-bottom: 0px; /* Reduzierter Abstand unter der Überschrift */
+        margin-top: 10px; /* Optional: Abstand oberhalb der Überschrift */
+      }
+      .half-br {
+        line-height: 0.3; /* Reduzierter Zeilenabstand */
+      }
+    </style>
   </head>
 
   <body>
-
-
+    {{INPUT:BODY}}
   </body>
 </html>

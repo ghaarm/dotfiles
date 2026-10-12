@@ -48,6 +48,7 @@ return {
         nowait = true,
         remap = false,
       },
+      -- Latex Templates
       {
         "<leader>tta",
         "<cmd>read ~/.config/nvim/templates/article-template.tex<CR>",
@@ -114,6 +115,20 @@ return {
         nowait = true,
         remap = false,
       },
+      {
+        "<leader>ttl",
+        "<cmd>read ~/.config/nvim/templates/footer-footnotes.tex<CR>",
+        desc = "footer-footnotes.tex",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttn",
+        "<cmd>read ~/.config/nvim/templates/book.tex<CR>",
+        desc = "report template tex",
+        nowait = true,
+        remap = false,
+      },
       -- Beamer Präambel
       {
         "<leader>tbp",
@@ -145,15 +160,7 @@ return {
         nowait = true,
         remap = false,
       },
-
-      -- andere Templates
-      {
-        "<leader>th",
-        "<cmd>read ~/.config/nvim/templates/template.html<CR>",
-        desc = "html template tex",
-        nowait = true,
-        remap = false,
-      },
+      -- Latex Briefkopf Templates
       {
         "<leader>ttm",
         "<cmd>read ~/.config/nvim/templates/briefkopf-vorlage-latex-2026-04-10-med.tex<CR>",
@@ -169,26 +176,20 @@ return {
         remap = false,
       },
       {
-        "<leader>ttl",
-        "<cmd>read ~/.config/nvim/templates/footer-footnotes.tex<CR>",
-        desc = "footer-footnotes.tex",
+        "<leader>ttu",
+        "<cmd>read ~/.config/nvim/templates/übergabeprotokoll.tex<CR>",
+        desc = "übergabeprotokoll.tex",
         nowait = true,
         remap = false,
       },
-      {
-        "<leader>tt1",
-        "<cmd>read ~/.config/nvim/templates/mail.txt<CR>",
-        desc = "mail.txt",
-        nowait = true,
-        remap = false,
-      },
-      {
-        "<leader>tmm",
-        "<cmd>read ~/.config/nvim/templates/markdown.md<CR>",
-        desc = "markdown.md",
-        nowait = true,
-        remap = false,
-      },
+      -- Markdown Templates
+      -- {
+      --   "<leader>tmm",
+      --   "<cmd>read ~/.config/nvim/templates/markdown.md<CR>",
+      --   desc = "markdown.md",
+      --   nowait = true,
+      --   remap = false,
+      -- },
       {
         "<leader>tma",
         "<cmd>read ~/.config/nvim/templates/project-work-gpt/PROJECT-ALLGEMEIN.md<CR>",
@@ -210,10 +211,19 @@ return {
         nowait = true,
         remap = false,
       },
+      -- HTML Templates
       {
-        "<leader>ttn",
-        "<cmd>read ~/.config/nvim/templates/book.tex<CR>",
-        desc = "report template tex",
+        "<leader>th",
+        "<cmd>read ~/.config/nvim/templates/template.html<CR>",
+        desc = "html template",
+        nowait = true,
+        remap = false,
+      },
+      -- andere Templates
+      {
+        "<leader>ttv",
+        "<cmd>tabedit ~/.config/nvim/templates/vim-keys.md<CR>",
+        desc = "vim-keys",
         nowait = true,
         remap = false,
       },
@@ -225,26 +235,19 @@ return {
         remap = false,
       },
       {
-        "<leader>ttu",
-        "<cmd>read ~/.config/nvim/templates/übergabeprotokoll.tex<CR>",
-        desc = "übergabeprotokoll.tex",
-        nowait = true,
-        remap = false,
-      },
-      {
-        "<leader>ttv",
-        "<cmd>tabedit ~/.config/nvim/templates/vim-keys.md<CR>",
-        desc = "vim-keys",
-        nowait = true,
-        remap = false,
-      },
-      {
         "<leader>ss",
         "<cmd>setlocal spell!<CR>",
         desc = "Spell toggle",
         nowait = true,
         remap = false,
       },
+      -- {
+      --   "<leader>tt1",
+      --   "<cmd>read ~/.config/nvim/templates/mail.txt<CR>",
+      --   desc = "mail.txt",
+      --   nowait = true,
+      --   remap = false,
+      -- },
       -- { "<leader>p", group = " " },
       -- leader leader Gruppe
       { "<leader><leader>", group = "quick" }, -- macht den Prefix sichtbar

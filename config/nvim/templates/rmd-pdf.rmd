@@ -1,5 +1,5 @@
 ---
-title: "____"
+title: "{{INPUT}}"
 author: "GH"
 date: "`r format(Sys.Date(), '%Y %m%d')`"
 output:  

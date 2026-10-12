@@ -71,7 +71,10 @@
 	\rule{\textwidth}{0.4pt} % Fügt eine horizontale Linie ein
 	\\
 	\\
-	____ \\
+	{{INPUT:EMPFÄNGER}}\\
+   \\
+	{{INPUT:STRASSE}}\\
+	{{INPUT:STADT}}\\
 \end{minipage}
 \end{textblock}
 
@@ -82,16 +85,16 @@
 \end{flushright}
 \vspace{5 mm} % Fügt einen vertikalen Abstand ein
 
-\textbf{Betreff: ____}
+\textbf{Betreff: {{INPUT:BETREFF}}}
 
 \vspace{5 mm}
 
 Sehr geehrte Damen und Herren, 
-Sehr geehrter Herr ____, 
-Sehr geehrter Frau ____, 
+Sehr geehrter Herr {{INPUT:NAME}}, 
+Sehr geehrter Frau {{MIRROR:NAME}}, 
 \vspace{5 mm}
 
-____ 
+{{INPUT:TEXT}} 
 
 \\
 \vspace{10 mm}
