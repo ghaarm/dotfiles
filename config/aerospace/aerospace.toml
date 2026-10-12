@@ -110,7 +110,7 @@ ctrl-alt-shift-e = 'enable toggle'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-period = 'layout tiles horizontal vertical'
-alt-comma = 'layout accordion horizontal vertical'
+# alt-comma = 'layout accordion horizontal vertical'
 alt-shift-period = 'balance-sizes'
 # Toggle float <-> tile für das fokussierte Fenster
 # alt-shift-space = 'layout floating tiling'

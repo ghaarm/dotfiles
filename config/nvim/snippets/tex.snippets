@@ -451,7 +451,7 @@ snippet pngfig "png bild" b
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
-        {\footnotesize\raggedright  Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -478,7 +478,7 @@ snippet pngfig-tikz "png bild mit tikz annotation" b
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
-        {\footnotesize\raggedright  Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -494,7 +494,7 @@ snippet pngtab "png Tabelle" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{table}
 	${0}
@@ -508,7 +508,7 @@ snippet pngfigup "png bilder-latex im Überordner" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 snippet pngfigdown "png bilder-latex im Unterordner" b
@@ -521,7 +521,7 @@ snippet pngfigdown "png bilder-latex im Unterordner" b
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -534,7 +534,7 @@ snippet pngfigcenter "png fig unterordner center für multicols"
     	  \caption{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
   \end{center}
 
@@ -545,7 +545,7 @@ snippet pngcenterFIG "png fig float 1 spalte, unterordner center für multicols"
     	  \captionof{figure}{${2:Name}}
     	  \label{fig:$2}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
    \par}
 
@@ -556,7 +556,7 @@ snippet pngcenterTAB "png fig float 1 spalte, unterordner center für multicols"
     	  \label{tab:$2}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
    \par}
 
@@ -569,7 +569,7 @@ snippet pngtabup "png Tabelle im Überordner" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{table}
 	${0}
@@ -583,7 +583,7 @@ snippet pngtabdown "png Tabelle im Unterordner" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{table}
 	${0}
@@ -596,7 +596,7 @@ snippet pngtabcenter "png tabelle unterordner center für multicols"
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{table}
 # png same folder
@@ -609,7 +609,7 @@ snippet pppsame "png same folder" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -624,7 +624,7 @@ snippet pngsame "png same folder" b
       \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:Name}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -640,7 +640,7 @@ snippet pppmulti "png multi" b
        \begin{minipage}{1\textwidth}
     	  \includegraphics[width=\linewidth]{./bilder-latex/${1:name-bild-links}}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -675,7 +675,7 @@ snippet pngmulti "pngmulti" b
    	\caption{${7:titel-bild-rechts}}
    	\label{fig:$7}
        \par\smallskip
-       {\footnotesize Quelle: \cite{${8:zitat}}, S. ${9:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${9:seite}]{${8:zitat}}\par}
      \end{minipage}
   \end{figure}
  
@@ -695,7 +695,7 @@ snippet ecmopng "ecmopng" b
       \begin{minipage}{1\textwidth}
      	\includegraphics[width=\linewidth]{./ECMO-latex-png/${1:Name}.png}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -712,7 +712,7 @@ snippet ecmopdf "ecmopdf" b
         \begin{minipage}{0.8\textwidth}
         \includegraphics[width=\linewidth]{./ECMO-latex-png/${1:Name}.pdf}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{figure}
 	${0}
@@ -729,7 +729,7 @@ snippet ecmotbl "ecmotbl" b
       \begin{minipage}{1\textwidth}
         \includegraphics[width=\linewidth]{./ECMO-latex-png/${1:Name}.png}
         \par\smallskip
-        {\footnotesize Quelle: \cite{${4:zitat}}, S. ${5:seite}\par}
+        {\footnotesize\raggedright  Quelle: \cite[S.~${5:seite}]{${4:zitat}}\par}
       \end{minipage}
 	\end{table}
 	${0}
