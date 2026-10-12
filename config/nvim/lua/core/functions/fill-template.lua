@@ -69,7 +69,7 @@ function M.fill()
   -- -------------------------------------------------------
 
   while true do
-    local start_pos, end_pos, marker = content:find("({{.-}})", position)
+    local start_pos, end_pos, marker = content:find("({{[%u]+:?[^}]*}})", position)
 
     if not start_pos then
       local remaining = content:sub(position)
