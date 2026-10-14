@@ -6,6 +6,8 @@
 -- ├── PROJECT.md
 -- ├── DECISIONS.md
 -- ├── manuscript/
+-- │   ├── <hauptdatei>.tex
+-- │   │   [optional neu erstellt]
 -- │   └── bilder-latex -> .../gmics-latex/bilder-latex
 -- │       [nur bei Projektarten mit bilder_latex = true]
 -- └── research/
@@ -17,6 +19,20 @@
 -- Projekt erstellen:
 --   <leader>cw
 --   :OilNewProject
+--
+-- Beim Erstellen kann für die Hauptdatei gewählt werden:
+--
+--   Neue Hauptdatei erstellen
+--       Name wird in PROJECT.md eingesetzt und
+--       manuscript/<name>.tex wird erstellt.
+--
+--   Hauptdatei existiert bereits
+--       Name wird in PROJECT.md eingesetzt,
+--       es wird aber keine .tex-Datei erstellt.
+--
+--   Noch keine Hauptdatei festlegen
+--       {{INPUT:MAINFILE}} und {{MIRROR:MAINFILE}}
+--       bleiben als persistente Template-Marker erhalten.
 --
 -- Die allgemeinen Template-Marker
 --
@@ -91,6 +107,22 @@ local function render_project_name(content, project_name)
 end
 
 -- ---------------------------------------------------------
+-- Hauptdatei einsetzen
+-- ---------------------------------------------------------
+
+local function render_mainfile(content, mainfile)
+  content = content:gsub("{{INPUT:MAINFILE}}", function()
+    return mainfile
+  end)
+
+  content = content:gsub("{{MIRROR:MAINFILE}}", function()
+    return mainfile
+  end)
+
+  return content
+end
+
+-- ---------------------------------------------------------
 -- Datei schreiben
 -- ---------------------------------------------------------
 
@@ -108,10 +140,37 @@ local function write_file(path, content)
 end
 
 -- ---------------------------------------------------------
--- Projekt erstellen
+-- Hauptdateinamen normalisieren
 -- ---------------------------------------------------------
 
-local function create_project(project_name, project_template, create_bilder_latex)
+local function normalize_mainfile(mainfile)
+  mainfile = vim.trim(mainfile or "")
+
+  if mainfile == "" then
+    return nil
+  end
+
+  -- Eine eingegebene .tex-Endung entfernen.
+  -- Intern wird nur der Basisname gespeichert.
+  mainfile = mainfile:gsub("%.tex$", "")
+
+  if mainfile == "" then
+    return nil
+  end
+
+  return mainfile
+end
+
+-- ---------------------------------------------------------
+-- Projekt erstellen
+--
+-- mainfile_mode:
+--   "new"      -> Hauptdatei eintragen und .tex erstellen
+--   "existing" -> Hauptdatei nur eintragen
+--   "unset"    -> Template-Marker unverändert lassen
+-- ---------------------------------------------------------
+
+local function create_project(project_name, project_template, create_bilder_latex, mainfile_mode, mainfile)
   local current_dir = get_oil_dir()
 
   if not current_dir then
@@ -141,6 +200,24 @@ local function create_project(project_name, project_template, create_bilder_late
   end
 
   -- -------------------------------------------------------
+  -- Hauptdatei prüfen
+  -- -------------------------------------------------------
+
+  if mainfile_mode == "new" or mainfile_mode == "existing" then
+    mainfile = normalize_mainfile(mainfile)
+
+    if not mainfile then
+      vim.notify("Kein gültiger Name für die Hauptdatei angegeben.", vim.log.levels.ERROR)
+      return
+    end
+
+    if mainfile:find("/", 1, true) or mainfile:find("\\", 1, true) then
+      vim.notify("Der Name der Hauptdatei darf keinen Pfad enthalten.", vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  -- -------------------------------------------------------
   -- Templates zuerst lesen
   -- -------------------------------------------------------
 
@@ -167,10 +244,6 @@ local function create_project(project_name, project_template, create_bilder_late
 
   -- -------------------------------------------------------
   -- PROJECT-NAME sofort ersetzen
-  --
-  -- INPUT und MIRROR bleiben persistent in den Dateien und
-  -- werden anschließend vom allgemeinen Template-Filler
-  -- verarbeitet.
   -- -------------------------------------------------------
 
   project_content = render_project_name(project_content, project_name)
@@ -178,6 +251,19 @@ local function create_project(project_name, project_template, create_bilder_late
   decisions_content = render_project_name(decisions_content, project_name)
 
   evidence_content = render_project_name(evidence_content, project_name)
+
+  -- -------------------------------------------------------
+  -- Hauptdatei einsetzen
+  --
+  -- Bei "new" und "existing" werden INPUT und MIRROR
+  -- direkt ersetzt.
+  --
+  -- Bei "unset" bleiben beide Marker persistent.
+  -- -------------------------------------------------------
+
+  if mainfile_mode == "new" or mainfile_mode == "existing" then
+    project_content = render_mainfile(project_content, mainfile)
+  end
 
   -- -------------------------------------------------------
   -- Verzeichnisse erstellen
@@ -226,7 +312,7 @@ local function create_project(project_name, project_template, create_bilder_late
   end
 
   -- -------------------------------------------------------
-  -- Dateien erstellen
+  -- Dateien vorbereiten
   -- -------------------------------------------------------
 
   local project_file = vim.fs.joinpath(project_dir, "PROJECT.md")
@@ -257,6 +343,23 @@ local function create_project(project_name, project_template, create_bilder_late
       content = "# OpenEvidence\n\n",
     },
   }
+
+  -- -------------------------------------------------------
+  -- Neue Hauptdatei vorbereiten
+  --
+  -- Nur bei mainfile_mode == "new".
+  -- -------------------------------------------------------
+
+  if mainfile_mode == "new" then
+    table.insert(files, {
+      path = vim.fs.joinpath(project_dir, "manuscript", mainfile .. ".tex"),
+      content = "",
+    })
+  end
+
+  -- -------------------------------------------------------
+  -- Dateien schreiben
+  -- -------------------------------------------------------
 
   for _, item in ipairs(files) do
     local ok, err = write_file(item.path, item.content)
@@ -305,25 +408,99 @@ function M.new_project()
     },
   }
 
+  local mainfile_choices = {
+    {
+      label = "Neue Hauptdatei erstellen",
+      mode = "new",
+    },
+
+    {
+      label = "Hauptdatei existiert bereits",
+      mode = "existing",
+    },
+
+    {
+      label = "Noch keine Hauptdatei festlegen",
+      mode = "unset",
+    },
+  }
+
+  -- -------------------------------------------------------
+  -- Projektart wählen
+  -- -------------------------------------------------------
+
   vim.ui.select(project_types, {
     prompt = "Projektart: ",
 
     format_item = function(item)
       return item.label
     end,
-  }, function(choice)
-    if not choice then
+  }, function(project_choice)
+    if not project_choice then
       return
     end
+
+    -- ---------------------------------------------------
+    -- Projektname eingeben
+    -- ---------------------------------------------------
 
     vim.ui.input({
       prompt = "Projektname: ",
     }, function(project_name)
-      if not project_name then
+      project_name = vim.trim(project_name or "")
+
+      if project_name == "" then
         return
       end
 
-      create_project(project_name, choice.template, choice.bilder_latex)
+      -- -----------------------------------------------
+      -- Umgang mit Hauptdatei wählen
+      -- -----------------------------------------------
+
+      vim.ui.select(mainfile_choices, {
+        prompt = "Hauptdatei: ",
+
+        format_item = function(item)
+          return item.label
+        end,
+      }, function(mainfile_choice)
+        if not mainfile_choice then
+          return
+        end
+
+        -- -------------------------------------------
+        -- Noch keine Hauptdatei
+        -- -------------------------------------------
+
+        if mainfile_choice.mode == "unset" then
+          create_project(project_name, project_choice.template, project_choice.bilder_latex, "unset", nil)
+
+          return
+        end
+
+        -- -------------------------------------------
+        -- Neue oder vorhandene Hauptdatei:
+        -- Dateinamen abfragen
+        -- -------------------------------------------
+
+        vim.ui.input({
+          prompt = "Name der Hauptdatei: ",
+        }, function(mainfile)
+          mainfile = normalize_mainfile(mainfile)
+
+          if not mainfile then
+            return
+          end
+
+          create_project(
+            project_name,
+            project_choice.template,
+            project_choice.bilder_latex,
+            mainfile_choice.mode,
+            mainfile
+          )
+        end)
+      end)
     end)
   end)
 end
