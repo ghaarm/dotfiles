@@ -138,7 +138,7 @@ return {
       set_harpoon_root(vim.fn.getcwd())
     end, { desc = "set harpoon root to cwd" })
 
-    for i = 1, 4 do
+    for i = 6, 9 do
       vim.keymap.set("n", "<leader>" .. i, function()
         harpoon:list():select(i)
       end, { desc = "Harpoon " .. i })
