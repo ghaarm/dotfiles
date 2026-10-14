@@ -130,7 +130,7 @@ export PATH="/path/to/lua-language-server/bin:$PATH"
 # alias cd="/Users/g/qmk_firmware/keyboards/beekeeb/piantor_pro/keymaps"
 
 
-# cd configuration
+# cd lokal configuration
 
 alias cdconf="cd ~/dotfiles && nvim"
 
@@ -147,6 +147,9 @@ alias cdplug="cd ~/dotfiles/config/nvim/lua/plugins && nvim"
 alias cdcore="cd ~/dotfiles/config/nvim/lua/core && nvim keybindings.lua"
 
 alias cdfunc="cd ~/dotfiles/config/nvim/lua/core/functions && nvim"
+
+alias cdparakeet-vocabulary="cd ~/dotfiles/config/macparakeet && nvim"
+
 
 alias cdqmk="builtin cd /Users/g/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/qmk-icloud && nvim" # öffnet neovim automatisch 
 
