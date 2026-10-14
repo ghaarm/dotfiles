@@ -69,7 +69,9 @@ return {
                 local name = vim.api.nvim_buf_get_name(buf)
 
                 if name:match("^oil://") then
-                  oil.load_oil_buffer(buf)
+                  vim.api.nvim_buf_call(buf, function()
+                    oil.load_oil_buffer(buf)
+                  end)
                 end
               end
             end
@@ -77,12 +79,31 @@ return {
             pcall(vim.cmd, "redrawstatus")
           end)
         end,
-
-        after_save = function()
+        after_load = function()
           vim.schedule(function()
+            local oil = require("oil")
+
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.api.nvim_buf_is_valid(buf) then
+                local name = vim.api.nvim_buf_get_name(buf)
+
+                if name:match("^oil://") then
+                  vim.api.nvim_buf_call(buf, function()
+                    oil.load_oil_buffer(buf)
+                  end)
+                end
+              end
+            end
+
             pcall(vim.cmd, "redrawstatus")
           end)
         end,
+        -- after load function die die filererkennung macht aber den buffer nicht erkennt
+        -- after_save = function()
+        --   vim.schedule(function()
+        --     pcall(vim.cmd, "redrawstatus")
+        --   end)
+        -- end,
       },
     })
 

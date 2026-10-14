@@ -30,7 +30,7 @@ exec-on-workspace-change = ['/bin/bash', '-c',
 start-at-login = true
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
-enable-normalization-flatten-containers = false
+enable-normalization-flatten-containers = true # macht sonst ein Fenster z.B. mit 50% auf
 enable-normalization-opposite-orientation-for-nested-containers = false
 
 # See: https://nikitabobko.github.io/AeroSpace/guide#layouts
