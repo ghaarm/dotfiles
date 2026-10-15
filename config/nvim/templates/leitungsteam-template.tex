@@ -1,0 +1,132 @@
+\documentclass[a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{calibri-regular.ttf}[
+  Path=/Users/g/Library/Fonts/,
+  BoldFont=calibri-bold.ttf,
+  ItalicFont=calibri-italic.ttf,
+  BoldItalicFont=calibri-bold-italic.ttf
+]
+
+% für MAC
+\input{../../../@Vorlagen-Latex-gpt/preamble-footnotes-bibliographie-neu.tex}
+\addbibresource{../research/literatur.bib}
+\ExecuteBibliographyOptions{url=false,eprint=false}
+\AtEveryBibitem{\clearfield{url}\clearfield{urldate}\clearfield{doi}}
+
+% für Linux
+%% \input{/Users/g/Dokumente/latex/vorlagen-latex/preamble-footnotes-bibliographie-neu.tex}
+
+\usepackage{textgreek}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.3ex plus .2ex}
+
+%========================== KOPF- UND FUSSZEILE ============================
+\usepackage{fancyhdr}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\hfill {{INPUT:TITLE}}, {{INPUT:AUTHOR}}, Stand: \today, S. \thepage}
+
+%========================== TITEL ==========================================
+\usepackage{titling}
+\setlength{\droptitle}{-2cm}
+
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \par\large#1\end{center}
+  }
+}
+
+\title{{{INPUT:TITLE}}}
+\subtitle{{{INPUT:SUBTITLE}}}
+\date{\todaydeutsch}
+
+\begin{document}
+\maketitle
+\enlargethispage{0.3cm}
+
+\thispagestyle{fancy}
+\hypertarget{toc}{}
+
+\tableofcontents
+
+\hypersetup{
+  linkcolor = red!70!black,
+  citecolor = black,
+  urlcolor = blue
+}
+
+\raggedcolumns
+\begin{multicols}{2}
+
+\section{Kernpunkte}
+\label{sec:Kernpunkte}
+
+\begin{itemize}
+  \item[-] {{INPUT:KEY_POINT_1}}
+  \item[-] {{INPUT:KEY_POINT_2}}
+  \item[-] {{INPUT:KEY_POINT_3}}
+  \item[-] {{INPUT:KEY_POINT_4}}
+\end{itemize}
+
+\section{Anliegen und Begründung}
+\label{sec:Anliegen und Begründung}
+
+{{INPUT:OBJECTIVE}}
+
+{{INPUT:CURRENT_SITUATION}}
+
+{{INPUT:RATIONALE}}
+
+{{INPUT:OPTIONAL_CALCULATION_OR_LOCAL_CONTEXT}}
+
+\section{Gesetzliche Anforderungen, Evidenz und lokale Situation}
+\label{sec:Gesetzliche Anforderungen, Evidenz und lokale Situation}
+
+{{INPUT:LEGAL_REQUIREMENTS}}
+
+{{INPUT:EVIDENCE}}
+
+{{INPUT:LOCAL_SITUATION}}
+
+\section{Rahmenbedingungen}
+\label{sec:Rahmenbedingungen}
+
+\begin{itemize}
+  \item[-] {{INPUT:FRAMEWORK_1}}
+  \item[-] {{INPUT:FRAMEWORK_2}}
+  \item[-] {{INPUT:FRAMEWORK_3}}
+  \item[-] {{INPUT:FRAMEWORK_4}}
+  \item[-] {{INPUT:FRAMEWORK_5}}
+\end{itemize}
+
+\section{Praktischer Ablauf}
+\label{sec:Praktischer Ablauf}
+
+{{INPUT:PRACTICAL_WORKFLOW}}
+
+\section{Erwartbare Einwände}
+\label{sec:Erwartbare Einwände}
+
+\begin{itemize}
+  \item[-] \enquote{{{INPUT:OBJECTION_1}}} {{INPUT:RESPONSE_1}}
+  \item[-] \enquote{{{INPUT:OBJECTION_2}}} {{INPUT:RESPONSE_2}}
+  \item[-] \enquote{{{INPUT:OBJECTION_3}}} {{INPUT:RESPONSE_3}}
+\end{itemize}
+
+\section{Vorschlag für das Leitungsteam}
+\label{sec:Vorschlag für das Leitungsteam}
+
+{{INPUT:DECISION_PROPOSAL}}
+
+{{INPUT:OPTIONAL_FINAL_NOTE}}
+
+\end{multicols}
+
+\vspace{2 mm}
+{\footnotesize\printbibliography}
+
+\end{document}

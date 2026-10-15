@@ -394,16 +394,19 @@ function M.new_project()
       template = "PROJECT-ALLGEMEIN.md",
       bilder_latex = false,
     },
-
     {
       label = "PROJECT-G'MICS.md",
       template = "PROJECT-GMICS.md",
       bilder_latex = true,
     },
-
     {
       label = "PROJECT-LATEX.md",
       template = "PROJECT-LATEX.md",
+      bilder_latex = true,
+    },
+    {
+      label = "PROJECT-LEITUNGSTEAM.md",
+      template = "PROJECT-LEITUNGSTEAM.md",
       bilder_latex = true,
     },
   }
