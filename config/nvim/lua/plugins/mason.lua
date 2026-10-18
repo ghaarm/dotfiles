@@ -127,6 +127,8 @@ return {
 
         -- Markdown
         "marksman",
+        -- Typst
+        "tinymist",
 
         -- YAML
         "yamlls",
