@@ -162,6 +162,14 @@ return {
         nowait = true,
         remap = false,
       },
+      -- Touying Beamer Templates
+      {
+        "<leader>tbk",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/touying-vorlage-knn.typ<CR>",
+        desc = "TOUYING KN template typ",
+        nowait = true,
+        remap = false,
+      },
       -- Latex Briefkopf Templates
       {
         "<leader>tlm",

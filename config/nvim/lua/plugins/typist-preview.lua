@@ -1,4 +1,3 @@
-
 -- https://github.com/chomosuke/typst-preview.nvim
 return {
   "chomosuke/typst-preview.nvim",
@@ -52,7 +51,7 @@ return {
     require("typst-preview").setup(opts)
 
     local function set_typst_maps(buf)
-      vim.keymap.set("n", "<localleader>vp", "<cmd>TypstPreviewToggle<CR>", {
+      vim.keymap.set("n", "<localleader>lu", "<cmd>TypstPreviewToggle<CR>", {
         buffer = buf,
         silent = true,
         desc = "Typst-Vorschau umschalten",
