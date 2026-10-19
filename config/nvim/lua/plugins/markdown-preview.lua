@@ -3,11 +3,31 @@ vim.g.maplocalleader = ","
 return {
   "iamcco/markdown-preview.nvim",
   lazy = true, -- Lädt das Plugin nur, wenn es benötigt wird
-  ft = { "md", "markdown" }, -- Lädt das Plugin nur für LaTeX-Dateien
+  ft = { "md", "markdown" }, -- Lädt das Plugin für Markdown-Dateien
   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
   build = "cd app && yarn install",
   init = function()
     vim.g.mkdp_filetypes = { "markdown" }
+
+    local group = vim.api.nvim_create_augroup("markdown_preview_keymaps", { clear = true })
+    vim.api.nvim_create_autocmd("FileType", {
+      group = group,
+      pattern = "markdown",
+      callback = function(args)
+        local function map(lhs, command, desc)
+          vim.keymap.set("n", lhs, "<cmd>" .. command .. "<CR>", {
+            buffer = args.buf,
+            silent = true,
+            desc = desc,
+          })
+        end
+
+        map("<localleader>lu", "MarkdownPreview", "Markdown Preview")
+        map("<localleader>mu", "MarkdownPreviewToggle", "Toggle Markdown Preview")
+        map("<localleader>mt", "MarkdownPreviewToggle", "Toggle Markdown Preview")
+        map("<localleader>ms", "MarkdownPreviewStop", "Markdown Preview Stop")
+      end,
+    })
   end,
   -- ft = { "markdown" },
   config = function()
@@ -43,39 +63,5 @@ return {
     vim.g.mkdp_theme = "dark"
     vim.g.mkdp_combine_preview = 0
     vim.g.mkdp_combine_preview_auto_refresh = 1
-
-    -- Setze Keybindings für Markdown Preview
-
-    vim.keymap.set(
-      "n",
-      "<localleader>ll",
-      ":MarkdownPreview<CR>",
-      { noremap = true, silent = true, desc = "Markdown Preview" }
-    )
-    -- vim.keymap.set(
-    --   "n",
-    --   "<localleader>lu",
-    --   ":MarkdownPreview<CR>",
-    --   { noremap = true, silent = true, desc = "Markdown Preview" }
-    -- )
-    vim.keymap.set(
-      "n",
-      "<localleader>mu",
-      ":MarkdownPreviewToggle<CR>",
-      { noremap = true, silent = true, desc = "Toggle Markdown Preview" }
-    )
-    vim.keymap.set(
-      "n",
-      "<localleader>mt",
-      ":MarkdownPreviewToggle<CR>",
-      { noremap = true, silent = true, desc = "Toggle Markdown Preview" }
-    )
-
-    vim.keymap.set(
-      "n",
-      "<localleader>ms",
-      ":MarkdownPreviewStop<CR>",
-      { noremap = true, silent = true, desc = "Markdown Preview Stop" }
-    )
   end,
 }

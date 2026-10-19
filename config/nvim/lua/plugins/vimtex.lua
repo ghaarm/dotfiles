@@ -22,7 +22,7 @@ return {
     -- end
 
     -- Auto-Befehle für VimTeX
-    vim.api.nvim_create_augroup("vimtex_common", { clear = true })
+    local vimtex_group = vim.api.nvim_create_augroup("vimtex_common", { clear = true })
     -- vim.api.nvim_create_autocmd("FileType", {
     --   pattern = "tex",
     --   callback = write_server_name,
@@ -47,152 +47,165 @@ return {
     --   args = { '-a', 'Skim' }
     -- }
 
-    -- Kürzel für Vimtex-Funktionen über den lokalen Leader
-    vim.api.nvim_set_keymap("n", "<Localleader>lu", ":VimtexCompile<CR>", { noremap = true, silent = true })
-    --
-    -- ============================================================================
-    -- Finale PDF mit qpdf
-    -- ============================================================================
+    -- VimTeX-Kürzel nur im jeweiligen TeX-Buffer anlegen.
+    vim.api.nvim_create_autocmd("FileType", {
+      group = vimtex_group,
+      pattern = "tex",
+      callback = function(args)
+        local function map(lhs, rhs)
+          vim.keymap.set("n", lhs, rhs, { buffer = args.buf, silent = true })
+        end
 
-    -- vim.keymap.set("n", "<Localleader>lf", function()
-    --   vim.cmd("write")
-    --
-    --   local dir = vim.fn.expand("%:p:h")
-    --   local basename = vim.fn.expand("%:t:r")
-    --   local date = os.date("%Y-%m-%d")
-    --
-    --   local input_pdf = basename .. ".pdf"
-    --   local output_pdf = basename .. "-" .. date .. ".pdf"
-    --
-    --   local cmd = string.format(
-    --     "cd %s && " .. "qpdf " .. "--stream-data=compress " .. "--recompress-flate " .. "%s %s",
-    --     vim.fn.shellescape(dir),
-    --     vim.fn.shellescape(input_pdf),
-    --     vim.fn.shellescape(output_pdf)
-    --   )
-    --
-    --   vim.cmd("botright split | terminal " .. cmd)
-    -- end, {
-    --   desc = "PDF finalisieren mit qpdf",
-    -- })
-    --
-    -- -- ============================================================================
-    -- -- Kleine PDF mit Ghostscript
-    -- -- ============================================================================
-    --
-    -- vim.keymap.set("n", "<Localleader>lp", function()
-    --   vim.cmd("write")
-    --
-    --   local dir = vim.fn.expand("%:p:h")
-    --   local basename = vim.fn.expand("%:t:r")
-    --   local date = os.date("%Y-%m-%d")
-    --
-    --   local input_pdf = basename .. ".pdf"
-    --   local output_pdf = basename .. "-" .. date .. "-small.pdf"
-    --
-    --   local cmd = string.format(
-    --     "cd %s && "
-    --       .. "gs "
-    --       .. "-sDEVICE=pdfwrite "
-    --       .. "-dCompatibilityLevel=1.7 "
-    --       .. "-dNOPAUSE "
-    --       .. "-dBATCH "
-    --       .. "-dQUIET "
-    --       .. "-sOutputFile=%s "
-    --       .. "%s",
-    --     vim.fn.shellescape(dir),
-    --     vim.fn.shellescape(output_pdf),
-    --     vim.fn.shellescape(input_pdf)
-    --   )
-    --
-    --   vim.cmd("botright split | terminal " .. cmd)
-    -- end, {
-    --   desc = "PDF stark komprimieren mit Ghostscript",
-    -- })
-    -- ============================================================================
-    -- Finale PDF mit qpdf
-    -- ============================================================================
+        map("<Localleader>lu", "<cmd>VimtexCompile<CR>")
 
-    vim.keymap.set("n", "<Localleader>lf", function()
-      vim.cmd("write")
+        -- ============================================================================
+        -- Finale PDF mit qpdf
+        -- ============================================================================
 
-      local dir = vim.fn.expand("%:p:h")
-      local basename = vim.fn.expand("%:t:r")
-      local date = os.date("%Y-%m-%d")
+        -- vim.keymap.set("n", "<Localleader>lf", function()
+        --   vim.cmd("write")
+        --
+        --   local dir = vim.fn.expand("%:p:h")
+        --   local basename = vim.fn.expand("%:t:r")
+        --   local date = os.date("%Y-%m-%d")
+        --
+        --   local input_pdf = basename .. ".pdf"
+        --   local output_pdf = basename .. "-" .. date .. ".pdf"
+        --
+        --   local cmd = string.format(
+        --     "cd %s && " .. "qpdf " .. "--stream-data=compress " .. "--recompress-flate " .. "%s %s",
+        --     vim.fn.shellescape(dir),
+        --     vim.fn.shellescape(input_pdf),
+        --     vim.fn.shellescape(output_pdf)
+        --   )
+        --
+        --   vim.cmd("botright split | terminal " .. cmd)
+        -- end, {
+        --   desc = "PDF finalisieren mit qpdf",
+        -- })
+        --
+        -- -- ============================================================================
+        -- -- Kleine PDF mit Ghostscript
+        -- -- ============================================================================
+        --
+        -- vim.keymap.set("n", "<Localleader>lp", function()
+        --   vim.cmd("write")
+        --
+        --   local dir = vim.fn.expand("%:p:h")
+        --   local basename = vim.fn.expand("%:t:r")
+        --   local date = os.date("%Y-%m-%d")
+        --
+        --   local input_pdf = basename .. ".pdf"
+        --   local output_pdf = basename .. "-" .. date .. "-small.pdf"
+        --
+        --   local cmd = string.format(
+        --     "cd %s && "
+        --       .. "gs "
+        --       .. "-sDEVICE=pdfwrite "
+        --       .. "-dCompatibilityLevel=1.7 "
+        --       .. "-dNOPAUSE "
+        --       .. "-dBATCH "
+        --       .. "-dQUIET "
+        --       .. "-sOutputFile=%s "
+        --       .. "%s",
+        --     vim.fn.shellescape(dir),
+        --     vim.fn.shellescape(output_pdf),
+        --     vim.fn.shellescape(input_pdf)
+        --   )
+        --
+        --   vim.cmd("botright split | terminal " .. cmd)
+        -- end, {
+        --   desc = "PDF stark komprimieren mit Ghostscript",
+        -- })
+        -- ============================================================================
+        -- Finale PDF mit qpdf
+        -- ============================================================================
 
-      local input_pdf = basename .. ".pdf"
-      local output_pdf = basename .. "-" .. date .. ".pdf"
+        vim.keymap.set("n", "<Localleader>lf", function()
+          vim.cmd("write")
 
-      vim.notify("qpdf läuft …", vim.log.levels.INFO)
+          local dir = vim.fn.expand("%:p:h")
+          local basename = vim.fn.expand("%:t:r")
+          local date = os.date("%Y-%m-%d")
 
-      vim.system({
-        "qpdf",
-        "--stream-data=compress",
-        "--recompress-flate",
-        input_pdf,
-        output_pdf,
-      }, {
-        cwd = dir,
-        text = true,
-      }, function(result)
-        vim.schedule(function()
-          if result.code == 0 then
-            vim.notify("PDF erstellt:\n" .. output_pdf, vim.log.levels.INFO)
-          else
-            vim.notify("qpdf fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
-          end
-        end)
-      end)
-    end, {
-      desc = "PDF finalisieren mit qpdf",
+          local input_pdf = basename .. ".pdf"
+          local output_pdf = basename .. "-" .. date .. ".pdf"
+
+          vim.notify("qpdf läuft …", vim.log.levels.INFO)
+
+          vim.system({
+            "qpdf",
+            "--stream-data=compress",
+            "--recompress-flate",
+            input_pdf,
+            output_pdf,
+          }, {
+            cwd = dir,
+            text = true,
+          }, function(result)
+            vim.schedule(function()
+              if result.code == 0 then
+                vim.notify("PDF erstellt:\n" .. output_pdf, vim.log.levels.INFO)
+              else
+                vim.notify("qpdf fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
+              end
+            end)
+          end)
+        end, {
+          buffer = args.buf,
+          desc = "PDF finalisieren mit qpdf",
+        })
+
+        -- ============================================================================
+        -- Kleine PDF mit Ghostscript
+        -- ============================================================================
+
+        vim.keymap.set("n", "<Localleader>lp", function()
+          vim.cmd("write")
+
+          local dir = vim.fn.expand("%:p:h")
+          local basename = vim.fn.expand("%:t:r")
+          local date = os.date("%Y-%m-%d")
+
+          local input_pdf = basename .. ".pdf"
+          local output_pdf = basename .. "-" .. date .. "-small.pdf"
+
+          vim.notify("Ghostscript läuft …", vim.log.levels.INFO)
+
+          vim.system({
+            "gs",
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.7",
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-dQUIET",
+            "-sOutputFile=" .. output_pdf,
+            input_pdf,
+          }, {
+            cwd = dir,
+            text = true,
+          }, function(result)
+            vim.schedule(function()
+              if result.code == 0 then
+                vim.notify("PDF erstellt:\n" .. output_pdf, vim.log.levels.INFO)
+              else
+                vim.notify("Ghostscript fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
+              end
+            end)
+          end)
+        end, {
+          buffer = args.buf,
+          desc = "PDF stark komprimieren mit Ghostscript",
+        })
+
+        map("<Localleader>vc", "<cmd>VimtexClean<CR>")
+        map("<Localleader>vC", "<cmd>VimtexClean!<CR>")
+        map("<Localleader>ve", "<cmd>VimtexErrors<CR>")
+        map("<Localleader>vl", "<cmd>VimtexView<CR>")
+        map("<Localleader>vq", "<cmd>VimtexLog<CR>")
+        map("<Localleader>vt", "<cmd>VimtexTocToggle<CR>")
+      end,
     })
-
-    -- ============================================================================
-    -- Kleine PDF mit Ghostscript
-    -- ============================================================================
-
-    vim.keymap.set("n", "<Localleader>lp", function()
-      vim.cmd("write")
-
-      local dir = vim.fn.expand("%:p:h")
-      local basename = vim.fn.expand("%:t:r")
-      local date = os.date("%Y-%m-%d")
-
-      local input_pdf = basename .. ".pdf"
-      local output_pdf = basename .. "-" .. date .. "-small.pdf"
-
-      vim.notify("Ghostscript läuft …", vim.log.levels.INFO)
-
-      vim.system({
-        "gs",
-        "-sDEVICE=pdfwrite",
-        "-dCompatibilityLevel=1.7",
-        "-dNOPAUSE",
-        "-dBATCH",
-        "-dQUIET",
-        "-sOutputFile=" .. output_pdf,
-        input_pdf,
-      }, {
-        cwd = dir,
-        text = true,
-      }, function(result)
-        vim.schedule(function()
-          if result.code == 0 then
-            vim.notify("PDF erstellt:\n" .. output_pdf, vim.log.levels.INFO)
-          else
-            vim.notify("Ghostscript fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
-          end
-        end)
-      end)
-    end, {
-      desc = "PDF stark komprimieren mit Ghostscript",
-    })
-    vim.api.nvim_set_keymap("n", "<Localleader>vc", ":VimtexClean<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap("n", "<Localleader>vC", ":VimtexClean!<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap("n", "<Localleader>ve", ":VimtexErrors<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap("n", "<Localleader>vl", ":VimtexView<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap("n", "<Localleader>vq", ":VimtexLog<CR>", { noremap = true, silent = true })
-    vim.api.nvim_set_keymap("n", "<Localleader>vt", ":VimtexTocToggle<CR>", { noremap = true, silent = true })
 
     -- Mapping für :VimtexClean auf <leader>cc
     -- vim.api.nvim_set_keymap("n", "<leader>vc", ":VimtexClean<CR>", { noremap = true, silent = true })
