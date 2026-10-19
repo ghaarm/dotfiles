@@ -8,6 +8,8 @@
 -- iCloud:
 --   <leader>cc = Copy
 --   <leader>cm = Copy + Ziel öffnen
+--   Visual <leader>cc = Auswahl kopieren
+--   Visual <leader>cp = Auswahl kopieren + Ziel öffnen
 --
 -- DRACOON:
 --   <leader>cz = Copy
@@ -25,24 +27,42 @@ local M = {}
 local directory_index = require("core.functions.directory-index")
 
 -- ---------------------------------------------------------
--- Oil: Datei unter Cursor
+-- Oil: Datei unter Cursor oder Einträge aus der Visual-Auswahl
 -- ---------------------------------------------------------
 
-local function get_oil_source()
+local function get_oil_sources(visual)
   local oil = require("oil")
-
-  local entry = oil.get_cursor_entry()
   local dir = oil.get_current_dir()
 
-  if not entry or not dir then
-    vim.notify("Keine Datei unter Cursor", vim.log.levels.WARN)
+  if not dir then
+    vim.notify("Kein lokales Oil-Verzeichnis", vim.log.levels.WARN)
     return nil
   end
 
-  return {
-    name = entry.name,
-    source = vim.fs.joinpath(dir, entry.name),
-  }
+  local sources = {}
+  local first_line = vim.api.nvim_win_get_cursor(0)[1]
+  local last_line = first_line
+
+  if visual then
+    first_line = vim.fn.getpos("v")[2]
+    if first_line > last_line then
+      first_line, last_line = last_line, first_line
+    end
+  end
+
+  for line = first_line, last_line do
+    local entry = oil.get_entry_on_line(0, line)
+    if entry then
+      table.insert(sources, vim.fs.joinpath(dir, entry.name))
+    end
+  end
+
+  if #sources == 0 then
+    vim.notify("Keine Datei ausgewählt", vim.log.levels.WARN)
+    return nil
+  end
+
+  return sources
 end
 
 -- ---------------------------------------------------------
@@ -155,22 +175,19 @@ end
 -- Kopieren
 -- ---------------------------------------------------------
 
-local function copy_to_fuzzy_dir(index_name, change_dir)
-  local source_info = get_oil_source()
+local function copy_to_fuzzy_dir(index_name, change_dir, visual)
+  local sources = get_oil_sources(visual)
 
-  if not source_info then
+  if not sources then
     return
   end
 
   select_target_dir(index_name, function(target_dir)
-    local target = vim.fs.joinpath(target_dir, source_info.name)
+    local command = { "cp", "-R" }
+    vim.list_extend(command, sources)
+    table.insert(command, target_dir)
 
-    vim.system({
-      "cp",
-      "-R",
-      source_info.source,
-      target,
-    }, {
+    vim.system(command, {
       text = true,
     }, function(result)
       vim.schedule(function()
@@ -194,12 +211,12 @@ end
 -- iCloud
 -- ---------------------------------------------------------
 
-function M.copy_icloud()
-  copy_to_fuzzy_dir("icloud", false)
+function M.copy_icloud(visual)
+  copy_to_fuzzy_dir("icloud", false, visual)
 end
 
-function M.copy_icloud_and_cd()
-  copy_to_fuzzy_dir("icloud", true)
+function M.copy_icloud_and_cd(visual)
+  copy_to_fuzzy_dir("icloud", true, visual)
 end
 
 -- ---------------------------------------------------------
@@ -248,6 +265,20 @@ vim.api.nvim_create_autocmd("FileType", {
     end, {
       buffer = args.buf,
       desc = "Oil: Copy fuzzy iCloud",
+    })
+
+    vim.keymap.set("x", "<leader>cc", function()
+      M.copy_icloud(true)
+    end, {
+      buffer = args.buf,
+      desc = "Oil: Copy selected entries to iCloud",
+    })
+
+    vim.keymap.set("x", "<leader>cp", function()
+      M.copy_icloud_and_cd(true)
+    end, {
+      buffer = args.buf,
+      desc = "Oil: Copy selected entries and open target iCloud",
     })
 
     vim.keymap.set("n", "<leader>cm", function()
