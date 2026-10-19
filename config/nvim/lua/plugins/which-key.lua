@@ -50,38 +50,40 @@ return {
       },
       -- Latex Templates
       {
-        "<leader>tta",
+        "<leader>tla",
         "<cmd>read ~/.config/nvim/templates/latex-templates/article-template.tex<CR>",
         desc = "article-template.tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttb",
+        "<leader>tlb",
         "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-knn.tex<CR>",
         desc = "article-template-knn.tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttc",
+        "<leader>tlc",
         "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.tex<CR>",
         desc = "footer-footnotes-bibliography.tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttd",
+        "<leader>tld",
         "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography-knn.tex<CR>",
         desc = "footer-footnotes-bibliography-knn.tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>tte",
+        "<leader>tle",
         function()
           vim.cmd.tabedit(
-            vim.fn.fnameescape(vim.fn.expand("~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.tex"))
+            vim.fn.fnameescape(
+              vim.fn.expand("~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.tex")
+            )
           )
         end,
         desc = "footer-footnotes-bibliography.tex EDIT",
@@ -89,28 +91,28 @@ return {
         remap = false,
       },
       {
-        "<leader>ttf",
+        "<leader>tlf",
         "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes.tex<CR>",
         desc = "footer-footnotes.tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttg",
+        "<leader>tlg",
         "<cmd>read ~/.config/nvim/templates/latex-templates/chapter.tex<CR>",
         desc = "chapter template tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttl",
+        "<leader>tll",
         "<cmd>read ~/.config/nvim/templates/latex-templates/leitungsteam-template.tex<CR>",
         desc = "leitungsteam template tex",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttp",
+        "<leader>tlp",
         function()
           vim.cmd.tabedit(
             vim.fn.fnameescape(
@@ -123,7 +125,7 @@ return {
         remap = false,
       },
       {
-        "<leader>ttt",
+        "<leader>tlt",
         "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-toc.tex<CR>",
         desc = "article-template-toc.tex",
         nowait = true,
@@ -162,21 +164,21 @@ return {
       },
       -- Latex Briefkopf Templates
       {
-        "<leader>ttm",
+        "<leader>tlm",
         "<cmd>read ~/.config/nvim/templates/latex-templates/briefkopf-vorlage-latex-2026-04-10-med.tex<CR>",
         desc = "Briefkopf med",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>tti",
+        "<leader>tli",
         "<cmd>read ~/.config/nvim/templates/latex-templates/briefkopf-vorlage-latex-2026-04-10-no-med.tex<CR>",
         desc = "Briefkopf NO med",
         nowait = true,
         remap = false,
       },
       {
-        "<leader>ttu",
+        "<leader>tlu",
         "<cmd>read ~/.config/nvim/templates/latex-templates/übergabeprotokoll.tex<CR>",
         desc = "übergabeprotokoll.tex",
         nowait = true,
@@ -216,6 +218,89 @@ return {
         "<leader>th",
         "<cmd>read ~/.config/nvim/templates/template.html<CR>",
         desc = "html template",
+        nowait = true,
+        remap = false,
+      },
+      -- Typst Templates
+      {
+        "<leader>tta",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/article-template.typ<CR>",
+        desc = "article-template.typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttb",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-knn.typ<CR>",
+        desc = "article-template-knn.typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttc",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.typ<CR>",
+        desc = "footer-footnotes-bibliography.typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttd",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography-knn.typ<CR>",
+        desc = "footer-footnotes-bibliography-knn.typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>tte",
+        function()
+          vim.cmd.tabedit(
+            vim.fn.fnameescape(
+              vim.fn.expand("~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.typ")
+            )
+          )
+        end,
+        desc = "footer-footnotes-bibliography.typ EDIT",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttf",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes.typ<CR>",
+        desc = "footer-footnotes.typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttg",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/chapter.typ<CR>",
+        desc = "chapter template typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttl",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/leitungsteam-template.typ<CR>",
+        desc = "leitungsteam template typ",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttp",
+        function()
+          vim.cmd.tabedit(
+            vim.fn.fnameescape(
+              "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ"
+            )
+          )
+        end,
+        desc = "Präambel Footnotes Bibliography EDIT",
+        nowait = true,
+        remap = false,
+      },
+      {
+        "<leader>ttt",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-toc.typ<CR>",
+        desc = "article-template-toc.typ",
         nowait = true,
         remap = false,
       },
