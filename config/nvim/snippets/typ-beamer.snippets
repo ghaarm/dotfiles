@@ -1,0 +1,205 @@
+# Folien für beamer-vorlage-knn.typ (#folientitel ist dort definiert).
+snippet frame "Folie mit Titel" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  ${2:Inhalt}
+  ${0}
+
+snippet bemit "Hervorgehobener Folienpunkt" b
+  *${1:Begriff}* ${2:Aussage}${0}
+
+snippet frame-beamer-basic "Einfache Folie" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  ${2:Inhalt}
+
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${3:Quellenangabe}]${0}
+
+snippet frame-beamer-bullets "Folie mit Stichpunkten" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  - ${2:Erster Punkt}
+  - ${3:Zweiter Punkt}
+  - ${4:Dritter Punkt}
+
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${5:Quellenangabe}]${0}
+
+snippet frame-beamer-enumerate "Folie mit nummerierter Liste" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  + ${2:Erster Punkt}
+  + ${3:Zweiter Punkt}
+  + ${4:Dritter Punkt}
+
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${5:Quellenangabe}]${0}
+
+snippet frame-beamer-2col "Folie mit zwei Spalten" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 12mm,
+    [${2:Linker Inhalt}],
+    [${3:Rechter Inhalt}],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${4:Quellenangabe}]${0}
+
+snippet frame-beamer-2col-bullets "Folie mit Stichpunkten in zwei Spalten" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 12mm,
+    [
+      - ${2:Punkt links 1}
+      - ${3:Punkt links 2}
+    ],
+    [
+      - ${4:Punkt rechts 1}
+      - ${5:Punkt rechts 2}
+    ],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${6:Quellenangabe}]${0}
+
+snippet frame-beamer-compare "Vergleich in zwei Spalten" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 12mm,
+    [*${2:Links}*\ ${3:Linker Inhalt}],
+    [*${4:Rechts}*\ ${5:Rechter Inhalt}],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${6:Quellenangabe}]${0}
+
+snippet frame-beamer-img-left "Bild links, Text rechts" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1.3fr, 1fr),
+    gutter: 12mm,
+    [#image("${2:bild.png}", width: 100%)],
+    [
+      - ${3:Erster Punkt}
+      - ${4:Zweiter Punkt}
+    ],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${5:Quellenangabe}]${0}
+
+snippet frame-beamer-img-right "Text links, Bild rechts" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1fr, 1.3fr),
+    gutter: 12mm,
+    [
+      - ${2:Erster Punkt}
+      - ${3:Zweiter Punkt}
+    ],
+    [#image("${4:bild.png}", width: 100%)],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${5:Quellenangabe}]${0}
+
+snippet frame-beamer-2img "Zwei Bilder nebeneinander" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 10mm,
+    [#image("${2:links.png}", width: 100%)\ #text(size: 12pt)[${3:Beschriftung links}]],
+    [#image("${4:rechts.png}", width: 100%)\ #text(size: 12pt)[${5:Beschriftung rechts}]],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${6:Quellenangabe}]${0}
+
+snippet frame-beamer-plain-img "Vollbildfolie" b
+  #pagebreak()
+  #align(center + horizon)[#image("${1:bild.png}", width: 100%, height: 100%, fit: "contain")]${0}
+
+snippet block-beamer "Hervorgehobener Block" b
+  #rect(width: 100%, inset: 8pt, radius: 4pt, fill: rgb("eef3f7"))[
+    *${1:Titel}*\
+    ${2:Inhalt}
+  ]${0}
+
+snippet alertblock-beamer "Warnblock" b
+  #rect(width: 100%, inset: 8pt, radius: 4pt, fill: rgb("fcebea"))[
+    *${1:Titel}*\
+    ${2:Inhalt}
+  ]${0}
+
+snippet exampleblock-beamer "Beispielblock" b
+  #rect(width: 100%, inset: 8pt, radius: 4pt, fill: rgb("edf6ed"))[
+    *${1:Titel}*\
+    ${2:Inhalt}
+  ]${0}
+
+snippet takehome-beamer "Kernaussage" b
+  #rect(width: 100%, inset: 8pt, radius: 4pt, fill: rgb("eef3f7"))[
+    *Kernaussage:* ${1:Text}
+  ]${0}
+
+snippet frame-beamer-formula "Folie mit großer Formel" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #align(center + horizon)[#text(size: 32pt)[$ ${2:a + b} $]]
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${3:Quellenangabe}]${0}
+
+snippet frame-beamer-formula-example "Formel mit Beispiel" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  #align(center)[#text(size: 32pt)[$ ${2:a + b} $]]
+  #v(8mm)
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    gutter: 6mm,
+    [*${3:Schritt 1}*\ ${4:Wert 1}],
+    [*${5:Schritt 2}*\ ${6:Wert 2}],
+    [*${7:Schritt 3}*\ ${8:Wert 3}],
+  )
+  #v(1fr)
+  #text(size: 12pt)[Quelle: ${9:Quellenangabe}]${0}
+
+snippet frame-beamer-takehome "Folie mit Kernaussage" b
+  #pagebreak()
+  #folientitel[${1:Folientitel}]
+  ${2:Inhalt}
+  #v(1fr)
+  #rect(width: 100%, inset: 8pt, fill: rgb("eef3f7"))[*Kernaussage:* ${3:Text}]
+  #text(size: 12pt)[Quelle: ${4:Quellenangabe}]${0}
+
+snippet frame-beamer-final "Schlussfolie" b
+  #pagebreak()
+  #folientitel[${1:Zusammenfassung}]
+  + ${2:Erste Aussage}
+  + ${3:Zweite Aussage}
+  + ${4:Dritte Aussage}
+  #v(1fr)
+  #align(center)[#text(size: 28pt, weight: "bold", fill: rgb("b02b2b"))[${5:Kernaussage}]]${0}
+
+snippet source-beamer "Quellenangabe" b
+  #text(size: 12pt)[Quelle: ${1:Quellenangabe}]${0}
+
+snippet cite-beamer "Zitat mit manueller Seitenzahl"
+  @${1:key}, S. ${2:seite}${0}
+
+snippet cite-beamer-biblatex "Zitat mit Seitenzahl"
+  #cite(<${1:key}>, supplement: [S. ${2:seite}])${0}
+
+snippet beamer-video-extern "Link zu externem Video"
+  #link("videos/${1:video.mp4}")[${2:Video abspielen}]${0}
+
+snippet png-beamer-plain "Bild auf Folie" b
+  #image("${1:bild.png}", width: 100%, height: 80%, fit: "contain")${0}
+
+snippet beamer-scriptsize-8pt-umbruch "Kleiner Text mit Umbruch" b
+  #text(size: 8pt)[${1:Text}]${0}

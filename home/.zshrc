@@ -181,6 +181,8 @@ alias cdcolemak-train="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs
 
 alias cdtodo="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/todo-icloud && nvim" 
 
+alias cdtypst="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/typst-icloud && nvim" 
+
 alias cdwork="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud && nvim"
 
 alias cdwork-proj="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud/projects-work-gpt && nvim"

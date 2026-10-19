@@ -51,28 +51,28 @@ return {
       -- Latex Templates
       {
         "<leader>tta",
-        "<cmd>read ~/.config/nvim/templates/article-template.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template.tex<CR>",
         desc = "article-template.tex",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttb",
-        "<cmd>read ~/.config/nvim/templates/article-template-knn.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-knn.tex<CR>",
         desc = "article-template-knn.tex",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttc",
-        "<cmd>read ~/.config/nvim/templates/footer-footnotes-bibliography.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.tex<CR>",
         desc = "footer-footnotes-bibliography.tex",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttd",
-        "<cmd>read ~/.config/nvim/templates/footer-footnotes-bibliography-knn.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography-knn.tex<CR>",
         desc = "footer-footnotes-bibliography-knn.tex",
         nowait = true,
         remap = false,
@@ -81,7 +81,7 @@ return {
         "<leader>tte",
         function()
           vim.cmd.tabedit(
-            vim.fn.fnameescape(vim.fn.expand("~/.config/nvim/templates/footer-footnotes-bibliography.tex"))
+            vim.fn.fnameescape(vim.fn.expand("~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.tex"))
           )
         end,
         desc = "footer-footnotes-bibliography.tex EDIT",
@@ -90,21 +90,21 @@ return {
       },
       {
         "<leader>ttf",
-        "<cmd>read ~/.config/nvim/templates/footer-footnotes.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes.tex<CR>",
         desc = "footer-footnotes.tex",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttg",
-        "<cmd>read ~/.config/nvim/templates/chapter.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/chapter.tex<CR>",
         desc = "chapter template tex",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttl",
-        "<cmd>read ~/.config/nvim/templates/leitungteam-template.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/leitungsteam-template.tex<CR>",
         desc = "leitungsteam template tex",
         nowait = true,
         remap = false,
@@ -124,7 +124,7 @@ return {
       },
       {
         "<leader>ttt",
-        "<cmd>read ~/.config/nvim/templates/article-template-toc.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-toc.tex<CR>",
         desc = "article-template-toc.tex",
         nowait = true,
         remap = false,
@@ -146,7 +146,7 @@ return {
       {
         "<leader>tby",
         function()
-          vim.cmd.tabedit(vim.fn.fnameescape("~/.config/nvim/templates/beamer-vorlage-knn.tex"))
+          vim.cmd.tabedit(vim.fn.fnameescape("~/.config/nvim/templates/latex-templates/beamer-vorlage-knn.tex"))
         end,
         desc = "Beamer Vorlage KN EDIT",
         nowait = true,
@@ -155,7 +155,7 @@ return {
       -- Beamer Templates
       {
         "<leader>tbk",
-        "<cmd>read ~/.config/nvim/templates/beamer-vorlage-knn.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/beamer-vorlage-knn.tex<CR>",
         desc = "Beamer KN template tex",
         nowait = true,
         remap = false,
@@ -163,21 +163,21 @@ return {
       -- Latex Briefkopf Templates
       {
         "<leader>ttm",
-        "<cmd>read ~/.config/nvim/templates/briefkopf-vorlage-latex-2026-04-10-med.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/briefkopf-vorlage-latex-2026-04-10-med.tex<CR>",
         desc = "Briefkopf med",
         nowait = true,
         remap = false,
       },
       {
         "<leader>tti",
-        "<cmd>read ~/.config/nvim/templates/briefkopf-vorlage-latex-2026-04-10-no-med.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/briefkopf-vorlage-latex-2026-04-10-no-med.tex<CR>",
         desc = "Briefkopf NO med",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttu",
-        "<cmd>read ~/.config/nvim/templates/übergabeprotokoll.tex<CR>",
+        "<cmd>read ~/.config/nvim/templates/latex-templates/übergabeprotokoll.tex<CR>",
         desc = "übergabeprotokoll.tex",
         nowait = true,
         remap = false,
