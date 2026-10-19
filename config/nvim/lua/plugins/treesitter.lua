@@ -158,6 +158,7 @@ return {
         "javascript",
         "typescript",
         "typescriptreact",
+        "typst",
         "javascriptreact",
         "yaml",
         "html",
