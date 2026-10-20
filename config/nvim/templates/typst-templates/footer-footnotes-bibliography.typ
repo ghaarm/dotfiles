@@ -12,7 +12,7 @@
 
 // #let datum = datetime.today().display("[day].[month].[year]")
 
-#let datum = datetime.today().display("[year].[month].[day]")
+#let datum = datetime.today().display("[year]-[month]-[day]")
 
 #set page(footer: context {
   line(length: 100%, stroke: 0.4pt)
