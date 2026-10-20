@@ -1,5 +1,5 @@
 // Hauptdokument zu footer-footnotes-bibliography.tex.
-#import "preamble-footnotes-bibliographie-neu.typ": praembel, inhaltsverzeichnis, tabellenverzeichnis, abbildungsverzeichnis, literatur, zweispaltig
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, inhaltsverzeichnis, tabellenverzeichnis, abbildungsverzeichnis, literatur, zweispaltig
 #show: praembel
 // \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)

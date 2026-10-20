@@ -1,5 +1,5 @@
 // Hauptdokument zu book.tex. Weitere Kapitel mit #kapitel ergänzen.
-#import "preamble-book.typ": praembel, inhaltsverzeichnis
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-book.typ": praembel, inhaltsverzeichnis
 #import "chapter.typ": kapitel
 #show: praembel
 
