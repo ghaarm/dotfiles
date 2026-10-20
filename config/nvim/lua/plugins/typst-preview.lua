@@ -1,4 +1,5 @@
 -- https://github.com/chomosuke/typst-preview.nvim
+--
 return {
   "chomosuke/typst-preview.nvim",
   version = "1.*",
@@ -16,7 +17,7 @@ return {
 
   opts = {
     debug = false, -- Log: stdpath('data')/typst-preview/log.txt
-    open_cmd = "open -a Zen %s", -- Vorschau immer in Zen öffnen
+    open_cmd = [[open -na "Google Chrome" --args --app="%s"]],
     port = 0, -- freien Port automatisch wählen
     host = "127.0.0.1", -- Vorschau nur lokal bereitstellen
     invert_colors = "never", -- mögliche Werte: never, always, auto
