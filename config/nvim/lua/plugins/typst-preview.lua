@@ -56,20 +56,22 @@ return {
     -- Chrome selbst wird nicht beendet.
     local function close_typst_chrome_window()
       local script = [[
-      tell application "Google Chrome"
-        repeat with w in windows
-          try
-            if URL of active tab of w starts with "http://127.0.0.1:" then
-              close w
-            end if
-          end try
-        end repeat
-      end tell
-    ]]
+        tell application "Google Chrome"
+          repeat with w in windows
+            try
+              if URL of active tab of w starts with "http://127.0.0.1:" then
+                close w
+              end if
+            end try
+          end repeat
+        end tell
+      ]]
 
       vim.system({ "osascript", "-e", script })
     end
 
+    -- Startet bzw. stoppt die Typst-Vorschau.
+    -- Beim Stoppen wird zusätzlich das zugehörige Chrome-Fenster geschlossen.
     local function toggle_typst_preview()
       if preview_running then
         vim.cmd("TypstPreviewStop")
@@ -81,6 +83,7 @@ return {
       end
     end
 
+    -- Vorschau explizit stoppen und zugehöriges Chrome-Fenster schließen.
     local function stop_typst_preview()
       vim.cmd("TypstPreviewStop")
       close_typst_chrome_window()
@@ -105,6 +108,12 @@ return {
         silent = true,
         desc = "Typst-Vorschau zur Cursorposition bewegen",
       })
+
+      vim.keymap.set("n", "<localleader>ve", vim.diagnostic.open_float, {
+        buffer = buf,
+        silent = true,
+        desc = "Typst-Fehler anzeigen",
+      })
     end
 
     vim.api.nvim_create_autocmd("FileType", {
@@ -114,7 +123,8 @@ return {
       end,
     })
 
-    -- Beim Laden über ft ist das FileType-Ereignis für den aktuellen Buffer schon gelaufen.
+    -- Beim Laden über ft ist das FileType-Ereignis für den aktuellen Buffer
+    -- schon gelaufen.
     if vim.bo.filetype == "typst" then
       set_typst_maps(vim.api.nvim_get_current_buf())
     end
