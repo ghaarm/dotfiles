@@ -1,1 +1,511 @@
-extends typ
+extends typst-touying
+extends typst-med
+
+# Überschriften: Label direkt hinter der Überschrift.
+snippet chapter "Kapitel mit Label" b
+  = ${1:Kapitel} <chap:${2:label}>
+
+  #outline(title: [In diesem Kapitel], target: heading.where(level: 2))
+
+  ${0}
+
+snippet sec "Abschnitt mit Label" b
+  = ${1:Titel} <sec:${2:label}>
+  ${0}
+
+snippet sub "Unterabschnitt mit Label" b
+  == ${1:Titel} <sub:${2:label}>
+  ${0}
+
+snippet ssub "Unterunterabschnitt mit Label" b
+  === ${1:Titel} <sub:${2:label}>
+  ${0}
+
+snippet nossub "Unterunterabschnitt ohne Inhaltsverzeichnis" b
+  #heading(level: 3, outlined: false)[${1:Titel}] <sub:${2:label}>
+  ${0}
+
+snippet hsec "Abschnitt mit Label" b
+  = ${1:Titel} <sec:${2:label}>
+  ${0}
+
+snippet hsub "Unterabschnitt mit Label" b
+  == ${1:Titel} <sub:${2:label}>
+  ${0}
+
+snippet hssub "Unterunterabschnitt mit Label" b
+  === ${1:Titel} <sub:${2:label}>
+  ${0}
+
+snippet paragraph "Absatzüberschrift" b
+  #heading(level: 4)[${1:Titel}]
+  ${0}
+
+snippet kernpunkte "Kernpunkte ohne Nummer und Inhaltsverzeichnis" b
+  #heading(numbering: none, outlined: false)[Kernpunkte]
+  + ${1:Kernpunkt 1}
+  + ${2:Kernpunkt 2}
+  + ${3:Kernpunkt 3}
+  ${0}
+
+# Text und Verweise
+snippet quote "Deutsche Anführungszeichen"
+  „${1:Text}“${0}
+
+snippet enquote "Deutsche Anführungszeichen"
+  „${1:Text}“${0}
+
+snippet it "Kursiv" wi
+  _${1:Text}_${0}
+
+snippet bf "Fett" wi
+  *${1:Text}*${0}
+
+snippet tt "Monospace" wi
+  #raw("${1:Text}")${0}
+
+snippet sc "Kapitälchen" wi
+  #smallcaps[${1:Text}]${0}
+
+snippet uline "Unterstrichen"
+  #underline[${1:Text}]${0}
+
+snippet lab "Label" wi
+  <${1:label}>${0}
+
+snippet reff "Verweis" wi
+  @${1:label}${0}
+
+snippet bref "Fetter Verweis" wi
+  #strong[@${1:label}]${0}
+
+snippet fn "Fußnote" wi
+  #footnote[${1:Text}]${0}
+
+snippet fproof "Beweis in Fußnote" wi
+  #footnote[_Beweis:_ ${1:Text} □]${0}
+
+snippet nc "Neue Typst-Funktion" b
+  #let ${1:name}(inhalt) = [${2:#inhalt}]${0}
+
+snippet up "Typst-Paket oder Datei importieren" b
+  #import "${1:datei.typ}": ${2:funktion}${0}
+
+snippet qt "Allquantor" w
+  $forall ${1:alpha}$${0}
+
+snippet qte "Existenzquantor" w
+  $exists ${1:alpha}$${0}
+
+snippet cite "Zitat mit Seitenzahl"
+  #cite(<${1:key}>, supplement: [S. ${2:seite}])${0}
+
+snippet citen "Zitat mit Seitenzahl"
+  #cite(<${1:key}>, supplement: [S. ${2:seite}])${0}
+
+snippet cf "Quellenangabe in Fußnote"
+  #footnote[#cite(<${1:key}>, supplement: [S. ${2:seite}])]${0}
+
+snippet citef-alt "Quellenangabe in Fußnote"
+  #footnote[#cite(<${1:key}>, supplement: [S. ${2:seite}])]${0}
+
+snippet fnquelle "Quellenangabe als Fußnote"
+  #footnote[Quelle: #cite(<${1:key}>, supplement: [S. ${2:seite}])]${0}
+
+snippet link "Link ohne Titel"
+  #link("${1:https://example.org}")${0}
+
+snippet url "Link ohne Titel"
+  #link("${1:https://example.org}")${0}
+
+snippet link-name "Link mit Titel"
+  #link("${1:https://example.org}")[${2:Titel}]${0}
+
+snippet link-name-datum "Link mit Titel und Stand"
+  #link("${1:https://example.org}")[${2:Titel} (Stand ${3:Datum})]${0}
+
+snippet url-name "Link mit Titel und Stand"
+  #link("${1:https://example.org}")[${2:Titel}, Stand ${3:Datum}]${0}
+
+snippet shiny-link "Shiny-Link"
+  #link("https://shinyicu.de")[Shiny]${0}
+
+snippet shiny-gmics "G'MICS-Link"
+  #link("https://shinyicu.de/gmics")[G'MICS]${0}
+
+snippet gmics-shiny "G'MICS-Link"
+  #link("https://shinyicu.de/gmics")[G'MICS]${0}
+
+snippet toc "Inhalts-, Tabellen- und Abbildungsverzeichnis" b
+  #outline() <toc>
+  #outline(title: [Tabellenverzeichnis], target: figure.where(kind: table))
+  #outline(title: [Abbildungsverzeichnis], target: figure.where(kind: image))
+  ${0}
+
+# Listen und beschriftete Blöcke
+snippet item "Aufzählung" b
+  - ${1:Erster Punkt}
+  - ${2:Zweiter Punkt}
+  - ${3:Dritter Punkt}
+  ${0}
+
+snippet enum "Nummerierte Liste" b
+  + ${1:Erster Punkt}
+  + ${2:Zweiter Punkt}
+  + ${3:Dritter Punkt}
+  ${0}
+
+snippet ie "Nummerierter Punkt" b
+  + ${1:Text}${0}
+
+snippet i- "Aufzählungspunkt" b
+  - ${1:Text}${0}
+
+snippet iben "Beschrifteter Punkt" b
+  - *${1:Begriff}:* ${2:Text}${0}
+
+snippet itemben "Beschriftete Aufzählung" b
+  - *${1:Begriff}:* ${2:Text}
+  ${0}
+
+snippet enumb "Beschriftete nummerierte Liste" b
+  + *${1:Begriff}:* ${2:Text}
+  ${0}
+
+snippet labelalign "Beschrifteter Absatz" b
+  *${1:Begriff}:* ${2:Text}${0}
+
+snippet ilabelcom "Aufzählungspunkt mit Label" b
+  - ${1:Text} <${2:label}>${0}
+
+snippet textbox "Gerahmter Text" b
+  #rect(width: 100%, inset: 8pt, stroke: 0.5pt)[
+    ${1:Text}
+  ]${0}
+
+snippet factoidbox "Merkkasten mit Label" b
+  #rect(width: 100%, inset: 8pt, stroke: 0.5pt)[
+    *${1:Name}* ${2:Text}
+  ] <rule:${3:label}>${0}
+
+snippet customthm "Aussage mit Antwort" b
+  #block[
+    *${1:Name}.* ${2:Aussage}
+  ] <thm:${3:label}>
+
+  *Antwort.* ${0}
+
+snippet rule "Regel mit Label" b
+  #block[*${1:Regel}.* ${2:Text}] <rule:${3:label}>${0}
+
+snippet lemma "Lemma mit Label" b
+  #block[*Lemma.* ${1:Text}] <lemma:${2:label}>${0}
+
+snippet prop "Proposition mit Label" b
+  #block[*Proposition.* ${1:Text}] <prop:${2:label}>${0}
+
+snippet thrm "Satz mit Label" b
+  #block[*Satz.* ${1:Text}] <thm:${2:label}>${0}
+
+snippet prf "Beweis" b
+  #block[_Beweis._ ${1:Text} □]${0}
+
+snippet def "Definition" b
+  #block[*Definition ${1:Name}.* ${2:Text}] <def:${3:label}>${0}
+
+snippet prob "Problem" b
+  #block[*Problem ${1:Name}.* ${2:Text}] <prob:${3:label}>${0}
+
+snippet corl "Korollar" b
+  #block[*Korollar ${1:Name}.* ${2:Text}] <cor:${3:label}>${0}
+
+snippet example "Beispiel" b
+  #block[*Beispiel ${1:Name}.* ${2:Text}] <ex:${3:label}>${0}
+
+# Formeln
+snippet align "Mehrzeilige Formel" b
+  $
+    ${1:a} &= ${2:b} \\
+    ${3:c} &= ${4:d}
+  $ <eq:${5:label}>${0}
+
+snippet equation "Nummerierte Formel" b
+  $
+    ${1:a + b}
+  $ <eq:${2:label}>${0}
+
+snippet equation-simple "Einfache Formel" b
+  $ ${1:y} = ${2:a} dot ${3:b} $${0}
+
+snippet equation-simple-label "Einfache Formel mit Label" b
+  $ ${1:y} = ${2:a} dot ${3:b} $ <eq:${4:label}>${0}
+
+snippet equation-multi "Mehrzeilige Formel für Spalte" b
+  $ ${1:y} &= ${2:a + b} $${0}
+
+snippet equation-multi-label "Mehrzeilige Formel mit Label" b
+  $ ${1:y} &= ${2:a + b} $ <eq:${3:label}>${0}
+
+snippet case "Fallunterscheidung" b
+  $ ${1:f}(x) = cases(${2:a} &"falls " ${3:x > 0}, ${4:b} &"sonst") $${0}
+
+snippet mf "Frakturschrift" w
+  $frak(${1:A})$${0}
+
+snippet mc "Kalligrafische Schrift" w
+  $cal(${1:A})$${0}
+
+snippet ms "Kalligrafische Schrift" w
+  $cal(${1:A})$${0}
+
+# Bilder und Tabellen. Typst nummeriert figure und table selbst.
+snippet fig "Abbildung mit Beschriftung und Label" b
+  #figure(
+    image("${1:bilder/datei.png}", width: ${2:100%}),
+    caption: [${3:Bildunterschrift}],
+  ) <fig:${4:label}>
+  ${0}
+
+snippet pngfig "PNG-Abbildung mit Quelle" b
+  #figure(
+    image("./bilder-latex/${1:datei.png}", width: 100%),
+    caption: [${2:Bildunterschrift}],
+  ) <fig:${3:label}>
+  #text(size: 8pt)[Quelle: #cite(<${4:key}>, supplement: [S. ${5:seite}])]
+  ${0}
+
+snippet pngfigup "PNG-Abbildung mit Quelle" b
+  #figure(
+    image("./bilder-latex/${1:datei.png}", width: 100%),
+    caption: [${2:Bildunterschrift}],
+  ) <fig:${3:label}>
+  #text(size: 8pt)[Quelle: #cite(<${4:key}>, supplement: [S. ${5:seite}])]
+  ${0}
+
+snippet pngfigdown "PNG-Abbildung mit Quelle" b
+  #figure(
+    image("./bilder-latex/${1:datei.png}", width: 100%),
+    caption: [${2:Bildunterschrift}],
+  ) <fig:${3:label}>
+  #text(size: 8pt)[Quelle: #cite(<${4:key}>, supplement: [S. ${5:seite}])]
+  ${0}
+
+snippet pngsame "PNG-Abbildung im gleichen Ordner" b
+  #figure(image("${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet pppsame "PNG-Abbildung im gleichen Ordner" b
+  #figure(image("${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet pngfigcenter "Zentrierte Abbildung" b
+  #align(center)[
+    #figure(image("${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>
+  ]${0}
+
+snippet pngcenterFIG "Abbildung in einer Spalte" b
+  #figure(image("${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet pngtab "Bild als Tabelle" b
+  #figure(
+    image("./bilder-latex/${1:datei.png}", width: 100%),
+    kind: table,
+    caption: [${2:Tabellentitel}],
+  ) <tab:${3:label}>
+  #text(size: 8pt)[Quelle: #cite(<${4:key}>, supplement: [S. ${5:seite}])]
+  ${0}
+
+snippet pngtabup "Bild als Tabelle" b
+  #figure(image("./bilder-latex/${1:datei.png}", width: 100%), kind: table, caption: [${2:Titel}]) <tab:${3:label}>${0}
+
+snippet pngtabdown "Bild als Tabelle" b
+  #figure(image("./bilder-latex/${1:datei.png}", width: 100%), kind: table, caption: [${2:Titel}]) <tab:${3:label}>${0}
+
+snippet pngtabcenter "Zentriertes Bild als Tabelle" b
+  #align(center)[
+    #figure(image("./bilder-latex/${1:datei.png}", width: 100%), kind: table, caption: [${2:Titel}]) <tab:${3:label}>
+  ]${0}
+
+snippet pngcenterTAB "Bild als Tabelle in einer Spalte" b
+  #figure(image("${1:datei.png}", width: 100%), kind: table, caption: [${2:Titel}]) <tab:${3:label}>${0}
+
+snippet ecmopng "ECMO-PNG" b
+  #figure(image("./ECMO-latex-png/${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet ecmopdf "ECMO-PDF als Bild" b
+  #figure(image("./ECMO-latex-png/${1:datei.pdf}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet ecmotbl "ECMO-Bild als Tabelle" b
+  #figure(image("./ECMO-latex-png/${1:datei.png}", width: 100%), kind: table, caption: [${2:Titel}]) <tab:${3:label}>${0}
+
+snippet pdfi "PDF als Abbildung" b
+  #figure(image("${1:datei.pdf}", width: 50%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+snippet tabelle3x3 "Tabelle mit drei Spalten" b
+  #figure(
+    table(
+      columns: 3,
+      [${1:Spalte 1}], [${2:Spalte 2}], [${3:Spalte 3}],
+      [${4:Zelle}], [${5:Zelle}], [${6:Zelle}],
+      [${7:Zelle}], [${8:Zelle}], [${9:Zelle}],
+    ),
+    caption: [${10:Titel}],
+  ) <tab:${11:label}>${0}
+
+snippet tabelle2x3 "Tabelle mit zwei Spalten" b
+  #figure(
+    table(
+      columns: 2,
+      [${1:Spalte 1}], [${2:Spalte 2}],
+      [${3:Zelle}], [${4:Zelle}],
+      [${5:Zelle}], [${6:Zelle}],
+    ),
+    caption: [${7:Titel}],
+  ) <tab:${8:label}>${0}
+
+snippet pngmulti "Zwei Bilder nebeneinander" b
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 8mm,
+    [#figure(image("${1:links.png}", width: 100%), caption: [${2:Titel links}]) <fig:${3:links}>],
+    [#figure(image("${4:rechts.png}", width: 100%), caption: [${5:Titel rechts}]) <fig:${6:rechts}>],
+  )${0}
+
+snippet pppmulti "Bild mit Beschriftung" b
+  #figure(image("${1:datei.png}", width: 100%), caption: [${2:Titel}]) <fig:${3:label}>${0}
+
+# Layout, Kommentare und kurze Angaben
+snippet linie "Linie" b
+  #line(length: ${1:5cm}, stroke: ${2:1pt})${0}
+
+snippet lücke "Horizontaler Abstand"
+  #h(${1:1cm})${0}
+
+snippet beginmulticols2 "Zweispaltiger Block" b
+  #columns(2, gutter: 8mm)[
+    ${1:Inhalt}
+  ]${0}
+
+snippet end-begin-multicols "Spaltenumbruch" b
+  #colbreak()${0}
+
+snippet todo "TODO-Kommentar"
+  // TODO: ${0}
+
+snippet todo-user "TODO-Kommentar für Benutzer"
+  // TODO [USER]: ${0}
+
+snippet todo-agent "TODO-Kommentar für Agent"
+  // TODO [AGENT]: ${0}
+
+snippet memo "Memo-Kommentar"
+  // MEMO: ${0}
+
+snippet note "Notiz-Kommentar"
+  // NOTE: ${0}
+
+snippet ign-comment "Kommentar"
+  // nicht kommentieren${0}
+
+snippet no-comment "Kommentar"
+  // nicht kommentieren${0}
+
+snippet comment-latex-comment-next "Kommentar"
+  // dies kommentieren${0}
+
+snippet comment-latex-uncomment-next "Kommentar"
+  // dies aktivieren${0}
+
+snippet latred "Roter Text"
+  #text(fill: rgb("b02b2b"))[${1:Text}]${0}
+
+snippet latp "Prozentwert"
+  ${1:Zahl}\%${0}
+
+snippet latpp "p-Wert"
+  $p ${1:<} 0.0${2:5}$${0}
+
+snippet kg/m2 "Kilogramm pro Quadratmeter"
+  kg/m²${0}
+
+snippet cmh2o "Zentimeter Wassersäule"
+  cm H₂O${0}
+
+snippet sanford-guide-zotero "Sanford Guide als Fußnote"
+  #footnote[#cite(<sanfordGuideApp>), ${1:Eintrag}, Stand ${2:Datum}]${0}
+
+snippet iqr "Interquartilsabstand"
+  (IQR ${1:untere Grenze}–${2:obere Grenze} ${3:Einheit})${0}
+
+snippet hr "Hazard Ratio mit Konfidenzintervall"
+  HR ${1:Wert} (95\%-KI ${2:unten}–${3:oben}; p < ${4:p-Wert})${0}
+
+snippet 95ci "Konfidenzintervall"
+  (95\%-KI ${1:unten}–${2:oben}; p < ${3:p-Wert})${0}
+
+snippet auc "AUC mit Konfidenzintervall"
+  AUC ${1:Wert} (95\%-KI ${2:unten}–${3:oben}; p < ${4:p-Wert})${0}
+
+snippet vss "Vergleich mit p-Wert"
+  (${1:Wert 1} vs. ${2:Wert 2} ${3:Einheit}; p < ${4:p-Wert})${0}
+
+snippet kleigl "Kleiner gleich"
+  ≤${0}
+
+snippet größgl "Größer gleich"
+  ≥${0}
+
+snippet ____ "Ausfülllinie"
+  ____${0}
+
+snippet checkbox "Leeres Kästchen"
+  ☐${0}
+
+snippet checkbox-filled "Markiertes Kästchen"
+  ☒${0}
+
+snippet likert-makros "Likert-Tabellen als Typst-Bausteine" b
+  #let checkboxjanein = table(
+    columns: 2,
+    align: center,
+    [Ja], [Nein],
+    [☐], [☐],
+  )
+
+  #let likertjanein = table(
+    columns: 6,
+    align: center,
+    [Ja, eindeutig], [Ja], [Eher ja], [Eher nein], [Nein], [Nein, gar nicht],
+    [☐], [☐], [☐], [☐], [☐], [☐],
+  )
+
+  #let likertzahlen = table(
+    columns: 6,
+    align: center,
+    [1], [2], [3], [4], [5], [6],
+    [☐], [☐], [☐], [☐], [☐], [☐],
+  )
+
+  #let likertzustimmungmitzahlen = table(
+    columns: 6,
+    align: center,
+    [Stimme voll zu], [Stimme zu], [Stimme eher zu],
+    [Stimme eher nicht zu], [Stimme nicht zu], [Stimme überhaupt nicht zu],
+    [1], [2], [3], [4], [5], [6],
+    [☐], [☐], [☐], [☐], [☐], [☐],
+  )
+
+  #let likertzustimmung = table(
+    columns: 6,
+    align: center,
+    [Stimme voll zu], [Stimme zu], [Stimme eher zu],
+    [Stimme eher nicht zu], [Stimme nicht zu], [Stimme überhaupt nicht zu],
+    [☐], [☐], [☐], [☐], [☐], [☐],
+  )
+  ${0}
+
+snippet signaturelatex "Unterschrift als Bild" b
+  #image("${1:unterschrift.png}", width: ${2:30%})${0}
+
+snippet empfänger "Empfängeranschrift" b
+  ${1:Name} \\
+  ${2:Straße} \\
+  ${3:PLZ Ort}${0}

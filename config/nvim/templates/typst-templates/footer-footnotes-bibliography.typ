@@ -19,7 +19,8 @@
   v(2pt)
   link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]
   h(1fr)
-  [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
+  // [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
+  [#fusszeile, Stand: #datetime.today().display("[year]-[month]-[day]"), S. #counter(page).display()]
 })
 
 #align(center)[
