@@ -1,113 +1,90 @@
-#let datum = [{{INPUT:DATUM}}]
-#let mieter = [{{INPUT:MIETER}}]
-
+// Eigenständiges Hauptdokument zu übergabeprotokoll.tex.
+#let datum = "replace-date"
+#let mieter = "{{INPUT:MIETER}}"
 #set page(
   paper: "a4",
-  margin: (left: 1.5cm, right: 1.5cm, top: 1.4cm, bottom: 1.6cm),
+  margin: (left: 1.5cm, right: 1.5cm, top: 1.85cm, bottom: 1.85cm),
   footer: context [
-    #line(length: 100%, stroke: 0.4pt)
-    #grid(
-      columns: (2fr, 1fr),
-      [Übergabeprotokoll „An der Krücke 36“, 1. OG links · G. Haarmeyer],
-      align(right)[#datum · S. #counter(page).display()],
-    )
+    Übergabeprotokoll „An der Krücke 36“ 1. OG links, G. Haarmeyer, Stand: 07/2024
+    #h(1fr)
+    #datum, S. #counter(page).display()
   ],
 )
-#set text(lang: "de", font: "Libertinus Serif", size: 10pt)
-#set par(first-line-indent: 0pt, spacing: 0.35em)
-#set heading(numbering: none)
+#set text(font: "New Computer Modern", size: 11pt, lang: "de")
+#set par(first-line-indent: 0pt, spacing: 0.65em)
+#set heading(numbering: "1.")
 
 #align(center)[
-  #text(size: 18pt, weight: "bold")[Übergabeprotokoll]
-  #v(2mm)
-  #text(size: 12pt)[– bei Einzug –]
+  #text(size: 17pt, weight: "bold")[Übergabeprotokoll]
+  #parbreak()
+  #text(size: 12pt, "- bei Einzug -")
+  #parbreak()
+  #datum
 ]
+#v(1em)
 
-#v(4mm)
 Zwischen
 
-Golo-Sung Haarmeyer\
-Blütenstraße 22\
+Golo-Sung Haarmeyer \
+Blütenstraße 22 \
 90480 Nürnberg
 
-#align(right)[– im Folgenden Vermieter genannt –]
+#align(right, text("- folgend Vermieter genannt -"))
 
 und
 
-#mieter\
-geboren am: {{INPUT:GEBURTSDATUM}}\
+#mieter \
+geboren am: {{INPUT:GEBURTSDATUM}} \
 derzeitiger Wohnsitz: {{INPUT:WOHNSITZ}}
 
-#align(right)[– im Folgenden Mieter:in genannt –]
-
-#v(4mm)
+#align(right, text("- folgend Mieter:in genannt -"))
+#v(1cm)
 *Objekt: Mietwohnung 1. OG links in „An der Krücke 36“*
 
-Hiermit bestätige ich, dass mir die Mieträume entsprechend § 8 des Mietvertrages vom {{INPUT:VERTRAGSDATUM}} übergeben wurden.
+Hiermit bestätige ich, dass mir die Mieträume, entsprechend § 8 des Mietvertrages vom replace-vertrag, übergeben wurden.
 
-= Zählerstände
-
+= Zählerstände <sec-zaehlerstaende>
 #table(
-  columns: (1.8fr, 1.5fr, 1fr),
-  stroke: 0.5pt,
-  inset: 3pt,
+  columns: (1fr, 30mm, 30mm),
+  stroke: 0.4pt,
   [Ort], [Zählerstand], [Zählernummer],
-  [Küche (Wasser, m³)], text(size: 8pt)[{{INPUT:KUECHE_WASSER}}], [2 412 501],
-  [Bad (Wasser, m³)], text(size: 8pt)[{{INPUT:BAD_WASSER}}], [2 412 499],
-  [Waschkeller (Wasser, m³, 3. Anschluss von links)], text(size: 8pt)[{{INPUT:WASCHKELLER_WASSER}}], [08 358 847],
-  [Gas (m³)], text(size: 8pt)[{{INPUT:GAS}}], [162 832],
-  [Strom (kWh)], text(size: 8pt)[{{INPUT:STROM}}], [457 024],
+  [Küche (Wasser, m³)], [Zelle], [2 412 501],
+  [Bad (Wasser, m³)], [Zelle], [2 412 499],
+  [Waschkeller (Wasser, m³, 3. Anschluss von links)], [Zelle], [08 358 847],
+  [Gas (m³)], [Zelle], [162 832],
+  [Strom (kW/h)], [Zelle], [457 024],
 )
 
-= Schlüssel
-
+= Schlüssel <sec-schluessel>
 Folgende Schlüssel wurden ausgehändigt:
 
 #table(
-  columns: (1.1fr, 1fr),
-  stroke: 0.5pt,
-  inset: 3pt,
+  columns: (1fr, 30mm),
+  stroke: 0.4pt,
   [Beschreibung], [Anzahl],
-  [Wohnungstür], text(size: 8pt)[{{INPUT:SCHLUESSEL_WOHNUNG}}],
-  [Briefkasten], text(size: 8pt)[{{INPUT:SCHLUESSEL_BRIEFKASTEN}}],
-  [Haustür], text(size: 8pt)[{{INPUT:SCHLUESSEL_HAUS}}],
-  [Haushintertür], text(size: 8pt)[{{INPUT:SCHLUESSEL_HINTERTUER}}],
-  [Schloss Keller], text(size: 8pt)[{{INPUT:SCHLUESSEL_KELLER}}],
+  [Wohnungstür], [2],
+  [Briefkasten], [2],
+  [Haustür], [2],
+  [Haushintertür], [2],
+  [Schloss Keller], [2],
 )
 
-= Bemerkungen
+= Bemerkungen <sec-bemerkungen>
++ {{INPUT:BEMERKUNG_1}}
++ {{INPUT:BEMERKUNG_2}}
++ {{INPUT:BEMERKUNG_3}}
++ {{INPUT:BEMERKUNG_4}}
 
-1. {{INPUT:BEMERKUNG_1}}
-2. {{INPUT:BEMERKUNG_2}}
-3. {{INPUT:BEMERKUNG_3}}
-4. {{INPUT:BEMERKUNG_4}}
-
-#v(5mm)
+#v(3cm)
 Bielefeld, #datum
 
-#v(5mm)
+#line(length: 5cm, stroke: 0.3mm) \
+Ort, Datum
+
+#v(1.5cm)
 #grid(
   columns: (1fr, 1fr),
-  gutter: 12mm,
-  [
-    #line(length: 7cm, stroke: 0.3pt)
-    Ort, Datum
-  ],
-  [],
+  gutter: 15mm,
+  [Unterschrift #v(2cm) #line(length: 5cm, stroke: 0.2mm) \ Mieter:in],
+  [Unterschrift #v(2cm) #line(length: 5cm, stroke: 0.2mm) \ Vermieter],
 )
-
-#v(8mm)
-#grid(
-  columns: (1fr, 1fr),
-  gutter: 12mm,
-  [
-    #line(length: 7cm, stroke: 0.3pt)
-    Unterschrift Mieter:in
-  ],
-  [
-    #line(length: 7cm, stroke: 0.3pt)
-    Unterschrift Vermieter
-  ],
-)
-
-

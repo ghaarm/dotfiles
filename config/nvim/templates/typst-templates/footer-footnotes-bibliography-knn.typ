@@ -1,82 +1,41 @@
-// Gemeinsame Seitengestaltung für die Artikelvorlagen.
-#let heute = datetime.today().display("[day].[month].[year]")
+// Hauptdokument zu footer-footnotes-bibliography-knn.tex.
+#import "preamble-footnotes-bibliographie-neu.typ": praembel, inhaltsverzeichnis, tabellenverzeichnis, abbildungsverzeichnis, literatur, zweispaltig
+#show: praembel
+// \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
+#show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
 
-#let artikel(
-  titel,
-  fuss,
-  inhalt,
-  untertitel: none,
-  datum: none,
-  inhaltsverzeichnis: false,
-  abbildungsverzeichnisse: false,
-  zweispaltig: false,
-  schrift: "Libertinus Serif",
-  autor: [G. Haarmeyer],
-  literatur: none,
-) = {
-  set page(
-    paper: "a4",
-    margin: (left: 1.5cm, right: 1.5cm, top: 1.8cm, bottom: 2cm),
-    footer: context [
-      #line(length: 100%, stroke: 0.4pt)
-      #grid(
-        columns: (1fr, 2fr),
-        if inhaltsverzeichnis { link(<toc>)[Zurück zum Inhaltsverzeichnis] } else { [] },
-        align(right)[#fuss, #autor, Stand: #heute, S. #counter(page).display()],
-      )
-    ],
-  )
-  set text(lang: "de", font: schrift, size: 11pt)
-  set par(first-line-indent: 0pt, spacing: 1em)
-  set heading(numbering: "1.")
+#let titel = "{{INPUT:FOOTER}}"
+#let fusszeile = "{{INPUT:FOOTER}}, G. Haarmeyer"
+#let untertitel = none
+#let datum = datetime.today().display("[day].[month].[year]")
+#set page(footer: context {
+  line(length: 100%, stroke: 0.4pt)
+  v(2pt)
 
-  align(center)[
-    #text(size: 18pt, weight: "bold")[#titel]
-    #if untertitel != none { [\ #text(size: 12pt)[#untertitel]] }
-    #if datum != none { [\ #datum] }
-  ]
-  v(8mm)
-
-  if inhaltsverzeichnis {
-    [#outline() <toc>]
-    if abbildungsverzeichnisse {
-      outline(title: [Tabellenverzeichnis], target: figure.where(kind: table))
-      outline(title: [Abbildungsverzeichnis], target: figure.where(kind: image))
-    }
-    v(6mm)
-  }
-
-  if zweispaltig { columns(2, gutter: 8mm, inhalt) } else { inhalt }
-
-  if literatur != none {
-    v(12mm)
-    bibliography(literatur, title: [Literatur])
-  }
-}
-
-
-// Für Literaturangaben eine vorhandene .bib-Datei bei literatur: eintragen.
-#artikel(
-  [{{INPUT:FOOTER}}],
-  [{{MIRROR:FOOTER}}],
-  schrift: "Calibri",
-  datum: [#heute],
-  inhaltsverzeichnis: true,
-  abbildungsverzeichnisse: true,
-  // literatur: "literatur.bib",
-)[
-  #columns(2, gutter: 8mm)[
-    {{INPUT:BEGINN}}
-
-    = Name
-    == Name
-
-    // Zitat nach Eintrag einer .bib-Datei: @name oder #footnote[@name, S. Seite]
-
-    - Stichpunkt
-    - Stichpunkt
-
-    + Punkt
-    + Punkt
-  ]
+  h(1fr)
+  [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
+})
+#set text(font: "Calibri")
+#align(center)[
+  #text(size: 17pt, weight: "bold", titel)
+  #if untertitel != none { parbreak(); text(size: 12pt, untertitel) }
+  #if datum != none { parbreak(); datum }
 ]
+#v(1em)
+
+#inhaltsverzeichnis()
+#tabellenverzeichnis()
+#abbildungsverzeichnis()
+
+#zweispaltig[
+  {{INPUT:BEGINN}}
+
+  = Name <sec-name>
+  == Name <sub-name>
+  // Fußnoten: #footnote[Anmerkung]; Zitate: @Schluessel.
+  - Erster Punkt
+  - Zweiter Punkt
+]
+
+#v(20mm)
+#literatur()

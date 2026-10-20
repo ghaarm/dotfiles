@@ -1,27 +1,27 @@
-#set page(paper: "a4", margin: 2.5cm)
-#set text(lang: "de", font: "Libertinus Serif", size: 11pt)
-#set heading(numbering: "1.")
+// Hauptdokument zu book.tex. Weitere Kapitel mit #kapitel ergänzen.
+#import "preamble-book.typ": praembel, inhaltsverzeichnis
+#import "chapter.typ": kapitel
+#show: praembel
 
+#let titel = "{{INPUT:TITLE}}"
 #align(center)[
-  #v(5cm)
-  #text(size: 24pt, weight: "bold")[{{INPUT:TITLE}}]
-  #v(1cm)
+  #text(size: 24pt, weight: "bold", titel)
+  #parbreak()
   G. Haarmeyer
-  #v(5mm)
+  #parbreak()
   #datetime.today().display("[day].[month].[year]")
 ]
-
 #pagebreak()
-#outline(title: [Inhaltsverzeichnis])
+#inhaltsverzeichnis()
 #pagebreak()
 
-// Weiteres Kapitelmuster: chapter.typ
-= {{INPUT:CHAPTER}}
+#kapitel(titel: "Kapitel 1", kapitelinhalt: [Name], body: [
+  {{INPUT:BEGINN}}
+  == Name
+  Hier beginnt das erste Kapitel.
+])
+#pagebreak()
+#kapitel(titel: "Kapitel 2", kapitelinhalt: [Weiteres Thema], body: [
+  Hier beginnt das zweite Kapitel.
+])
 
-#outline(title: [In diesem Kapitel], target: heading.where(level: 2))
-
-{{INPUT:BEGINN}}
-
-== Name
-
-// Für Zitate eine .bib-Datei am Dokumentende mit #bibliography("literatur.bib") einbinden.
