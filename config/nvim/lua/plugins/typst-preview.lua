@@ -50,17 +50,56 @@ return {
   config = function(_, opts)
     require("typst-preview").setup(opts)
 
+    local preview_running = false
+
+    -- Schließt nur Chrome-Fenster mit einer lokalen Typst-Preview.
+    -- Chrome selbst wird nicht beendet.
+    local function close_typst_chrome_window()
+      local script = [[
+      tell application "Google Chrome"
+        repeat with w in windows
+          try
+            if URL of active tab of w starts with "http://127.0.0.1:" then
+              close w
+            end if
+          end try
+        end repeat
+      end tell
+    ]]
+
+      vim.system({ "osascript", "-e", script })
+    end
+
+    local function toggle_typst_preview()
+      if preview_running then
+        vim.cmd("TypstPreviewStop")
+        close_typst_chrome_window()
+        preview_running = false
+      else
+        vim.cmd("TypstPreview")
+        preview_running = true
+      end
+    end
+
+    local function stop_typst_preview()
+      vim.cmd("TypstPreviewStop")
+      close_typst_chrome_window()
+      preview_running = false
+    end
+
     local function set_typst_maps(buf)
-      vim.keymap.set("n", "<localleader>lu", "<cmd>TypstPreviewToggle<CR>", {
+      vim.keymap.set("n", "<localleader>lu", toggle_typst_preview, {
         buffer = buf,
         silent = true,
         desc = "Typst-Vorschau umschalten",
       })
-      vim.keymap.set("n", "<localleader>vs", "<cmd>TypstPreviewStop<CR>", {
+
+      vim.keymap.set("n", "<localleader>vs", stop_typst_preview, {
         buffer = buf,
         silent = true,
         desc = "Typst-Vorschau stoppen",
       })
+
       vim.keymap.set("n", "<localleader>vl", "<cmd>TypstPreviewSyncCursor<CR>", {
         buffer = buf,
         silent = true,
