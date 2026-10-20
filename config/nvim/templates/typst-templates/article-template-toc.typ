@@ -24,7 +24,11 @@
 ]
 #v(1em)
 
-#outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+#[
+  #show outline.entry.where(level: 1): set outline.entry(fill: none)
+  #show outline.entry.where(level: 1): set block(above: 1em)
+  #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+]
 #outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
 #outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
 

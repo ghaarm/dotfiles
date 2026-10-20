@@ -1,14 +1,11 @@
 // Gegenstück zu preamble-book.tex: gemeinsame Regeln für Buchdokumente.
-// Im Hauptdokument: #import "preamble-book.typ": praembel, literatur, ...
+// Im Hauptdokument: #import "preamble-book.typ": praembel
 //                  #show: praembel
 
-// GRAPHIKEN, PDFS UND QUERFORMAT
-#let bild(pfad, breite: 100%, beschriftung: none) = {
-  let grafik = image(pfad, width: breite)
-  if beschriftung == none { grafik }
-  else { figure(grafik, caption: beschriftung) }
-}
-#let pdfseite(pfad, seite: 1, breite: 100%) = image(pfad, page: seite, width: breite)
+// BILDER, PDFS UND QUERFORMAT
+// #image("bild.png", width: 80%)
+// #figure(image("bild.png", width: 80%), caption: [Beschriftung])
+// #image("datei.pdf", page: 1, width: 100%)
 // Ein neues Querformat-Kapitel kann im Hauptdokument mit #set page(flipped: true)
 // vor einem Seitenumbruch beginnen; anschließend flipped: false setzen.
 
@@ -25,23 +22,10 @@
 #let enquote(body) = [„#body“]
 #let ignorieren(body) = []
 #let wert-einheit(wert, einheit) = [#wert~#einheit]
-#let zweispaltig(body) = columns(2, gutter: 7mm, body)
 // Typst setzt Formeln direkt mit $...$ und Fußnoten mit #footnote[...].
 // Textformatierungen: #underline[...], #strike[...], #emph[...].
 
-// VERZEICHNISSE
-#let inhaltsverzeichnis() = outline(title: "Inhaltsverzeichnis")
-#let tabellenverzeichnis() = outline(
-  target: figure.where(kind: table), title: "Tabellenverzeichnis",
-)
-#let abbildungsverzeichnis() = outline(
-  target: figure.where(kind: image), title: "Abbildungsverzeichnis",
-)
-
-// LITERATUR UND LINKS
-#let literatur(datei: "Zotero.bib") = bibliography(
-  datei, title: [Literatur], style: "chicago-author-date",
-)
+// LINKS
 #let url(adresse) = text(fill: blue, link(adresse))
 
 // SATZSPIEGEL UND KAPITEL: 18 × 26 cm, deutsche Bezeichnungen.

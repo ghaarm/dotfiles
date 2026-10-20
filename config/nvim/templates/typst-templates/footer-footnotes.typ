@@ -1,5 +1,5 @@
 // Hauptdokument zu footer-footnotes.tex.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, inhaltsverzeichnis
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel
 #show: praembel
 // \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
@@ -23,6 +23,10 @@
 ]
 #v(1em)
 
-#inhaltsverzeichnis()
+#[
+  #show outline.entry.where(level: 1): set outline.entry(fill: none)
+  #show outline.entry.where(level: 1): set block(above: 1em)
+  #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+]
 
 {{INPUT:BEGINN}}

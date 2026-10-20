@@ -1,14 +1,10 @@
 // Gegenstück zu preamble-footnotes-bibliographie-neu.tex.
 // Im Hauptdokument mit #import und #show: praembel verwenden.
 
-// GRAPHIKEN, PDFS UND SPALTEN
-#let bild(pfad, breite: 100%, beschriftung: none) = {
-  let grafik = image(pfad, width: breite)
-  if beschriftung == none { grafik }
-  else { figure(grafik, caption: beschriftung) }
-}
-#let pdfseite(pfad, seite: 1, breite: 100%) = image(pfad, page: seite, width: breite)
-#let zweispaltig(body) = columns(2, gutter: 7mm, body)
+// BILDER UND PDFS
+// #image("bild.png", width: 80%)
+// #figure(image("bild.png", width: 80%), caption: [Beschriftung])
+// #image("datei.pdf", page: 1, width: 100%)
 // Querformat: #set page(flipped: true), anschließend #pagebreak().
 
 // ANNOTIERTE BILDER: KNRed (#E62249) steht im TeX nur für diese Markierungen.
@@ -85,7 +81,7 @@
 // Unterstreichen, Streichen: #underline[Text], #strike[Text].
 // Aufzählung ohne Zeichen: #list(marker: none)[...].
 
-// TABELLEN, TEXTBOXEN UND VERZEICHNISSE
+// TABELLEN UND TEXTBOXEN
 // Tabellen: #table(columns: (1fr, 2fr), stroke: none, ...)
 // Horizontale Regeln: #table.hline(stroke: 0.8pt).
 #let tabelle-mit-anmerkung(tabelle, titel, anmerkung) = figure(
@@ -99,19 +95,9 @@
 #let nicht-im-verzeichnis(titel, stufe: 3) = heading(
   level: stufe, outlined: false, titel,
 )
-#let inhaltsverzeichnis() = [#outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>]
-#let tabellenverzeichnis() = outline(
-  target: figure.where(kind: table), title: "Tabellenverzeichnis",
-)
-#let abbildungsverzeichnis() = outline(
-  target: figure.where(kind: image), title: "Abbildungsverzeichnis",
-)
 
 // LITERATUR UND FUSSNOTEN
-// Zotero.bib liegt im Vorlagenordner. Im Text mit @Schluessel zitieren.
-#let literatur(datei: "Zotero.bib") = bibliography(
-  datei, title: [Literatur], style: "chicago-autojahr-nummeriert.csl",
-)
+// Die Hauptvorlage setzt den Pfad zu Zotero.bib und den CSL-Stil direkt.
 #let url(adresse) = text(fill: blue, link(adresse))
 // Fußnote: #footnote[Text]. Für Tabellen mit Anmerkungen #figure(...) nutzen.
 

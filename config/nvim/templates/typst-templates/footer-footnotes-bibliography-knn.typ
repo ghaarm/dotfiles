@@ -1,5 +1,5 @@
 // Hauptdokument zu footer-footnotes-bibliography-knn.tex.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, inhaltsverzeichnis, tabellenverzeichnis, abbildungsverzeichnis, literatur, zweispaltig
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel
 #show: praembel
 // \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
@@ -23,11 +23,15 @@
 ]
 #v(1em)
 
-#inhaltsverzeichnis()
-#tabellenverzeichnis()
-#abbildungsverzeichnis()
+#[
+  #show outline.entry.where(level: 1): set outline.entry(fill: none)
+  #show outline.entry.where(level: 1): set block(above: 1em)
+  #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+]
+#outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
+#outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
 
-#zweispaltig[
+#columns(2, gutter: 7mm)[
   {{INPUT:BEGINN}}
 
   = Name <sec-name>
@@ -38,4 +42,8 @@
 ]
 
 #v(20mm)
-#literatur()
+#bibliography(
+  "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/Zotero.bib",
+  title: [Literatur],
+  style: "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/chicago-autojahr-nummeriert.csl",
+)

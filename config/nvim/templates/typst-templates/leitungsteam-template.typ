@@ -1,5 +1,5 @@
 // Hauptdokument zu leitungsteam-template.tex.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, heute-deutsch, inhaltsverzeichnis, literatur, zweispaltig
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, heute-deutsch
 #show: praembel
 // \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
@@ -23,9 +23,13 @@
   #heute-deutsch()
 ]
 #v(1em)
-#inhaltsverzeichnis()
+#[
+  #show outline.entry.where(level: 1): set outline.entry(fill: none)
+  #show outline.entry.where(level: 1): set block(above: 1em)
+  #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+]
 
-#zweispaltig[
+#columns(2, gutter: 7mm)[
 = Kernpunkte <sec-kernpunkte>
 - {{INPUT:KEY_POINT_1}}
 - {{INPUT:KEY_POINT_2}}
@@ -70,4 +74,8 @@
 ]
 
 #v(2mm)
-#literatur()
+#bibliography(
+  "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/Zotero.bib",
+  title: [Literatur],
+  style: "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/chicago-autojahr-nummeriert.csl",
+)

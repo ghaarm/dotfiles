@@ -23,22 +23,21 @@ return {
     partial_rendering = true, -- bei großen Dokumenten nur den sichtbaren Bereich rendern
     follow_cursor = false, -- kein automatisches Scrollen bei Cursorbewegungen
 
-    -- Ohne Pfade lädt das Plugin passende Versionen bei setup() selbst herunter.
-    -- Falls lokale Binaries verwendet werden sollen, hier tinymist und websocat eintragen.
-    dependencies_bin = {},
+    -- Der Wrapper startet Tinymist in /, damit --root / korrekt aufgelöst wird.
+    dependencies_bin = {
+      tinymist = vim.fn.stdpath("config") .. "/bin/tinymist-preview",
+    },
 
     -- Zusätzliche Previewer-Argumente, z. B. { "--input=ver=draft" }.
     extra_args = nil,
 
-    get_root = function(path_of_main_file)
+    -- Absoluten Imports denselben Root wie beim PDF-Kompilieren geben.
+    get_root = function()
       local root = os.getenv("TYPST_ROOT")
       if root and root ~= "" then
         return root
       end
-
-      local main_dir = vim.fs.dirname(vim.fn.fnamemodify(path_of_main_file, ":p"))
-      local found = vim.fs.find({ "typst.toml", ".git" }, { path = main_dir, upward = true })
-      return #found > 0 and vim.fs.dirname(found[1]) or main_dir
+      return "/"
     end,
 
     -- Für Projekte mit einer separaten Hauptdatei kann diese Funktion angepasst werden.

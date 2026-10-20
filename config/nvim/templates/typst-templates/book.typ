@@ -1,5 +1,5 @@
 // Hauptdokument zu book.tex. Weitere Kapitel mit #kapitel ergänzen.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-book.typ": praembel, inhaltsverzeichnis
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-book.typ": praembel
 #import "chapter.typ": kapitel
 #show: praembel
 
@@ -12,7 +12,11 @@
   #datetime.today().display("[day].[month].[year]")
 ]
 #pagebreak()
-#inhaltsverzeichnis()
+#[
+  #show outline.entry.where(level: 1): set outline.entry(fill: none)
+  #show outline.entry.where(level: 1): set block(above: 1em)
+  #outline(title: "Inhaltsverzeichnis")
+]
 #pagebreak()
 
 #kapitel(titel: "Kapitel 1", kapitelinhalt: [Name], body: [
