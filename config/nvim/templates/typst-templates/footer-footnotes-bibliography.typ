@@ -5,9 +5,15 @@
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
 
 #let titel = "{{INPUT:TITLE}}"
+
 #let fusszeile = "{{INPUT:FOOTER}}, G. Haarmeyer"
+
 #let untertitel = "- nur für den persönlichen Gebrauch -"
-#let datum = datetime.today().display("[day].[month].[year]")
+
+// #let datum = datetime.today().display("[day].[month].[year]")
+
+#let datum = datetime.today().display("[year].[month].[day]")
+
 #set page(footer: context {
   line(length: 100%, stroke: 0.4pt)
   v(2pt)
@@ -17,11 +23,20 @@
 })
 
 #align(center)[
-  #text(size: 17pt, weight: "bold", titel)
-  #if untertitel != none { parbreak(); text(size: 12pt, untertitel) }
-  #if datum != none { parbreak(); datum }
+  #text(size: 17pt, weight: "regular", titel)
+
+  #if untertitel != none {
+    parbreak()
+    text(size: 12pt, untertitel)
+  }
+
+  #if datum != none {
+    v(4mm)
+    parbreak()
+    datum
+  }
 ]
-#v(1em)
+#v(1em) // Abstand zum Inhaltsverzeichnis
 
 #[
   #show outline.entry.where(level: 1): set outline.entry(fill: none)
@@ -43,6 +58,8 @@
   = Name <sec-name>
   == Name <sub-name>
   // Fußnoten: #footnote[Anmerkung]; Zitate: @Schluessel.
+
+#set list(marker: [–])
   - Erster Punkt
   - Zweiter Punkt
 ]
