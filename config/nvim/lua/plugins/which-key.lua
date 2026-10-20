@@ -164,7 +164,7 @@ return {
       },
       -- Touying Beamer Templates
       {
-        "<leader>tbk",
+        "<leader>tbt",
         "<cmd>read ~/.config/nvim/templates/typst-templates/touying-vorlage-knn.typ<CR>",
         desc = "TOUYING KN template typ",
         nowait = true,
