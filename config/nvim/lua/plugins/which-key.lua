@@ -239,21 +239,21 @@ return {
       },
       {
         "<leader>ttb",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-knn.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/article-template-knn.typ<CR>",
         desc = "article-template-knn.typ",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttc",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/footer-footnotes-bibliography.typ<CR>",
         desc = "footer-footnotes-bibliography.typ",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttd",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography-knn.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/footer-footnotes-bibliography-knn.typ<CR>",
         desc = "footer-footnotes-bibliography-knn.typ",
         nowait = true,
         remap = false,
@@ -261,11 +261,7 @@ return {
       {
         "<leader>tte",
         function()
-          vim.cmd.tabedit(
-            vim.fn.fnameescape(
-              vim.fn.expand("~/.config/nvim/templates/latex-templates/footer-footnotes-bibliography.typ")
-            )
-          )
+          vim.cmd.tabedit(vim.fn.fnameescape())
         end,
         desc = "footer-footnotes-bibliography.typ EDIT",
         nowait = true,
@@ -273,21 +269,21 @@ return {
       },
       {
         "<leader>ttf",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/footer-footnotes.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/footer-footnotes.typ<CR>",
         desc = "footer-footnotes.typ",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttg",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/chapter.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/chapter.typ<CR>",
         desc = "chapter template typ",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttl",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/leitungsteam-template.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/leitungsteam-template.typ<CR>",
         desc = "leitungsteam template typ",
         nowait = true,
         remap = false,
@@ -301,13 +297,13 @@ return {
             )
           )
         end,
-        desc = "Präambel Footnotes Bibliography EDIT",
+        desc = "Präambel Footnotes Bibliography Typst EDIT",
         nowait = true,
         remap = false,
       },
       {
         "<leader>ttt",
-        "<cmd>read ~/.config/nvim/templates/latex-templates/article-template-toc.typ<CR>",
+        "<cmd>read ~/.config/nvim/templates/typst-templates/article-template-toc.typ<CR>",
         desc = "article-template-toc.typ",
         nowait = true,
         remap = false,
