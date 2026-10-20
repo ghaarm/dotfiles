@@ -2,6 +2,23 @@
 #import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel
 #show: praembel
 // \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
+
+// Linkfarben
+#let linkrot = rgb("a32121")
+
+// Interne Links dunkelrot
+#show link: set text(fill: linkrot)
+
+// Externe URLs blau
+#show link.where(dest: str): set text(fill: blue)
+
+// Fußnotenziffern im Fließtext dunkelrot
+#show footnote: set text(fill: linkrot)
+
+// Inhaltsverzeichnis dunkelrot
+// #show outline.entry: set text(fill: linkrot)
+
+
 #show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
 
 #let titel = "{{INPUT:TITLE}}"
@@ -40,10 +57,14 @@
 #v(1em) // Abstand zum Inhaltsverzeichnis
 
 #[
+  #show outline.entry: set text(fill: linkrot)
+  #show outline.entry.where(level: 1): set text(weight: "bold")
   #show outline.entry.where(level: 1): set outline.entry(fill: none)
   #show outline.entry.where(level: 1): set block(above: 1em)
+
   #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
 ]
+
 #outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
 #outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
 
