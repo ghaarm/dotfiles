@@ -162,7 +162,21 @@ return {
         nowait = true,
         remap = false,
       },
-      -- Touying Beamer Templates
+      -- TOUYING TYPST Präambel
+      {
+        "<leader>tbp",
+        function()
+          vim.cmd.tabedit(
+            vim.fn.fnameescape(
+              "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying//kn-touying-preamble.typ"
+            )
+          )
+        end,
+        desc = "Touying Präambel KN EDIT",
+        nowait = true,
+        remap = false,
+      },
+      -- Touying Typst Beamer Templates
       {
         "<leader>tbt",
         "<cmd>read ~/.config/nvim/templates/typst-templates/touying-vorlage-knn.typ<CR>",
@@ -261,12 +275,17 @@ return {
       {
         "<leader>tte",
         function()
-          vim.cmd.tabedit(vim.fn.fnameescape())
+          vim.cmd.tabedit(
+            vim.fn.fnameescape(
+              vim.fn.expand("~/.config/nvim/templates/typst-templates/footer-footnotes-bibliography.typ")
+            )
+          )
         end,
-        desc = "footer-footnotes-bibliography.typ EDIT",
+        desc = "footer-footnotes-bibliography.TYP EDIT",
         nowait = true,
         remap = false,
       },
+
       {
         "<leader>ttf",
         "<cmd>read ~/.config/nvim/templates/typst-templates/footer-footnotes.typ<CR>",
