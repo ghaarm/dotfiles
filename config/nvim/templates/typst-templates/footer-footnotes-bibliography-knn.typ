@@ -1,25 +1,74 @@
-// Hauptdokument zu footer-footnotes-bibliography-knn.tex.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel
-#show: praembel
-// \titlespacing aus dem TeX-Hauptdokument, nicht aus der Präambel.
+// ============================================================
+// DOKUMENTINFORMATIONEN
+// ============================================================
+//
+// Typst-Version bei Erstellung: 0.15.1
+//
+// Versionshistorie:
+// - 2026-10-11 | Typst 0.15.1 | Vorlage erstellt
+//
+// Aktuelle Version prüfen: typst --version
+// Die Versionsangabe ist Dokumentation, keine Versionsbindung.
 
-// Linkfarben
+
+// ============================================================
+// PRÄAMBEL
+// ============================================================
+
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel
+
+// ============================================================
+// OPTIONALE PAKETE
+// ============================================================
+//
+// Nur bei Bedarf aktivieren.
+// Vor Aktivierung aktuelle Versionsnummer prüfen.
+//
+// Grafiken und technische Zeichnungen (CeTZ)
+// #import "@preview/cetz:0.5.2": canvas, draw
+
+// Flussdiagramme und Entscheidungsbäume (Fletcher)
+// #import "@preview/fletcher:VERSION": diagram, node, edge
+
+// Wissenschaftliche Plots und Datenvisualisierung (Lilaq)
+// #import "@preview/lilaq:VERSION": *
+
+// Abkürzungs- und Glossarverwaltung (Glossarium)
+// #import "@preview/glossarium:VERSION": *
+
+// SI-Einheiten und Zahlenformatierung (Unify)
+// #import "@preview/unify:VERSION": *
+
+// Hinweis- und Merkkästen (Showybox)
+// #import "@preview/showybox:VERSION": *
+
+// Formatierte Codeblöcke (Codly)
+// #import "@preview/codly:VERSION": *
+
+// Zeitachsen (Timeliney)
+// #import "@preview/timeliney:VERSION": *
+
+// Präsentationen (Touying)
+// Besser in eigener Präsentationsvorlage verwenden.
+// #import "@preview/touying:VERSION": *
+
+
+// ============================================================
+// DOKUMENTLAYOUT
+// ============================================================
+
+#show: praembel
+
 #let linkrot = rgb("a32121")
 
-// Interne Links dunkelrot
 #show link: set text(fill: linkrot)
-
-// Externe URLs blau
 #show link.where(dest: str): set text(fill: blue)
-
-// Fußnotenziffern im Fließtext dunkelrot
 #show footnote: set text(fill: linkrot)
 
-// Inhaltsverzeichnis dunkelrot
-// #show outline.entry: set text(fill: linkrot)
-
-
-#show heading.where(level: 1): set block(above: 1.25em, below: 0.65em)
+#show heading.where(level: 1): set block(
+  above: 1.25em,
+  below: 0.65em,
+)
 
 #let titel = "{{INPUT:FOOTER}}"
 #let fusszeile = "{{INPUT:FOOTER}}, G. Haarmeyer"
@@ -52,7 +101,21 @@
 #outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
 #outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
 
+// ============================================================
+// BEGINN DOCUMENT
+// ============================================================
+
+
+
+
 #columns(2, gutter: 7mm)[
+
+  = Kernpunkte (TL;DR)
+
+  + Key Point 1
+  + Key Point 2
+  + Key Point 3
+
   {{INPUT:BEGINN}}
 
   = Name <sec-name>

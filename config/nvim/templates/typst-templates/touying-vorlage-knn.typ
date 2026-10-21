@@ -1,13 +1,65 @@
-// KN-Beamer-Vorlage als Typst/Touying-Dokument.
-// Aus dem Projektordner bauen: typst compile --root / touying-typst/vorlage-template.typ
-// Die Platzhalter {{INPUT:...}} entsprechen denen in vorlage-tex.tex.
+// ============================================================
+// DOKUMENTINFORMATIONEN
+// ============================================================
+//
+// Typst-Version bei Erstellung: 0.15.1
+//
+// Versionshistorie:
+// - 2026-10-11 | Typst 0.15.1 | Vorlage erstellt
+// - 2026-10-21 | Typst 0.15.1 | Standard-Folienmodell in Präambel ausgelagert
+//
+// Aktuelle Version prüfen: typst --version
+// Die Versionsangabe ist Dokumentation, keine Versionsbindung.
 
-// Aktuelle KN-Präambel und Quellenbaustein einbinden.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-beamer-preamble.typ": kn-vorlage, kn-folie, kn-titelfolie
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/_kn-bausteine.typ": kn-quelle, kn-dunkelblau
+
+// ============================================================
+// PRÄAMBEL UND TOUYING
+// ============================================================
+
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-touying-preamble.typ":
+  kn-vorlage,
+  kn-folie,
+  kn-titelfolie,
+  folie,
+  inhaltsfolie
+
+// Touying-Funktionen für Sonderfolien.
 #import "@preview/touying:0.8.0": pause, uncover, alert
 
-// Titel, Autor und Footer: Hier die Platzhalter durch eigene Angaben ersetzen.
+
+// ============================================================
+// OPTIONALE PAKETE
+// ============================================================
+//
+// Nur bei Bedarf aktivieren.
+// Vor Aktivierung aktuelle Versionsnummer prüfen.
+//
+// Grafiken und technische Zeichnungen (CeTZ)
+// #import "@preview/cetz:0.5.2": canvas, draw
+
+// Flussdiagramme und Entscheidungsbäume (Fletcher)
+// #import "@preview/fletcher:VERSION": diagram, node, edge
+
+// Wissenschaftliche Plots und Datenvisualisierung (Lilaq)
+// #import "@preview/lilaq:VERSION": *
+
+// Abkürzungs- und Glossarverwaltung (Glossarium)
+// #import "@preview/glossarium:VERSION": *
+
+// SI-Einheiten und Zahlenformatierung (Unify)
+// #import "@preview/unify:VERSION": *
+
+// Formatierte Codeblöcke (Codly)
+// #import "@preview/codly:VERSION": *
+
+// Zeitachsen (Timeliney)
+// #import "@preview/timeliney:VERSION": *
+
+
+// ============================================================
+// PRÄSENTATIONSDATEN
+// ============================================================
+
 #let titel = "{{INPUT:TITLE}}"
 #let untertitel = "{{INPUT:SUBTITLE}}"
 #let autor = [G. Haarmeyer]
@@ -17,9 +69,16 @@
 #let minuten = "{{INPUT:MINUTEN}}"
 #let thema = "{{INPUT:THEMA}}"
 
-// Die Präambel setzt 16:9, KN-Farben, Fira Sans und den Footer.
-// Für ein Handout handout: true ergänzen; dann bleibt nur die letzte
-// Einblendung jeder Folie übrig.
+// Projektbezogener Bildordner.
+// Beispiel: "bilder/" oder "ernaehrung-png/"
+// Leer lassen, wenn die Bilder neben der .typ-Datei liegen.
+#let bildpfad = "{{INPUT:ORDNER MIT BILDERN}}"
+
+
+// ============================================================
+// PRÄSENTATION
+// ============================================================
+
 #show: kn-vorlage.with(
   titel: titel,
   untertitel: untertitel,
@@ -27,42 +86,51 @@
   datum: datum,
   bereich: bereich,
   rechts: veranstaltung,
+  handout: sys.inputs.at("handout", default: "false") == "true",
 )
 
-// Titelfolie: Die KN-Präambel blendet hier den Footer aus.
+// ============================================================
+// TITELFOLIE
+// ============================================================
+
 #kn-titelfolie()
 
-// Einstiegsfolie wie in der TeX-Vorlage: links ein Bild, rechts vier Punkte.
-// Den Bildplatzhalter durch #image("name.png", width: 100%) ersetzen, sobald
-// die Bilddatei neben dieser .typ-Datei liegt.
-#kn-folie(title: [Was Sie in den nächsten #minuten Minuten erwartet])[
-  #grid(
-    columns: (54%, 42%),
-    gutter: 4%,
-    align: top,
-    rect(
-      width: 100%,
-      height: 70mm,
-      fill: rgb("#f7f7f7"),
-      stroke: 0.7pt + kn-dunkelblau,
-      align(center + horizon)[Bild: name.png],
-    ),
-    [
-      - #thema
-      #pause
-      - Zweiter Punkt
-      #pause
-      - Dritter Punkt
-      #pause
-      - Vierter Punkt
-    ],
-  )
-  // Quellenangabe am unteren Rand der Folie.
-  #uncover("1-")[#kn-quelle[Quellenangabe]]
-]
 
-// Zusammenfassung: Jeder Punkt erscheint auf einer weiteren Einblendung.
-// Der Merksatz erscheint wie in Beamer erst nach dem fünften Punkt.
+// ============================================================
+// FOLIEN
+// ============================================================
+
+#let folien = (
+
+  // 01 – Einstieg
+  folie(
+    [Was Sie in den nächsten #minuten Minuten erwartet],
+    punkte: (
+      [#thema],
+      [Zweiter Punkt],
+      [Dritter Punkt],
+      [Vierter Punkt],
+    ),
+  ),
+
+  // Weitere Folien hier einfügen.
+
+)
+
+
+// ============================================================
+// FOLIEN AUSGEBEN
+// ============================================================
+
+#for f in folien {
+  inhaltsfolie(f, bildpfad: bildpfad)
+}
+
+
+// ============================================================
+// ZUSAMMENFASSUNG
+// ============================================================
+
 #kn-folie(title: [Zusammenfassung])[
   + Erster Punkt
   #pause
@@ -75,7 +143,11 @@
   + Fünfter Punkt
 
   #v(1fr)
-  #pause
-  #align(center)[#text(size: 25pt, weight: "regular")[#alert[Key Message]]]
-]
 
+  #pause
+  #align(center)[
+    #text(size: 25pt, weight: "regular")[
+      #alert[Key Message]
+    ]
+  ]
+]
