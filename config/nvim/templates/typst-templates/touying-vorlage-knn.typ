@@ -16,12 +16,7 @@
 // PRÄAMBEL UND TOUYING
 // ============================================================
 
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-touying-preamble.typ":
-  kn-vorlage,
-  kn-folie,
-  kn-titelfolie,
-  folie,
-  inhaltsfolie
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-touying-preamble.typ": kn-vorlage, kn-folie, kn-titelfolie, folie, inhaltsfolie
 
 // Touying-Funktionen für Sonderfolien.
 #import "@preview/touying:0.8.0": pause, uncover, alert
@@ -74,8 +69,13 @@
 // Leer lassen, wenn die Bilder neben der .typ-Datei liegen.
 #let bildpfad = "{{INPUT:ORDNER MIT BILDERN}}"
 
+#let bild(name) = image(
+  bildpfad + name,
+  width: 100%,
+  height: 100%,
+  fit: "contain",
 
-// ============================================================
+)// ============================================================
 // PRÄSENTATION
 // ============================================================
 
@@ -123,7 +123,7 @@
 // ============================================================
 
 #for f in folien {
-  inhaltsfolie(f, bildpfad: bildpfad)
+  inhaltsfolie(f, bild: bild)
 }
 
 
