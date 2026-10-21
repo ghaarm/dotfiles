@@ -51,7 +51,9 @@ return {
     require("typst-preview").setup(opts)
 
     local preview_running = false
-
+    local handout = false
+    local transparent = false
+    --
     -- Schließt nur Chrome-Fenster mit einer lokalen Typst-Preview.
     -- Chrome selbst wird nicht beendet.
     local function close_typst_chrome_window()
@@ -90,6 +92,34 @@ return {
       preview_running = false
     end
 
+    local function update_typst_inputs()
+      require("typst-preview").setup(vim.tbl_deep_extend("force", opts, {
+        extra_args = {
+          "--input=handout=" .. tostring(handout),
+          "--input=transparent=" .. tostring(transparent),
+        },
+      }))
+
+      if preview_running then
+        vim.cmd("TypstPreviewStop")
+        vim.cmd("TypstPreview")
+      end
+    end
+
+    local function toggle_typst_handout()
+      handout = not handout
+      update_typst_inputs()
+
+      vim.notify("Typst Handout: " .. (handout and "AN" or "AUS"), vim.log.levels.INFO)
+    end
+
+    local function toggle_typst_transparent()
+      transparent = not transparent
+      update_typst_inputs()
+
+      vim.notify("Touying-Cover: " .. (transparent and "transparent" or "unsichtbar"), vim.log.levels.INFO)
+    end
+
     local function set_typst_maps(buf)
       vim.keymap.set("n", "<localleader>lu", toggle_typst_preview, {
         buffer = buf,
@@ -102,7 +132,17 @@ return {
         silent = true,
         desc = "Typst-Vorschau stoppen",
       })
+      vim.keymap.set("n", "<localleader>vh", toggle_typst_handout, {
+        buffer = buf,
+        silent = true,
+        desc = "Typst Handout an/aus",
+      })
 
+      vim.keymap.set("n", "<localleader>vi", toggle_typst_transparent, {
+        buffer = buf,
+        silent = true,
+        desc = "Touying-Cover transparent/unsichtbar",
+      })
       vim.keymap.set("n", "<localleader>vl", "<cmd>TypstPreviewSyncCursor<CR>", {
         buffer = buf,
         silent = true,

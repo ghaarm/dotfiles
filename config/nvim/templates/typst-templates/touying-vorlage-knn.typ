@@ -87,67 +87,67 @@
   bereich: bereich,
   rechts: veranstaltung,
   handout: sys.inputs.at("handout", default: "false") == "true",
-)
+  transparent: sys.inputs.at("transparent", default: "false") == "true",)
 
-// ============================================================
-// TITELFOLIE
-// ============================================================
+  // ============================================================
+  // TITELFOLIE
+  // ============================================================
 
-#kn-titelfolie()
+  #kn-titelfolie()
 
 
-// ============================================================
-// FOLIEN
-// ============================================================
+  // ============================================================
+  // FOLIEN
+  // ============================================================
 
-#let folien = (
+  #let folien = (
 
-  // 01 – Einstieg
-  folie(
-    [Was Sie in den nächsten #minuten Minuten erwartet],
-    punkte: (
-      [#thema],
-      [Zweiter Punkt],
-      [Dritter Punkt],
-      [Vierter Punkt],
+    // 01 – Einstieg
+    folie(
+      [Was Sie in den nächsten #minuten Minuten erwartet],
+      punkte: (
+        [#thema],
+        [Zweiter Punkt],
+        [Dritter Punkt],
+        [Vierter Punkt],
+      ),
     ),
-  ),
 
-  // Weitere Folien hier einfügen.
+    // Weitere Folien hier einfügen.
 
-)
-
-
-// ============================================================
-// FOLIEN AUSGEBEN
-// ============================================================
-
-#for f in folien {
-  inhaltsfolie(f, bild: bild)
-}
+  )
 
 
-// ============================================================
-// ZUSAMMENFASSUNG
-// ============================================================
+  // ============================================================
+  // FOLIEN AUSGEBEN
+  // ============================================================
 
-#kn-folie(title: [Zusammenfassung])[
-  + Erster Punkt
-  #pause
-  + Zweiter Punkt
-  #pause
-  + Dritter Punkt
-  #pause
-  + Vierter Punkt
-  #pause
-  + Fünfter Punkt
+  #for f in folien {
+    inhaltsfolie(f, bild: bild)
+  }
 
-  #v(1fr)
 
-  #pause
-  #align(center)[
-    #text(size: 25pt, weight: "regular")[
-      #alert[Key Message]
+  // ============================================================
+  // ZUSAMMENFASSUNG
+  // ============================================================
+
+  #kn-folie(title: [Zusammenfassung])[
+    + Erster Punkt
+    #pause
+    + Zweiter Punkt
+    #pause
+    + Dritter Punkt
+    #pause
+    + Vierter Punkt
+    #pause
+    + Fünfter Punkt
+
+    #v(1fr)
+
+    #pause
+    #align(center)[
+      #text(size: 25pt, weight: "regular")[
+        #alert[Key Message]
+      ]
     ]
   ]
-]
