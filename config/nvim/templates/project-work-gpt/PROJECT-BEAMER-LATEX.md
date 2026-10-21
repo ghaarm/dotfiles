@@ -43,7 +43,7 @@ die mündlich erläutert werden, nur bei Bedarf auf die Folien setzen.
 <!-- Nur ändern, wenn sich die Aufgabe ändert; Fortschritt unter „Aktueller Stand“ festhalten. -->
 
 - Aufgabe:
-  * {INPUT}
+  * {{INPUT}}
 
 ## Dateien und Ressourcen
 
