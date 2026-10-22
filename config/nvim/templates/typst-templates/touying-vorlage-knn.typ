@@ -7,6 +7,7 @@
 // Versionshistorie:
 // - 2026-10-11 | Typst 0.15.1 | Vorlage erstellt
 // - 2026-10-21 | Typst 0.15.1 | Standard-Folienmodell in Präambel ausgelagert
+// - 2026-10-22 | Typst 0.15.1 | Umstellung auf direkte Touying-Folien
 //
 // Aktuelle Version prüfen: typst --version
 // Die Versionsangabe ist Dokumentation, keine Versionsbindung.
@@ -16,10 +17,13 @@
 // PRÄAMBEL UND TOUYING
 // ============================================================
 
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-touying-preamble.typ": kn-vorlage, kn-folie, kn-titelfolie, folie, inhaltsfolie
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/kn-touying-preamble.typ": kn-vorlage, kn-titelfolie
 
-// Touying-Funktionen für Sonderfolien.
-#import "@preview/touying:0.8.0": pause, uncover, alert
+// Touying-Funktionen für Einblendungen und Hervorhebungen.
+#import "@preview/touying:0.8.0": slide, pause, uncover, alert, item-by-item
+
+// KN-Bausteine bei Bedarf direkt importieren.
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/_kn-bausteine.typ": kn-quelle, kn-merksatz
 
 
 // ============================================================
@@ -61,21 +65,9 @@
 #let datum = "{{INPUT:DATE}}"
 #let bereich = "{{INPUT:FOOTER}}"
 #let veranstaltung = "{{INPUT:EVENT}}"
-#let minuten = "{{INPUT:MINUTEN}}"
-#let thema = "{{INPUT:THEMA}}"
 
-// Projektbezogener Bildordner.
-// Beispiel: "bilder/" oder "ernaehrung-png/"
-// Leer lassen, wenn die Bilder neben der .typ-Datei liegen.
-#let bildpfad = "{{INPUT:ORDNER MIT BILDERN}}"
 
-#let bild(name) = image(
-  bildpfad + name,
-  width: 100%,
-  height: 100%,
-  fit: "contain",
-
-)// ============================================================
+// ============================================================
 // PRÄSENTATION
 // ============================================================
 
@@ -87,67 +79,79 @@
   bereich: bereich,
   rechts: veranstaltung,
   handout: sys.inputs.at("handout", default: "false") == "true",
-  transparent: sys.inputs.at("transparent", default: "false") == "true",)
-
-  // ============================================================
-  // TITELFOLIE
-  // ============================================================
-
-  #kn-titelfolie()
+  transparent: sys.inputs.at("transparent", default: "false") == "true",
+)
 
 
-  // ============================================================
-  // FOLIEN
-  // ============================================================
+// ============================================================
+// TITELFOLIE
+// ============================================================
 
-  #let folien = (
+#kn-titelfolie()
 
-    // 01 – Einstieg
-    folie(
-      [Was Sie in den nächsten #minuten Minuten erwartet],
-      punkte: (
-        [#thema],
-        [Zweiter Punkt],
-        [Dritter Punkt],
-        [Vierter Punkt],
-      ),
-    ),
 
-    // Weitere Folien hier einfügen.
+// ============================================================
+// FOLIEN
+// ============================================================
 
+// 01 – Einstieg
+#slide(title: [Einführung])[
+  #item-by-item[
+    - Erster Punkt
+    - Zweiter Punkt
+    - Dritter Punkt
+    - Vierter Punkt
+  ]
+]
+
+
+// 02 – Folie mit nummerierter Liste
+#slide(title: [Vorgehen])[
+  + Erster Schritt
+  + Zweiter Schritt
+  + Dritter Schritt
+]
+
+
+// 03 – Folie mit Bild
+#slide(title: [Abbildung])[
+  #grid(
+    columns: (57%, 39%),
+    gutter: 4%,
+    [
+      - Erster Punkt
+      - Zweiter Punkt
+    ],
+    [
+      #image("bilder/beispiel.png", width: 100%)
+    ],
   )
 
-
-  // ============================================================
-  // FOLIEN AUSGEBEN
-  // ============================================================
-
-  #for f in folien {
-    inhaltsfolie(f, bild: bild)
-  }
+  #kn-quelle[Quellenangabe]
+]
 
 
-  // ============================================================
-  // ZUSAMMENFASSUNG
-  // ============================================================
+// ============================================================
+// ZUSAMMENFASSUNG
+// ============================================================
 
-  #kn-folie(title: [Zusammenfassung])[
-    + Erster Punkt
-    #pause
-    + Zweiter Punkt
-    #pause
-    + Dritter Punkt
-    #pause
-    + Vierter Punkt
-    #pause
-    + Fünfter Punkt
+#slide(title: [Zusammenfassung])[
+  + Erster Punkt
+  #pause
+  + Zweiter Punkt
+  #pause
+  + Dritter Punkt
+  #pause
+  + Vierter Punkt
+  #pause
+  + Fünfter Punkt
 
-    #v(1fr)
+  #v(1fr)
 
-    #pause
-    #align(center)[
-      #text(size: 25pt, weight: "regular")[
-        #alert[Key Message]
-      ]
+  #pause
+  #align(center)[
+    #text(size: 25pt, weight: "regular")[
+      #alert[Key Message]
     ]
   ]
+]

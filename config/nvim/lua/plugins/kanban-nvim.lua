@@ -43,6 +43,45 @@ return {
     kanban.setup(opts)
 
     ---------------------------------------------------------------------------
+    -- Workaround: Fehler beim Schließen des Kanban-Boards
+    ---------------------------------------------------------------------------
+
+    local user_command = require("kanban.user_command")
+
+    user_command.del = function()
+      local commands = {
+        "KanbanTaskDelete",
+        "KanbanTaskToggleComplete",
+        "KanbanTakeRight",
+        "KanbanTakeLeft",
+        "KanbanTakeUp",
+        "KanbanTakeDown",
+        "KanbanMoveDown",
+        "KanbanMoveUp",
+        "KanbanMoveRight",
+        "KanbanMoveLeft",
+        "KanbanMoveTop",
+        "KanbanMoveBottom",
+        "KanbanTaskAdd",
+        "KanbanTaskAddBottom",
+        "KanbanTaskAddTop",
+        "KanbanClose",
+        "KanbanSave",
+        "KanbanListDelete",
+        "KanbanListRename",
+        "KanbanListAdd",
+        "KanbanTaskDescription",
+        "KanbanTaskDescriptionSetHeader",
+      }
+
+      for _, name in ipairs(commands) do
+        if vim.fn.exists(":" .. name) == 2 then
+          vim.api.nvim_del_user_command(name)
+        end
+      end
+    end
+
+    ---------------------------------------------------------------------------
     -- Farben
     ---------------------------------------------------------------------------
 
@@ -225,7 +264,21 @@ return {
 
     {
       "<leader>kf",
-      "<cmd>KanbanOpen telescope<cr>",
+      function()
+        local kanban = require("kanban")
+
+        -- Telescope ist nur die Dateiauswahl, noch kein aktives Board.
+        if kanban.active then
+          vim.notify("Ein Kanban-Board ist bereits aktiv.", vim.log.levels.WARN)
+          return
+        end
+
+        -- Das Plugin setzt active bereits beim Öffnen von Telescope auf true.
+        -- Nach dem Start der Auswahl zurücksetzen, damit das gewählte Board
+        -- anschließend über KanbanOpen geöffnet werden kann.
+        vim.cmd("KanbanOpen telescope")
+        kanban.active = false
+      end,
       desc = "Kanban: Find board",
     },
 
@@ -238,8 +291,9 @@ return {
       function()
         local file = vim.api.nvim_buf_get_name(0)
 
-        if file == "" then
-          vim.notify("Aktueller Buffer hat keinen Dateipfad.", vim.log.levels.WARN)
+        -- Nur reguläre Markdown-Dateien als Kanban-Board öffnen.
+        if vim.bo.filetype == "oil" or not file:match("%.md$") then
+          vim.notify("KanbanOpen benötigt einen Markdown-Buffer (.md).", vim.log.levels.WARN)
           return
         end
 
