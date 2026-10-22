@@ -38,7 +38,7 @@ return {
     })
 
     vim.api.nvim_set_hl(0, "KanbanProgressTitle", {
-      fg = "#D08770",
+      fg = "#D49A62",
       bold = true,
     })
 
