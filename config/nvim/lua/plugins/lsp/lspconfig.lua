@@ -167,7 +167,13 @@ return {
       },
     })
     vim.lsp.enable("texlab")
-
+    -- Tinymist (Typst)
+    vim.lsp.config("tinymist", {
+      settings = {
+        rootPath = "/",
+      },
+    })
+    vim.lsp.enable("tinymist")
     ----------------------------------------------------------------------
     -- Beispiel (deaktiviert) – so würdest du weitere Server migrieren:
     ----------------------------------------------------------------------

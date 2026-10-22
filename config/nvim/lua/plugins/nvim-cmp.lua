@@ -6,6 +6,7 @@ return {
   dependencies = {
     "hrsh7th/cmp-buffer",
     "hrsh7th/cmp-path",
+    "hrsh7th/cmp-nvim-lsp",
     "L3MON4D3/LuaSnip",
     "saadparwaiz1/cmp_luasnip",
     "hrsh7th/cmp-cmdline",
@@ -16,7 +17,7 @@ return {
   config = function()
     local cmp = require("cmp")
     local luasnip = require("luasnip")
-
+    cmp.register_source("typst_bib", require("cmp-typst-bib"))
     local kind_icons = {
       article = "󰧮",
       book = "",
@@ -151,6 +152,11 @@ return {
         fields = { "kind", "abbr", "menu" },
 
         format = function(entry, vim_item)
+          if entry.source.name == "typst_bib" then
+            vim_item.kind = "󰧮"
+            vim_item.menu = "[Zotero]"
+            return vim_item
+          end
           if entry.source.name == "omni" then
             -- Alle Zotero-/VimTeX-Einträge bekommen dasselbe Icon
             vim_item.kind = "󰧮"
@@ -221,7 +227,16 @@ return {
         { name = "cmp_r" },
       }),
     })
-
+    -- Typst: Tinymist + Zotero-BibTeX-Keys
+    cmp.setup.filetype("typst", {
+      sources = cmp.config.sources({
+        { name = "typst_bib", keyword_length = 1 },
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "buffer", keyword_length = 3 },
+        { name = "path" },
+      }),
+    })
     -- 3) cmdline setups
     local cmdline_mapping = cmp.mapping.preset.cmdline({
       ["<Down>"] = cmp.mapping(function(fallback)

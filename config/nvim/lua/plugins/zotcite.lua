@@ -5,7 +5,10 @@ return {
 
   -- Bereits das Laden begrenzen: Zotcite initialisiert die Datenbank,
   -- bevor es seine eigene filetypes-Einstellung prüft.
-  ft = { "markdown", "pandoc", "typst" },
+  ft = {
+    "markdown",
+    "pandoc",
+  },
 
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
@@ -22,7 +25,7 @@ return {
       filetypes = {
         "markdown",
         "pandoc",
-        "typst",
+        -- "typst",
       },
 
       -- Normaler Zotero-Datenordner unter macOS
