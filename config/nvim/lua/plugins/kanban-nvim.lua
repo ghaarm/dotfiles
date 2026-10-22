@@ -1,10 +1,18 @@
 -- https://github.com/arakkkkk/kanban.nvim
 --
--- kanban.nvim can provide in-buffer completion for due dates (@...) and tags (#...) via optional completion engines. The plugin works without any of these; install only if you want completion.
+-- kanban.nvim can provide in-buffer completion for due dates (@...) and tags (#...)
+-- via optional completion engines. The plugin works without any of these;
+-- install only if you want completion.
+--
 -- What gets completed
 --
---     @ due tokens are expanded to dates: @today, @2d, @1w, @2m, @1y, @/MM/DD, @//DD, weekdays @su..@sa, and next-week variants like @nmo, @nwe, etc. Candidates insert the concrete date like @2025/09/07.
---     # tags are suggested from existing task tags found in the current Kanban board (unique, case-insensitive match).
+-- @ due tokens are expanded to dates:
+-- @today, @2d, @1w, @2m, @1y, @/MM/DD, @//DD,
+-- weekdays @su..@sa, and next-week variants like @nmo, @nwe, etc.
+--
+-- # tags are suggested from existing task tags found in the current Kanban board
+-- (unique, case-insensitive match).
+
 return {
   "arakkkkk/kanban.nvim",
 
@@ -22,19 +30,26 @@ return {
       due_format = "YYYY-MM-DD",
 
       default_lists = {
-        "ToDo",
-        "In Progress",
-        "Done",
+        "TODO",
+        "WIP (max. 3)",
+        "DONE",
       },
     },
   },
-  config = function(_, opts)
-    require("kanban").setup(opts)
 
-    -- Vorläufige Farben; später durch deine Theme-Farben ersetzen.
+  config = function(_, opts)
+    local kanban = require("kanban")
+
+    kanban.setup(opts)
+
+    -- Farben für Titel und Rahmen
     vim.api.nvim_set_hl(0, "KanbanTodoTitle", {
       fg = "#81A1C1",
       bold = true,
+    })
+
+    vim.api.nvim_set_hl(0, "KanbanTodoBorder", {
+      fg = "#81A1C1",
     })
 
     vim.api.nvim_set_hl(0, "KanbanProgressTitle", {
@@ -42,33 +57,72 @@ return {
       bold = true,
     })
 
+    vim.api.nvim_set_hl(0, "KanbanProgressBorder", {
+      fg = "#D49A62",
+    })
+
     vim.api.nvim_set_hl(0, "KanbanDoneTitle", {
       fg = "#A3BE8C",
       bold = true,
     })
 
+    vim.api.nvim_set_hl(0, "KanbanDoneBorder", {
+      fg = "#A3BE8C",
+    })
+
     -- Unterschiedliche Highlights abhängig vom Namen der Spalte.
     local function highlight_list(_, list)
-      local highlights = {
-        ["To Do"] = "KanbanTodoTitle",
-        ["In Progress"] = "KanbanProgressTitle",
-        ["Done"] = "KanbanDoneTitle",
+      local styles = {
+        -- Neue Namen
+        ["TODO"] = {
+          title = "KanbanTodoTitle",
+          border = "KanbanTodoBorder",
+        },
+
+        ["WIP (max. 3)"] = {
+          title = "KanbanProgressTitle",
+          border = "KanbanProgressBorder",
+        },
+
+        ["DONE"] = {
+          title = "KanbanDoneTitle",
+          border = "KanbanDoneBorder",
+        },
+
+        -- Kompatibilität mit bestehenden Boards
+        ["ToDo"] = {
+          title = "KanbanTodoTitle",
+          border = "KanbanTodoBorder",
+        },
+
+        ["Done"] = {
+          title = "KanbanDoneTitle",
+          border = "KanbanDoneBorder",
+        },
       }
 
-      local group = highlights[list.title] or "ListTitle"
+      local style = styles[list.title]
 
-      vim.api.nvim_buf_add_highlight(list.buf_nr, 0, group, 1, 0, -1)
+      if not style then
+        return
+      end
 
-      vim.api.nvim_set_option_value("winhighlight", "NormalFloat:ListFloat", { win = list.win_id })
+      -- Titel einfärben
+      vim.api.nvim_buf_add_highlight(list.buf_nr, 0, style.title, 1, 0, -1)
+
+      -- Außenrahmen der jeweiligen Spalte einfärben
+      vim.api.nvim_set_option_value(
+        "winhighlight",
+        "NormalFloat:ListFloat,FloatBorder:" .. style.border,
+        { win = list.win_id }
+      )
     end
 
-    -- Modul überschreiben
+    -- Highlight-Funktion des Plugins überschreiben
     require("kanban.fn.lists.highlight").highlight = highlight_list
-
-    -- Vor allem aber die vom Kanban-Objekt verwendete Funktion überschreiben
-    local kanban = require("kanban")
     kanban.fn.lists.highlight = highlight_list
   end,
+
   keys = {
     -- Kanban-Board über Telescope finden
     {
