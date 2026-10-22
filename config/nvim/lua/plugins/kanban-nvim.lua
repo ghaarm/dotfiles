@@ -42,7 +42,11 @@ return {
 
     kanban.setup(opts)
 
-    -- Farben für Titel und Rahmen
+    ---------------------------------------------------------------------------
+    -- Farben
+    ---------------------------------------------------------------------------
+
+    -- TODO
     vim.api.nvim_set_hl(0, "KanbanTodoTitle", {
       fg = "#81A1C1",
       bold = true,
@@ -52,6 +56,11 @@ return {
       fg = "#81A1C1",
     })
 
+    vim.api.nvim_set_hl(0, "KanbanTodoText", {
+      fg = "#81A1C1",
+    })
+
+    -- WIP
     vim.api.nvim_set_hl(0, "KanbanProgressTitle", {
       fg = "#D49A62",
       bold = true,
@@ -61,6 +70,11 @@ return {
       fg = "#D49A62",
     })
 
+    vim.api.nvim_set_hl(0, "KanbanProgressText", {
+      fg = "#D49A62",
+    })
+
+    -- DONE
     vim.api.nvim_set_hl(0, "KanbanDoneTitle", {
       fg = "#A3BE8C",
       bold = true,
@@ -70,47 +84,63 @@ return {
       fg = "#A3BE8C",
     })
 
-    -- Unterschiedliche Highlights abhängig vom Namen der Spalte.
+    vim.api.nvim_set_hl(0, "KanbanDoneText", {
+      fg = "#A3BE8C",
+    })
+
+    ---------------------------------------------------------------------------
+    -- Zuordnung Spaltenname -> Stil
+    ---------------------------------------------------------------------------
+
+    local styles = {
+      ["TODO"] = {
+        title = "KanbanTodoTitle",
+        border = "KanbanTodoBorder",
+        text = "KanbanTodoText",
+      },
+
+      -- Kompatibilität mit bestehenden Boards
+      ["ToDo"] = {
+        title = "KanbanTodoTitle",
+        border = "KanbanTodoBorder",
+        text = "KanbanTodoText",
+      },
+
+      ["WIP (max. 3)"] = {
+        title = "KanbanProgressTitle",
+        border = "KanbanProgressBorder",
+        text = "KanbanProgressText",
+      },
+
+      ["DONE"] = {
+        title = "KanbanDoneTitle",
+        border = "KanbanDoneBorder",
+        text = "KanbanDoneText",
+      },
+
+      -- Kompatibilität mit bestehenden Boards
+      ["Done"] = {
+        title = "KanbanDoneTitle",
+        border = "KanbanDoneBorder",
+        text = "KanbanDoneText",
+      },
+    }
+
+    ---------------------------------------------------------------------------
+    -- Spalten
+    ---------------------------------------------------------------------------
+
     local function highlight_list(_, list)
-      local styles = {
-        -- Neue Namen
-        ["TODO"] = {
-          title = "KanbanTodoTitle",
-          border = "KanbanTodoBorder",
-        },
-
-        ["WIP (max. 3)"] = {
-          title = "KanbanProgressTitle",
-          border = "KanbanProgressBorder",
-        },
-
-        ["DONE"] = {
-          title = "KanbanDoneTitle",
-          border = "KanbanDoneBorder",
-        },
-
-        -- Kompatibilität mit bestehenden Boards
-        ["ToDo"] = {
-          title = "KanbanTodoTitle",
-          border = "KanbanTodoBorder",
-        },
-
-        ["Done"] = {
-          title = "KanbanDoneTitle",
-          border = "KanbanDoneBorder",
-        },
-      }
-
       local style = styles[list.title]
 
       if not style then
         return
       end
 
-      -- Titel einfärben
+      -- Titel der Spalte einfärben
       vim.api.nvim_buf_add_highlight(list.buf_nr, 0, style.title, 1, 0, -1)
 
-      -- Außenrahmen der jeweiligen Spalte einfärben
+      -- Außenrahmen der Spalte einfärben
       vim.api.nvim_set_option_value(
         "winhighlight",
         "NormalFloat:ListFloat,FloatBorder:" .. style.border,
@@ -118,20 +148,91 @@ return {
       )
     end
 
-    -- Highlight-Funktion des Plugins überschreiben
     require("kanban.fn.lists.highlight").highlight = highlight_list
     kanban.fn.lists.highlight = highlight_list
+
+    ---------------------------------------------------------------------------
+    -- Tasks
+    ---------------------------------------------------------------------------
+
+    -- Originale Highlight-Funktion sichern.
+    --
+    -- Dadurch bleiben die eingebauten Highlights von kanban.nvim erhalten:
+    -- Due-Dates, Tags, Completed-Status usw.
+    local original_task_highlight = require("kanban.fn.tasks.highlight").highlight
+
+    local function highlight_task(k, task)
+      -- Zuerst das normale Highlighting von kanban.nvim ausführen.
+      original_task_highlight(k, task)
+
+      -------------------------------------------------------------------------
+      -- Aktuelle Spalte des Tasks ermitteln
+      -------------------------------------------------------------------------
+
+      local parent_list = nil
+
+      for _, list in ipairs(k.items.lists) do
+        for _, candidate in ipairs(list.tasks) do
+          if candidate == task then
+            parent_list = list
+            break
+          end
+        end
+
+        if parent_list then
+          break
+        end
+      end
+
+      if not parent_list then
+        return
+      end
+
+      local style = styles[parent_list.title]
+
+      if not style then
+        return
+      end
+
+      -------------------------------------------------------------------------
+      -- Rahmen der Task-Karte
+      -------------------------------------------------------------------------
+
+      vim.api.nvim_set_option_value(
+        "winhighlight",
+        "NormalFloat:TaskFloat,FloatBorder:" .. style.border,
+        { win = task.win_id }
+      )
+
+      -------------------------------------------------------------------------
+      -- Titel der Task-Karte
+      -------------------------------------------------------------------------
+
+      -- kanban.nvim setzt für die erste Zeile normalerweise "TaskTitle".
+      -- Wir überschreiben dieses Highlight anschließend mit der Farbe
+      -- der aktuellen Spalte.
+      vim.api.nvim_buf_add_highlight(task.buf_nr, 0, style.text, 0, 0, -1)
+    end
+
+    require("kanban.fn.tasks.highlight").highlight = highlight_task
+    kanban.fn.tasks.highlight = highlight_task
   end,
 
   keys = {
+    ---------------------------------------------------------------------------
     -- Kanban-Board über Telescope finden
+    ---------------------------------------------------------------------------
+
     {
       "<leader>kf",
       "<cmd>KanbanOpen telescope<cr>",
       desc = "Kanban: Find board",
     },
 
-    -- Aktuelle Kanban-Markdown-Datei als Board öffnen
+    ---------------------------------------------------------------------------
+    -- Aktuelle Markdown-Datei als Board öffnen
+    ---------------------------------------------------------------------------
+
     {
       "<leader>ko",
       function()
@@ -150,7 +251,10 @@ return {
       desc = "Kanban: Open current file as board",
     },
 
+    ---------------------------------------------------------------------------
     -- Neues Kanban-Board im aktuellen Oil-Verzeichnis erstellen
+    ---------------------------------------------------------------------------
+
     {
       "<leader>kc",
       function()
