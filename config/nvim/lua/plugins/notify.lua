@@ -3,14 +3,14 @@ return {
     "rcarriga/nvim-notify",
     config = function()
       require("notify").setup({
-        background_colour = "NotifyBackground",
+        background_colour = "#2e3440",
         fps = 30,
         icons = {
           DEBUG = "",
           ERROR = "",
-          INFO  = "",
+          INFO = "",
           TRACE = "✎",
-          WARN  = ""
+          WARN = "",
         },
         level = 2,
         minimum_width = 50,
@@ -18,7 +18,7 @@ return {
         stages = "fade_in_slide_out",
         time_formats = {
           notification = "%T",
-          notification_history = "%FT%T"
+          notification_history = "%FT%T",
         },
         timeout = 1000, -- Zeit in Millisekunden
         top_down = true,

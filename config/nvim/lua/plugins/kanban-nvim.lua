@@ -18,38 +18,90 @@ return {
 
     markdown = {
       description_folder = "./tasks/",
-      list_head = "## ",
+      -- list_head = "## ",
       due_format = "YYYY-MM-DD",
 
       default_lists = {
-        "To Do",
+        "ToDo",
         "In Progress",
         "Done",
       },
     },
   },
+  config = function(_, opts)
+    require("kanban").setup(opts)
 
+    -- Vorläufige Farben; später durch deine Theme-Farben ersetzen.
+    vim.api.nvim_set_hl(0, "KanbanTodoTitle", {
+      fg = "#81A1C1",
+      bold = true,
+    })
+
+    vim.api.nvim_set_hl(0, "KanbanProgressTitle", {
+      fg = "#D08770",
+      bold = true,
+    })
+
+    vim.api.nvim_set_hl(0, "KanbanDoneTitle", {
+      fg = "#A3BE8C",
+      bold = true,
+    })
+
+    -- Unterschiedliche Highlights abhängig vom Namen der Spalte.
+    local function highlight_list(_, list)
+      local highlights = {
+        ["To Do"] = "KanbanTodoTitle",
+        ["In Progress"] = "KanbanProgressTitle",
+        ["Done"] = "KanbanDoneTitle",
+      }
+
+      local group = highlights[list.title] or "ListTitle"
+
+      vim.api.nvim_buf_add_highlight(list.buf_nr, 0, group, 1, 0, -1)
+
+      vim.api.nvim_set_option_value("winhighlight", "NormalFloat:ListFloat", { win = list.win_id })
+    end
+
+    -- Modul überschreiben
+    require("kanban.fn.lists.highlight").highlight = highlight_list
+
+    -- Vor allem aber die vom Kanban-Objekt verwendete Funktion überschreiben
+    local kanban = require("kanban")
+    kanban.fn.lists.highlight = highlight_list
+  end,
   keys = {
-    -- -----------------------------------------------------
-    -- Vorhandenes Kanban-Board über Telescope öffnen
-    -- -----------------------------------------------------
-
+    -- Kanban-Board über Telescope finden
     {
-      "<leader>ko",
+      "<leader>kf",
       "<cmd>KanbanOpen telescope<cr>",
-      desc = "Kanban: Open board",
+      desc = "Kanban: Find board",
     },
 
-    -- -----------------------------------------------------
-    -- Neues Kanban-Board im aktuellen Oil-Verzeichnis
-    -- -----------------------------------------------------
+    -- Aktuelle Kanban-Markdown-Datei als Board öffnen
+    {
+      "<leader>ko",
+      function()
+        local file = vim.api.nvim_buf_get_name(0)
 
+        if file == "" then
+          vim.notify("Aktueller Buffer hat keinen Dateipfad.", vim.log.levels.WARN)
+          return
+        end
+
+        vim.cmd({
+          cmd = "KanbanOpen",
+          args = { file },
+        })
+      end,
+      desc = "Kanban: Open current file as board",
+    },
+
+    -- Neues Kanban-Board im aktuellen Oil-Verzeichnis erstellen
     {
       "<leader>kc",
       function()
         local oil = require("oil")
 
-        -- Oil-Buffer merken, damit wir ihn nach dem Erstellen aktualisieren können.
         local oil_buf = vim.api.nvim_get_current_buf()
         local dir = oil.get_current_dir(oil_buf)
 
@@ -72,27 +124,23 @@ return {
 
           local file = vim.fs.joinpath(dir, "kanban-" .. name .. ".md")
 
-          -- Board erstellen.
           vim.cmd({
             cmd = "KanbanCreate",
             args = { file },
           })
 
-          -- Oil-Buffer aktualisieren.
           vim.api.nvim_buf_call(oil_buf, function()
             require("oil.actions").refresh.callback({
               force = true,
             })
           end)
 
-          -- Board direkt öffnen.
           vim.cmd({
             cmd = "KanbanOpen",
             args = { file },
           })
         end)
       end,
-
       desc = "Kanban: Create board in Oil directory",
     },
   },
