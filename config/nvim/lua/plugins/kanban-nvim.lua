@@ -41,6 +41,70 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
+
+    ---------------------------------------------------------------------------
+    -- Telescope: Nur Dateinamen statt vollständiger Pfade anzeigen
+    ---------------------------------------------------------------------------
+
+    local telescope_integration = require("kanban.integrations.telescope")
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local actions = require("telescope.actions")
+    local action_state = require("telescope.actions.state")
+    local conf = require("telescope.config").values
+
+    telescope_integration.kanban_telescope = function(picker_opts)
+      local handle = io.popen("rg '\\-+[\n\\s]+kanban-plugin: .+[\\n\\s]+\\-+' -lU ./")
+
+      if not handle then
+        return
+      end
+
+      local output = handle:read("*a")
+      handle:close()
+
+      local paths = {}
+
+      for path in output:gmatch("[^\n]+") do
+        table.insert(paths, path)
+      end
+
+      pickers
+        .new(picker_opts or {}, {
+          prompt_title = "Kanban.nvim",
+
+          finder = finders.new_table({
+            results = paths,
+
+            entry_maker = function(path)
+              return {
+                value = path,
+                display = vim.fn.fnamemodify(path, ":t"),
+                ordinal = path,
+              }
+            end,
+          }),
+
+          sorter = conf.generic_sorter(picker_opts or {}),
+
+          attach_mappings = function(prompt_bufnr)
+            actions.select_default:replace(function()
+              local selection = action_state.get_selected_entry()
+              actions.close(prompt_bufnr)
+
+              if selection then
+                vim.cmd({
+                  cmd = "KanbanOpen",
+                  args = { selection.value },
+                })
+              end
+            end)
+
+            return true
+          end,
+        })
+        :find()
+    end
     ---------------------------------------------------------------------------
     -- Workaround: Verbliebene Kanban-Floating-Windows schließen
     ---------------------------------------------------------------------------
