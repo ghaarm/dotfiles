@@ -23,7 +23,7 @@
 #import "@preview/touying:0.8.0": slide, pause, uncover, alert, item-by-item
 
 // KN-Bausteine bei Bedarf direkt importieren.
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/_kn-bausteine.typ": kn-quelle, kn-merksatz
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/_kn-bausteine.typ": quelle, kn-merksatz
 
 
 // ============================================================
