@@ -155,3 +155,36 @@
     ]
   ]
 ]
+
+
+// ============================================================
+// Danke und versteckte Bibliografie
+// ============================================================
+
+// 56 – Abschluss
+#slide(title: text(size: 22pt, weight: "regular", [Vielen Dank für die Aufmerksamkeit!]))[
+  #set text(size: 18pt)
+  #place(top + left, dx: 60mm, dy: 0mm, rotate(0deg, reflow: false, 
+  image(bildpfad + "{{INPUT:BILD ABSCHLUSS}}",
+
+  width: 180mm, height: 100mm, fit: "contain")))
+  #place(top + left, dx: 0mm, dy: 102mm, box(width: 275mm, height: 18mm)[
+    #align(center)[
+      #v(1em)
+
+    golo-sung.haarmeyer\@klinikum-nuernberg.de
+
+  ]
+  ])
+
+  #hide(
+    bibliography(
+      "/Users/g/Library/texmf/bibtex/bib/Zotero.bib",
+      style: "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst-touying/touying-cite.csl",
+      full: false,
+    )
+  )
+
+  #quelle([Quelle: #link("{{INPUT:QUELLE ABSCHLUSS}}") (Stand {{INPUT:DATUM QUELLE ABSCHLUSS}})])
+]
+

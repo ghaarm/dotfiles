@@ -34,6 +34,7 @@ für die jeweilige Aufgabe referenzierten spezialisierten Anweisungen.
 <!-- Nur ändern, wenn sich die Aufgabe ändert; Fortschritt unter „Aktueller Stand“ festhalten. -->
 
 - Aufgabe:
+
   * {{INPUT}}
 
 ## Dateien und Ressourcen

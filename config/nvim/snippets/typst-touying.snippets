@@ -203,3 +203,12 @@ snippet png-beamer-plain "Bild auf Folie" b
 
 snippet beamer-scriptsize-8pt-umbruch "Kleiner Text mit Umbruch" b
   #text(size: 8pt)[${1:Text}]${0}
+
+snippet cite-touying "#quelle touying"
+    #quelle[
+    #cite( 
+      <${1:name}>,
+      supplement: [S. ${2:seite}],
+    )
+  ]
+

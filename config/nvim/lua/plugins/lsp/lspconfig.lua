@@ -188,7 +188,11 @@ return {
       },
     })
     vim.lsp.enable("html")
-
+    -- XML / CSL
+    vim.lsp.config("lemminx", {
+      filetypes = { "xml" },
+    })
+    vim.lsp.enable("lemminx")
     -- TypeScript
     -- vim.lsp.config("tsserver", {})
     -- vim.lsp.enable("tsserver")

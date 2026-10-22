@@ -132,6 +132,8 @@ return {
 
         -- YAML
         "yamlls",
+        -- andere
+        "lemminx",
       },
 
       automatic_enable = true,
