@@ -41,6 +41,89 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
+    ---------------------------------------------------------------------------
+    -- Workaround: Verbliebene Kanban-Floating-Windows schließen
+    ---------------------------------------------------------------------------
+
+    local kwindow_close = require("kanban.fn.kwindow.close")
+
+    local function close_kanban_floats()
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local config = vim.api.nvim_win_get_config(win)
+
+        if config.relative ~= "" then
+          local winhl = vim.wo[win].winhighlight
+
+          -- Nur Floating Windows mit unseren Kanban-Highlights schließen.
+          if
+            winhl:find("KanbanTodoBackground", 1, true)
+            or winhl:find("KanbanProgressBackground", 1, true)
+            or winhl:find("KanbanDoneBackground", 1, true)
+          then
+            pcall(vim.api.nvim_win_close, win, true)
+          end
+        end
+      end
+    end
+
+    local original_kwindow_close = kwindow_close.close
+
+    kwindow_close.close = function(k)
+      original_kwindow_close(k)
+
+      -- Reguläre Task- und Spaltenfenster schließen.
+      k.fn.tasks.close_all(k)
+      k.fn.lists.close_all(k)
+
+      -- Verwaiste Task-Fenster entfernen.
+      close_kanban_floats()
+    end
+
+    kanban.fn.kwindow.close = kwindow_close.close
+    ---------------------------------------------------------------------------
+    -- Checkbox-Status automatisch an die Kanban-Spalte anpassen
+    ---------------------------------------------------------------------------
+
+    local take = require("kanban.fn.tasks.take")
+
+    local function take_with_status(direction)
+      return function(k)
+        local focus = k.fn.tasks.utils.get_focus(k)
+
+        if not focus then
+          return
+        end
+
+        local target_num = focus.list_num + direction
+        local target_list = k.items.lists[target_num]
+
+        if not target_list then
+          return
+        end
+
+        local source_list = k.items.lists[focus.list_num]
+        local task = source_list.tasks[focus.task_num]
+
+        if not task then
+          return
+        end
+
+        -- Status entsprechend der Zielspalte setzen.
+        -- DONE = erledigt, alle anderen Spalten = offen.
+        local clone_task = require("kanban.utils").deepcopy(task)
+        clone_task.check = target_list.title == "DONE" or target_list.title == "Done"
+
+        -- Original entfernen und Kopie in Zielspalte einfügen.
+        k.fn.tasks.delete(k)
+        k.fn.tasks.add(k, target_num, clone_task, k.ops.move_position, true)
+      end
+    end
+
+    take.left = take_with_status(-1)
+    take.right = take_with_status(1)
+
+    kanban.fn.tasks.take.left = take.left
+    kanban.fn.tasks.take.right = take.right
 
     ---------------------------------------------------------------------------
     -- Workaround: Fehler beim Schließen des Kanban-Boards
@@ -99,6 +182,11 @@ return {
       fg = "#81A1C1",
     })
 
+    vim.api.nvim_set_hl(0, "KanbanTodoBackground", {
+      fg = "#20242B",
+      bg = "#81A1C1",
+    })
+
     -- WIP
     vim.api.nvim_set_hl(0, "KanbanProgressTitle", {
       fg = "#D49A62",
@@ -111,6 +199,11 @@ return {
 
     vim.api.nvim_set_hl(0, "KanbanProgressText", {
       fg = "#D49A62",
+    })
+
+    vim.api.nvim_set_hl(0, "KanbanProgressBackground", {
+      fg = "#20242B",
+      bg = "#D49A62",
     })
 
     -- DONE
@@ -127,6 +220,11 @@ return {
       fg = "#A3BE8C",
     })
 
+    vim.api.nvim_set_hl(0, "KanbanDoneBackground", {
+      fg = "#20242B",
+      bg = "#A3BE8C",
+    })
+
     ---------------------------------------------------------------------------
     -- Zuordnung Spaltenname -> Stil
     ---------------------------------------------------------------------------
@@ -136,6 +234,7 @@ return {
         title = "KanbanTodoTitle",
         border = "KanbanTodoBorder",
         text = "KanbanTodoText",
+        background = "KanbanTodoBackground",
       },
 
       -- Kompatibilität mit bestehenden Boards
@@ -143,18 +242,21 @@ return {
         title = "KanbanTodoTitle",
         border = "KanbanTodoBorder",
         text = "KanbanTodoText",
+        background = "KanbanTodoBackground",
       },
 
       ["WIP (max. 3)"] = {
         title = "KanbanProgressTitle",
         border = "KanbanProgressBorder",
         text = "KanbanProgressText",
+        background = "KanbanProgressBackground",
       },
 
       ["DONE"] = {
         title = "KanbanDoneTitle",
         border = "KanbanDoneBorder",
         text = "KanbanDoneText",
+        background = "KanbanDoneBackground",
       },
 
       -- Kompatibilität mit bestehenden Boards
@@ -162,6 +264,7 @@ return {
         title = "KanbanDoneTitle",
         border = "KanbanDoneBorder",
         text = "KanbanDoneText",
+        background = "KanbanDoneBackground",
       },
     }
 
@@ -179,7 +282,7 @@ return {
       -- Titel der Spalte einfärben
       vim.api.nvim_buf_add_highlight(list.buf_nr, 0, style.title, 1, 0, -1)
 
-      -- Außenrahmen der Spalte einfärben
+      -- Spaltenhintergrund dunkel lassen, Rahmen einfärben
       vim.api.nvim_set_option_value(
         "winhighlight",
         "NormalFloat:ListFloat,FloatBorder:" .. style.border,
@@ -195,7 +298,6 @@ return {
     ---------------------------------------------------------------------------
 
     -- Originale Highlight-Funktion sichern.
-    --
     -- Dadurch bleiben die eingebauten Highlights von kanban.nvim erhalten:
     -- Due-Dates, Tags, Completed-Status usw.
     local original_task_highlight = require("kanban.fn.tasks.highlight").highlight
@@ -234,23 +336,21 @@ return {
       end
 
       -------------------------------------------------------------------------
-      -- Rahmen der Task-Karte
+      -- Hintergrund und Rahmen der Task-Karte
       -------------------------------------------------------------------------
 
+      -- Normal und NormalFloat erhalten dieselbe Hintergrundfarbe.
+      -- Dadurch sollen auch normale, nicht abgeschlossene Tasks
+      -- vollständig eingefärbt werden.
       vim.api.nvim_set_option_value(
         "winhighlight",
-        "NormalFloat:TaskFloat,FloatBorder:" .. style.border,
+        table.concat({
+          "Normal:" .. style.background,
+          "NormalFloat:" .. style.background,
+          "FloatBorder:" .. style.border,
+        }, ","),
         { win = task.win_id }
       )
-
-      -------------------------------------------------------------------------
-      -- Titel der Task-Karte
-      -------------------------------------------------------------------------
-
-      -- kanban.nvim setzt für die erste Zeile normalerweise "TaskTitle".
-      -- Wir überschreiben dieses Highlight anschließend mit der Farbe
-      -- der aktuellen Spalte.
-      vim.api.nvim_buf_add_highlight(task.buf_nr, 0, style.text, 0, 0, -1)
     end
 
     require("kanban.fn.tasks.highlight").highlight = highlight_task
