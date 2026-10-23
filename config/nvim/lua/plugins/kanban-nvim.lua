@@ -453,9 +453,17 @@ return {
     {
       "<leader>kb",
       function()
+        local kanban = require("kanban")
+
+        -- Ein bereits geöffnetes Kanban-Board schließen.
+        if kanban.active then
+          vim.cmd("KanbanClose")
+          return
+        end
+
+        -- Andernfalls die aktuelle Markdown-Datei als Board öffnen.
         local file = vim.api.nvim_buf_get_name(0)
 
-        -- Nur reguläre Markdown-Dateien als Kanban-Board öffnen.
         if vim.bo.filetype == "oil" or not file:match("%.md$") then
           vim.notify("KanbanOpen benötigt einen Markdown-Buffer (.md).", vim.log.levels.WARN)
           return
@@ -466,7 +474,7 @@ return {
           args = { file },
         })
       end,
-      desc = "Kanban Board open",
+      desc = "Kanban: Toggle board",
     },
 
     ---------------------------------------------------------------------------
