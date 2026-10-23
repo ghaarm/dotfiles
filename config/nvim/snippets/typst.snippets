@@ -389,12 +389,20 @@ snippet linie "Linie" b
 snippet lücke "Horizontaler Abstand"
   #h(${1:1cm})${0}
 
+snippet beginmulticols2-balanced "Zweispaltiger Block - balanced" b
+  #balanced-columns(
+    columns(2, gutter: 8mm)[
+      ${1:Inhalt}
+    ]${0}
+  )
+
 snippet beginmulticols2 "Zweispaltiger Block" b
   #columns(2, gutter: 8mm)[
     ${1:Inhalt}
   ]${0}
+  
 
-snippet end-begin-multicols "Spaltenumbruch" b
+snippet columnbreak "Spaltenumbruch" b
   #colbreak()${0}
 
 snippet todo "TODO-Kommentar"

@@ -42,6 +42,199 @@ return {
 
     kanban.setup(opts)
 
+    -- Kanban-Markdown beim Verlassen des Insert-Modus ohne Rückfrage schreiben.
+    -- auto-save.nvim speichert erst verzögert und verwendet :write ohne !.
+    local autosave_group = vim.api.nvim_create_augroup("KanbanMarkdownAutosave", { clear = true })
+    vim.api.nvim_create_autocmd("InsertLeave", {
+      group = autosave_group,
+      pattern = "*.md",
+      callback = function(event)
+        local buf = event.buf
+        if not vim.bo[buf].modified or vim.bo[buf].buftype ~= "" then
+          return
+        end
+
+        local header = table.concat(vim.api.nvim_buf_get_lines(buf, 0, 6, false), "\n")
+        if not header:find("kanban-plugin: basic", 1, true) then
+          return
+        end
+
+        vim.api.nvim_buf_call(buf, function()
+          local ok, err = pcall(vim.cmd, "silent write!")
+          if not ok then
+            vim.notify("Kanban-Datei konnte nicht gespeichert werden: " .. err, vim.log.levels.ERROR)
+          end
+        end)
+      end,
+    })
+
+    local function task_has_content(task)
+      for _, line in ipairs(task.lines) do
+        if not line:match("^%s*$") then
+          return true
+        end
+      end
+      return false
+    end
+
+    ---------------------------------------------------------------------------
+    -- Leere Spalten ohne Platzhalter-Karten anzeigen
+    ---------------------------------------------------------------------------
+
+    local original_save = kanban.fn.tasks.save
+    kanban.fn.tasks.save = function(k)
+      local has_focus = pcall(k.fn.tasks.utils.get_focus, k)
+      if has_focus then
+        original_save(k)
+      end
+    end
+
+    local original_add = kanban.fn.tasks.add
+    kanban.fn.tasks.add = function(k, list_num, task, position, open)
+      if not list_num then
+        for i, list in ipairs(k.items.lists) do
+          if list.win_id == vim.api.nvim_get_current_win() then
+            list_num = i
+            break
+          end
+        end
+      end
+      return original_add(k, list_num, task, position, open)
+    end
+
+    local function focus_list(k, list_num)
+      local list = k.items.lists[list_num]
+      if not list then
+        return
+      end
+      for _, task in ipairs(list.tasks) do
+        if task.win_id and vim.api.nvim_win_is_valid(task.win_id) then
+          vim.api.nvim_set_current_win(task.win_id)
+          return
+        end
+      end
+      vim.api.nvim_set_current_win(list.win_id)
+    end
+
+    local function list_number(k, buf)
+      for i, list in ipairs(k.items.lists) do
+        if list.buf_nr == buf then
+          return i
+        end
+      end
+    end
+
+    local original_list_add = kanban.fn.lists.add
+    kanban.fn.lists.add = function(k, title)
+      original_list_add(k, title, false)
+      local buf = k.items.lists[#k.items.lists].buf_nr
+      vim.keymap.set("n", "<C-o>", "<cmd>KanbanTaskAdd<cr>", { buffer = buf, silent = true })
+      for key, step in pairs({ ["<C-h>"] = -1, ["<C-l>"] = 1 }) do
+        vim.keymap.set("n", key, function()
+          local current = list_number(k, buf)
+          if current then
+            focus_list(k, current + step)
+          end
+        end, { buffer = buf, silent = true })
+      end
+    end
+
+    local function remove_blank_cards(k, list)
+      for i = #list.tasks, 1, -1 do
+        local task = list.tasks[i]
+        if not task_has_content(task) then
+          k.fn.tasks.close(task)
+          table.remove(list.tasks, i)
+        end
+      end
+    end
+
+    local original_open = kanban.kanban_open
+    kanban.kanban_open = function(path)
+      original_open(path)
+      if not kanban.active or not kanban.items or not kanban.items.lists then
+        return
+      end
+
+      for _, list in ipairs(kanban.items.lists) do
+        remove_blank_cards(kanban, list)
+      end
+      focus_list(kanban, 1)
+    end
+
+    local original_delete = kanban.fn.tasks.delete
+    kanban.fn.tasks.delete = function(k)
+      local focus = k.fn.tasks.utils.get_focus(k)
+      original_delete(k)
+      local list = k.items.lists[focus.list_num]
+      if #list.tasks == 1 and not task_has_content(list.tasks[1]) then
+        vim.api.nvim_set_current_win(list.win_id)
+        remove_blank_cards(k, list)
+      end
+    end
+
+    for _, direction in ipairs({ "left", "right" }) do
+      local step = direction == "left" and -1 or 1
+      local original_move = kanban.fn.tasks.move[direction]
+      kanban.fn.tasks.move[direction] = function(k)
+        local focus = k.fn.tasks.utils.get_focus(k)
+        local target = k.items.lists[focus.list_num + step]
+        if target and #target.tasks == 0 then
+          k.fn.tasks.save(k)
+          vim.api.nvim_set_current_win(target.win_id)
+        else
+          original_move(k)
+        end
+      end
+    end
+
+    ---------------------------------------------------------------------------
+    -- Markdown: leere Platzhalter auslassen und Tasks mit Leerzeile trennen
+    ---------------------------------------------------------------------------
+
+    local markdown_writer = require("kanban.markdown.writer")
+
+    markdown_writer.write = function(k, path)
+      path = path:gsub("^~", os.getenv("HOME"))
+
+      local lines = vim.list_extend({}, k.ops.markdown.header)
+
+      for _, list in ipairs(k.items.lists) do
+        vim.list_extend(lines, { "", "## " .. list.title, "" })
+
+        local written_tasks = 0
+        for _, task in ipairs(list.tasks) do
+          if task_has_content(task) then
+            if written_tasks > 0 then
+              table.insert(lines, "")
+            end
+
+            for i, line in ipairs(task.lines) do
+              if i == 1 then
+                table.insert(lines, (task.check and "- [x] " or "- [ ] ") .. line)
+              else
+                table.insert(lines, "\t" .. line)
+              end
+            end
+            written_tasks = written_tasks + 1
+          end
+        end
+      end
+
+      table.insert(lines, "")
+      vim.list_extend(lines, k.ops.markdown.footer)
+
+      local file, err = io.open(path, "w")
+      if not file then
+        vim.notify("Kanban konnte nicht gespeichert werden: " .. err, vim.log.levels.ERROR)
+        return
+      end
+      for _, line in ipairs(lines) do
+        file:write(line, "\n")
+      end
+      file:close()
+    end
+
     ---------------------------------------------------------------------------
     -- Telescope: Nur Dateinamen statt vollständiger Pfade anzeigen
     ---------------------------------------------------------------------------
@@ -458,7 +651,18 @@ return {
         -- Ein geöffnetes Board schließen.
         if kanban.active then
           if vim.fn.exists(":KanbanClose") == 2 then
+            local board_buf = vim.fn.bufnr(kanban.kanban_md_path or "")
             vim.cmd("KanbanClose")
+
+            if board_buf > 0 and vim.api.nvim_buf_is_loaded(board_buf) then
+              if vim.bo[board_buf].modified then
+                vim.notify("Kanban-Datei wurde geändert; Buffer nicht automatisch neu geladen.", vim.log.levels.WARN)
+              else
+                vim.api.nvim_buf_call(board_buf, function()
+                  vim.cmd("edit!")
+                end)
+              end
+            end
           else
             -- Fehlerhaften Zustand zurücksetzen.
             kanban.active = false
@@ -470,9 +674,14 @@ return {
         -- Aktuelle Markdown-Datei als Board öffnen.
         local file = vim.api.nvim_buf_get_name(0)
 
-        if vim.bo.filetype == "oil" or not file:match("%.md$") then
+        if vim.bo.buftype ~= "" or not file:match("%.md$") then
           vim.notify("KanbanOpen benötigt einen Markdown-Buffer (.md).", vim.log.levels.WARN)
           return
+        end
+
+        -- Das Plugin liest die Datei von der Platte, nicht den aktuellen Buffer.
+        if vim.bo.modified then
+          vim.cmd("write!")
         end
 
         vim.cmd({
@@ -514,19 +723,22 @@ return {
 
           local file = vim.fs.joinpath(dir, "kanban-" .. name .. ".md")
 
+          if vim.fn.filereadable(file) == 1 then
+            vim.notify("Kanban-Datei existiert bereits: " .. file, vim.log.levels.WARN)
+            return
+          end
+
           vim.cmd({
             cmd = "KanbanCreate",
             args = { file },
           })
 
-          vim.api.nvim_buf_call(oil_buf, function()
-            require("oil.actions").refresh.callback({
-              force = true,
-            })
-          end)
+          if vim.fn.filereadable(file) ~= 1 then
+            return
+          end
 
           vim.cmd({
-            cmd = "KanbanOpen",
+            cmd = "edit",
             args = { file },
           })
         end)
