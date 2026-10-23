@@ -17,27 +17,34 @@ return {
       -- Deaktiviere die standardmäßige Modusanzeige von Vim
       vim.opt.showmode = false
 
-      local noice_notify_enabled = true
+      -- local noice_notify_enabled = true
+      --
+      --
+      -- function ToggleNoiceNotify()
+      --   noice_notify_enabled = not noice_notify_enabled
+      --   require("noice").setup({
+      --     notify = {
+      --       enabled = noice_notify_enabled,
+      --     },
+      --   })
+      --   if noice_notify_enabled then
+      --     print("Noice notifications enabled")
+      --   else
+      --     print("Noice notifications disabled")
+      --   end
+      -- end
+      --
+      -- -- Keymap zum Umschalten der Benachrichtigungen
+      -- vim.keymap.set("n", "<leader>tn", function()
+      --   ToggleNoiceNotify()
+      -- end, { desc = "Toggle Noice notifications" })
+      vim.keymap.set("n", "<leader>nd", "<cmd>Noice disable<cr>", {
+        desc = "Noice: Disable",
+      })
 
-      function ToggleNoiceNotify()
-        noice_notify_enabled = not noice_notify_enabled
-        require("noice").setup({
-          notify = {
-            enabled = noice_notify_enabled,
-          },
-        })
-        if noice_notify_enabled then
-          print("Noice notifications enabled")
-        else
-          print("Noice notifications disabled")
-        end
-      end
-
-      -- Keymap zum Umschalten der Benachrichtigungen
-      vim.keymap.set("n", "<leader>nd", function()
-        ToggleNoiceNotify()
-      end, { desc = "Toggle Noice notifications" })
-
+      vim.keymap.set("n", "<leader>ne", "<cmd>Noice enable<cr>", {
+        desc = "Noice: Enable",
+      })
       require("noice").setup({
         cmdline = {
           enabled = true, -- enables the Noice cmdline UI
