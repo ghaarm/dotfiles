@@ -39,6 +39,13 @@ local function get_oil_sources(visual)
     return nil
   end
 
+  if not visual then
+    local selected = require("core.functions.oil-selection").get_selected_paths()
+    if selected then
+      return selected
+    end
+  end
+
   local sources = {}
   local first_line = vim.api.nvim_win_get_cursor(0)[1]
   local last_line = first_line

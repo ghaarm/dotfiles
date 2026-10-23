@@ -170,7 +170,10 @@ cddracoon() {
 
 # cd iCloud
 
+alias cddesk="cd /Users/g/Desktop && nvim" 
+
 alias cdic="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'" 
+
 
 alias cddocs="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'" 
 

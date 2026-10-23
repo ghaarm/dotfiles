@@ -36,6 +36,13 @@ return {
       keymaps = {
         ["R"] = "actions.refresh",
         ["<C-l>"] = "actions.refresh",
+        ["<Esc>"] = {
+          callback = function()
+            require("core.functions.oil-selection").toggle()
+          end,
+          mode = "n",
+          desc = "Eintrag markieren/entmarkieren",
+        },
 
         -- ["<leader>ga"] = function()
         ["ga"] = function()
