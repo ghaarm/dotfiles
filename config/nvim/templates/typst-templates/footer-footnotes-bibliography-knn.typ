@@ -129,5 +129,5 @@
 #bibliography(
   "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/Zotero.bib",
   title: [Literatur],
-  style: "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/chicago-autojahr-nummeriert.csl",
+  style: "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/typst-footcite-chicago.csl",
 )

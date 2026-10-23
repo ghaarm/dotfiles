@@ -455,13 +455,19 @@ return {
       function()
         local kanban = require("kanban")
 
-        -- Ein bereits geöffnetes Kanban-Board schließen.
+        -- Ein geöffnetes Board schließen.
         if kanban.active then
-          vim.cmd("KanbanClose")
+          if vim.fn.exists(":KanbanClose") == 2 then
+            vim.cmd("KanbanClose")
+          else
+            -- Fehlerhaften Zustand zurücksetzen.
+            kanban.active = false
+            vim.notify("Kein aktives Kanban-Board gefunden. Status zurückgesetzt.", vim.log.levels.WARN)
+          end
           return
         end
 
-        -- Andernfalls die aktuelle Markdown-Datei als Board öffnen.
+        -- Aktuelle Markdown-Datei als Board öffnen.
         local file = vim.api.nvim_buf_get_name(0)
 
         if vim.bo.filetype == "oil" or not file:match("%.md$") then

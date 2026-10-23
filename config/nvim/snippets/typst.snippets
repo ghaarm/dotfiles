@@ -9,17 +9,17 @@ snippet chapter "Kapitel mit Label" b
 
   ${0}
 
-snippet sec "Abschnitt mit Label" b
-  = ${1:Titel} <sec:${2:label}>
-  ${0}
-
-snippet sub "Unterabschnitt mit Label" b
-  == ${1:Titel} <sub:${2:label}>
-  ${0}
-
-snippet ssub "Unterunterabschnitt mit Label" b
-  === ${1:Titel} <sub:${2:label}>
-  ${0}
+# snippet sec "Abschnitt mit Label" b
+#   = ${1:Titel} <sec:${2:label}>
+#   ${0}
+#
+# snippet sub "Unterabschnitt mit Label" b
+#   == ${1:Titel} <sub:${2:label}>
+#   ${0}
+#
+# snippet ssub "Unterunterabschnitt mit Label" b
+#   === ${1:Titel} <sub:${2:label}>
+#   ${0}
 
 snippet nossub "Unterunterabschnitt ohne Inhaltsverzeichnis" b
   #heading(level: 3, outlined: false)[${1:Titel}] <sub:${2:label}>
@@ -105,6 +105,16 @@ snippet citen "Zitat mit Seitenzahl"
 
 snippet cf "Quellenangabe in Fußnote"
   #footnote[#cite(<${1:key}>, supplement: [S. ${2:seite}])]${0}
+
+
+snippet citef "Quellenangabe in Fußnote"
+  #footnote[
+    #cite(
+      <${1:name}>,
+      supplement: [S. ${2:seite}],
+    )
+  ]
+
 
 snippet citef-alt "Quellenangabe in Fußnote"
   #footnote[#cite(<${1:key}>, supplement: [S. ${2:seite}])]${0}
