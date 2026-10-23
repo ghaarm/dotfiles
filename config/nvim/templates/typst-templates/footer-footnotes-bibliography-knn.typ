@@ -15,7 +15,7 @@
 // PRÄAMBEL
 // ============================================================
 
-#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, balanced-columns
+#import "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/typst-icloud/1-vorlagen-typst/preamble-footnotes-bibliographie-neu.typ": praembel, balanced-columns, footnotes
 
 // ============================================================
 // OPTIONALE PAKETE

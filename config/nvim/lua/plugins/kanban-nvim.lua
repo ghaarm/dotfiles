@@ -562,7 +562,29 @@ return {
     local function highlight_task(k, task)
       -- Zuerst das normale Highlighting von kanban.nvim ausführen.
       original_task_highlight(k, task)
+      -------------------------------------------------------------------------
+      -- Tags mit Bindestrichen und Unterstrichen vollständig hervorheben
+      -------------------------------------------------------------------------
 
+      if task.buf_nr and vim.api.nvim_buf_is_valid(task.buf_nr) then
+        local lines = vim.api.nvim_buf_get_lines(task.buf_nr, 0, -1, false)
+
+        for i, line in ipairs(lines) do
+          -- Tags am Zeilenanfang
+          local tag = line:match("^(#[%w_%-]+)")
+
+          if tag then
+            vim.api.nvim_buf_add_highlight(task.buf_nr, 0, "TaskTag", i - 1, 0, #tag)
+          end
+
+          -- Tags nach Leerzeichen
+          for start_idx, tag_text in line:gmatch("()%s(#[%w_%-]+)") do
+            local start_col = start_idx
+
+            vim.api.nvim_buf_add_highlight(task.buf_nr, 0, "TaskTag", i - 1, start_col, start_col + #tag_text)
+          end
+        end
+      end
       -------------------------------------------------------------------------
       -- Aktuelle Spalte des Tasks ermitteln
       -------------------------------------------------------------------------

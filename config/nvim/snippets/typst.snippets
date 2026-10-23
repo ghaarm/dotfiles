@@ -98,7 +98,10 @@ snippet qte "Existenzquantor" w
   $exists ${1:alpha}$${0}
 
 snippet cite "Zitat mit Seitenzahl"
-  #cite(<${1:key}>, supplement: [S. ${2:seite}])${0}
+  #cite(
+    <${1:name}>,
+    supplement: [S. ${2:seite}],
+  )
 
 snippet citen "Zitat mit Seitenzahl"
   #cite(<${1:key}>, supplement: [S. ${2:seite}])${0}
@@ -108,12 +111,12 @@ snippet cf "Quellenangabe in Fußnote"
 
 
 snippet citef "Quellenangabe in Fußnote"
-  #footnote[
+  #footnotes([
     #cite(
       <${1:name}>,
       supplement: [S. ${2:seite}],
     )
-  ]
+  ])
 
 
 snippet citef-alt "Quellenangabe in Fußnote"
@@ -409,10 +412,10 @@ snippet todo "TODO-Kommentar"
   // TODO: ${0}
 
 snippet todo-user "TODO-Kommentar für Benutzer"
-  // TODO [USER]: ${0}
+  // TODO: [USER] ${0}
 
 snippet todo-agent "TODO-Kommentar für Agent"
-  // TODO [AGENT]: ${0}
+  // TODO: [AGENT] ${0}
 
 snippet memo "Memo-Kommentar"
   // MEMO: ${0}
