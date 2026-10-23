@@ -451,7 +451,7 @@ return {
     ---------------------------------------------------------------------------
 
     {
-      "<leader>ko",
+      "<leader>kb",
       function()
         local file = vim.api.nvim_buf_get_name(0)
 
@@ -466,7 +466,7 @@ return {
           args = { file },
         })
       end,
-      desc = "Kanban: Open current file as board",
+      desc = "Kanban Board open",
     },
 
     ---------------------------------------------------------------------------
