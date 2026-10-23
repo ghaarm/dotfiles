@@ -38,12 +38,18 @@ return {
       -- vim.keymap.set("n", "<leader>tn", function()
       --   ToggleNoiceNotify()
       -- end, { desc = "Toggle Noice notifications" })
-      vim.keymap.set("n", "<leader>nd", "<cmd>Noice disable<cr>", {
-        desc = "Noice: Disable",
-      })
+      local noice_enabled = true
 
-      vim.keymap.set("n", "<leader>ne", "<cmd>Noice enable<cr>", {
-        desc = "Noice: Enable",
+      vim.keymap.set("n", "<leader>nd", function()
+        noice_enabled = not noice_enabled
+
+        if noice_enabled then
+          vim.cmd("Noice enable")
+        else
+          vim.cmd("Noice disable")
+        end
+      end, {
+        desc = "Noice: Toggle",
       })
       require("noice").setup({
         cmdline = {
