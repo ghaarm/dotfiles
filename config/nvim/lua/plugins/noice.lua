@@ -56,12 +56,10 @@ return {
 
       -- Noice vollständig aktivieren/deaktivieren.
       vim.keymap.set("n", "<leader>nd", function()
-        noice_enabled = not noice_enabled
-
-        if noice_enabled then
-          vim.cmd("Noice enable")
-        else
+        if require("noice.config").is_running() then
           vim.cmd("Noice disable")
+        else
+          vim.cmd("Noice enable")
         end
       end, {
         desc = "Noice: Toggle",
