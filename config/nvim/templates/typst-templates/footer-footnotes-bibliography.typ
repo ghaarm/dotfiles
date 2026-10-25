@@ -59,11 +59,20 @@
 
 #show: praembel
 
+// Linkfarben
 #let linkrot = rgb("a32121")
 
+// Interne Links dunkelrot
 #show link: set text(fill: linkrot)
-#show link.where(dest: str): set text(fill: blue)
+
+// Querverweise (Abbildungen, Tabellen, Abschnitte) dunkelrot
+#show ref: set text(fill: linkrot)
+
+// Fußnotenziffern im Fließtext dunkelrot
 #show footnote: set text(fill: linkrot)
+
+// Externe URLs blau
+#show link.where(dest: str): set text(fill: blue)
 
 #show heading.where(level: 1): set block(
   above: 1.25em,
