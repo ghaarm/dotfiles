@@ -327,6 +327,21 @@ return {
         nowait = true,
         remap = false,
       },
+      -- Kanban Templates privat
+      {
+        "<leader>kp",
+        function()
+          vim.cmd.tabedit(
+            vim.fn.fnameescape(
+              "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/kanban-icloud/kanban-privat.md"
+            )
+          )
+        end,
+        desc = "Kanban PRIVAT EDIT",
+        nowait = true,
+        remap = false,
+      },
+      --
       -- andere Templates
       {
         "<leader>ttv",

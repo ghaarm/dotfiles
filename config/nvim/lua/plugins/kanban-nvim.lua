@@ -579,7 +579,8 @@ return {
       -- Zuerst das normale Highlighting von kanban.nvim ausführen.
       original_task_highlight(k, task)
       -------------------------------------------------------------------------
-      -- Tags mit Bindestrichen und Unterstrichen vollständig hervorheben
+      -- Tags vollständig hervorheben
+      -- Unterstützt Umlaute, ß, Bindestriche und Unterstriche
       -------------------------------------------------------------------------
 
       if task.buf_nr and vim.api.nvim_buf_is_valid(task.buf_nr) then
@@ -587,15 +588,15 @@ return {
 
         for i, line in ipairs(lines) do
           -- Tags am Zeilenanfang
-          local tag = line:match("^(#[%w_%-]+)")
+          local tag = line:match("^(#[^%s#]+)")
 
           if tag then
             vim.api.nvim_buf_add_highlight(task.buf_nr, 0, "TaskTag", i - 1, 0, #tag)
           end
 
           -- Tags nach Leerzeichen
-          for start_idx, tag_text in line:gmatch("()%s(#[%w_%-]+)") do
-            local start_col = start_idx
+          for start_idx, whitespace, tag_text in line:gmatch("()(%s+)(#[^%s#]+)") do
+            local start_col = start_idx - 1 + #whitespace
 
             vim.api.nvim_buf_add_highlight(task.buf_nr, 0, "TaskTag", i - 1, start_col, start_col + #tag_text)
           end
@@ -800,18 +801,29 @@ return {
             return
           end
 
+          -- -- Aufgabe direkt unter der TODO-Überschrift einfügen.
+          -- vim.api.nvim_buf_set_lines(0, todo_line, todo_line, false, { "- [ ] " })
+          --
+          -- -- Datei speichern.
+          -- vim.cmd("write!")
+          --
+          -- -- Cursor hinter der schließenden Klammer positionieren.
+          -- vim.api.nvim_win_set_cursor(0, { todo_line + 1, 5 })
+          --
+          -- -- Im Insert-Modus ein Leerzeichen einfügen.
+          -- vim.cmd("startinsert!")
+          -- vim.api.nvim_feedkeys(" ", "n", false)
           -- Aufgabe direkt unter der TODO-Überschrift einfügen.
           vim.api.nvim_buf_set_lines(0, todo_line, todo_line, false, { "- [ ] " })
 
           -- Datei speichern.
           vim.cmd("write!")
 
-          -- Cursor hinter der schließenden Klammer positionieren.
+          -- Cursor am Ende der Zeile positionieren.
           vim.api.nvim_win_set_cursor(0, { todo_line + 1, 5 })
 
-          -- Im Insert-Modus ein Leerzeichen einfügen.
+          -- Insert-Modus am Zeilenende starten.
           vim.cmd("startinsert!")
-          vim.api.nvim_feedkeys(" ", "n", false)
         end)
       end,
       desc = "Kanban: Create board in Oil directory",

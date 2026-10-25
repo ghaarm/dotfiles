@@ -182,6 +182,11 @@ alias cdedit="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/
 
 alias cdcolemak-train="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/keyboard-icloud/colemak-training && nvim" 
 
+alias cdkanban="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/kanban-icloud && nvim" 
+
+alias kp="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/kanban-icloud && nvim kanban-privat.md" 
+
+
 alias cdtodo="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/todo-icloud && nvim" 
 
 alias cdtypst="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/typst-icloud && nvim" 
