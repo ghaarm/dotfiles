@@ -806,11 +806,12 @@ return {
           -- Datei speichern.
           vim.cmd("write!")
 
-          -- Cursor hinter "- [ ] " positionieren.
-          vim.api.nvim_win_set_cursor(0, { todo_line + 1, 6 })
+          -- Cursor hinter der schließenden Klammer positionieren.
+          vim.api.nvim_win_set_cursor(0, { todo_line + 1, 5 })
 
-          -- Direkt mit der Eingabe beginnen.
-          vim.cmd("startinsert")
+          -- Im Insert-Modus ein Leerzeichen einfügen.
+          vim.cmd("startinsert!")
+          vim.api.nvim_feedkeys(" ", "n", false)
         end)
       end,
       desc = "Kanban: Create board in Oil directory",
