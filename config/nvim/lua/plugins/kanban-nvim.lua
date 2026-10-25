@@ -104,16 +104,21 @@ return {
 
     local function focus_list(k, list_num)
       local list = k.items.lists[list_num]
+
       if not list then
         return
       end
-      for _, task in ipairs(list.tasks) do
-        if task.win_id and vim.api.nvim_win_is_valid(task.win_id) then
+
+      for _, task in ipairs(list.tasks or {}) do
+        if type(task.win_id) == "number" and vim.api.nvim_win_is_valid(task.win_id) then
           vim.api.nvim_set_current_win(task.win_id)
           return
         end
       end
-      vim.api.nvim_set_current_win(list.win_id)
+
+      if type(list.win_id) == "number" and vim.api.nvim_win_is_valid(list.win_id) then
+        vim.api.nvim_set_current_win(list.win_id)
+      end
     end
 
     local function list_number(k, buf)
@@ -150,8 +155,18 @@ return {
     end
 
     local original_open = kanban.kanban_open
+
     kanban.kanban_open = function(path)
-      original_open(path)
+      local ok, err = pcall(original_open, path)
+
+      if not ok then
+        kanban.active = false
+
+        vim.notify("Kanban konnte nicht geöffnet werden:\n" .. tostring(err), vim.log.levels.ERROR)
+
+        return
+      end
+
       if not kanban.active or not kanban.items or not kanban.items.lists then
         return
       end
@@ -159,6 +174,7 @@ return {
       for _, list in ipairs(kanban.items.lists) do
         remove_blank_cards(kanban, list)
       end
+
       focus_list(kanban, 1)
     end
 
