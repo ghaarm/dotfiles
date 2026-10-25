@@ -732,6 +732,7 @@ return {
 
     ---------------------------------------------------------------------------
     -- Neues Kanban-Board im aktuellen Oil-Verzeichnis erstellen
+    -- Eine leere Aufgabe nur in TODO anlegen und direkt bearbeiten
     ---------------------------------------------------------------------------
 
     {
@@ -766,6 +767,7 @@ return {
             return
           end
 
+          -- Kanban-Datei mit den konfigurierten Standardspalten erstellen.
           vim.cmd({
             cmd = "KanbanCreate",
             args = { file },
@@ -775,10 +777,40 @@ return {
             return
           end
 
+          -- Neue Datei öffnen.
           vim.cmd({
             cmd = "edit",
             args = { file },
           })
+
+          -- Erste leere Aufgabe ausschließlich unter TODO einfügen.
+          local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+          local todo_line = nil
+
+          for i, line in ipairs(lines) do
+            if line == "## TODO" then
+              todo_line = i
+              break
+            end
+          end
+
+          if not todo_line then
+            vim.notify("Kanban: TODO-Spalte nicht gefunden.", vim.log.levels.ERROR)
+            return
+          end
+
+          -- Aufgabe direkt unter der TODO-Überschrift einfügen.
+          vim.api.nvim_buf_set_lines(0, todo_line, todo_line, false, { "- [ ] " })
+
+          -- Datei speichern.
+          vim.cmd("write!")
+
+          -- Cursor hinter "- [ ] " positionieren.
+          vim.api.nvim_win_set_cursor(0, { todo_line + 1, 6 })
+
+          -- Direkt mit der Eingabe beginnen.
+          vim.cmd("startinsert")
         end)
       end,
       desc = "Kanban: Create board in Oil directory",
