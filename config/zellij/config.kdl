@@ -366,6 +366,7 @@ load_plugins {
 // Default: default
 //
 // theme "default"
+theme "nord"
 
 // Themes to use when the host terminal reports a dark or light color palette.
 // Both must be set for automatic switching to take place, otherwise `theme`
