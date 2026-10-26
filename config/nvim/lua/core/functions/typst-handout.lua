@@ -34,14 +34,18 @@ function M.build()
   local copy = vim.deepcopy(lines)
   local has_handout = false
   for i = show_line + 1, #copy do
-    if copy[i]:match("^%s*%)") then break end
+    if copy[i]:match("^%s*%)") then
+      break
+    end
     if copy[i]:match("^%s*handout%s*:") then
       copy[i] = copy[i]:gsub("handout%s*:%s*[%a]+", "handout: true", 1)
       has_handout = true
       break
     end
   end
-  if not has_handout then table.insert(copy, show_line + 1, "  handout: true,") end
+  if not has_handout then
+    table.insert(copy, show_line + 1, "  handout: true,")
+  end
   local dir = vim.fs.dirname(source)
   local stem = vim.fn.fnamemodify(source, ":t:r")
   local name = stem .. "-" .. os.date("%Y-%m-%d") .. "-handout"
@@ -61,8 +65,10 @@ function M.build()
         vim.notify("Handout-Kompilierung fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
         return
       end
-      vim.system({ "qpdf", "--stream-data=compress", "--recompress-flate", output, compressed_output },
-        { cwd = dir, text = true }, function(compressed)
+      vim.system(
+        { "qpdf", "--stream-data=compress", "--recompress-flate", output, compressed_output },
+        { cwd = dir, text = true },
+        function(compressed)
           vim.schedule(function()
             if compressed.code ~= 0 then
               vim.fn.delete(compressed_output)
@@ -71,7 +77,10 @@ function M.build()
             end
             local renamed, rename_error = os.rename(compressed_output, output)
             if not renamed then
-              vim.notify("Komprimiertes Handout konnte nicht übernommen werden: " .. tostring(rename_error), vim.log.levels.ERROR)
+              vim.notify(
+                "Komprimiertes Handout konnte nicht übernommen werden: " .. tostring(rename_error),
+                vim.log.levels.ERROR
+              )
               return
             end
             vim.notify("Typst-Handout erstellt: " .. output)
@@ -79,7 +88,8 @@ function M.build()
               vim.fn.jobstart({ "sioyek", output }, { detach = true })
             end
           end)
-        end)
+        end
+      )
     end)
   end)
 end
@@ -88,8 +98,14 @@ vim.api.nvim_create_user_command("TypstHandout", M.build, { desc = "Touying-Hand
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "typst",
   callback = function(args)
-    vim.keymap.set("n", "<localleader>bh", M.build,
-      { buffer = args.buf, silent = true, desc = "Typst-Handout bauen" })
+    vim.keymap.set("n", "<localleader>bh", M.build, { buffer = args.buf, silent = true, desc = "Typst-Handout bauen" })
+  end,
+})
+vim.api.nvim_create_user_command("TypstHandout", M.build, { desc = "Touying-Handout bauen" })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "typst",
+  callback = function(args)
+    vim.keymap.set("n", "<localleader>lh", M.build, { buffer = args.buf, silent = true, desc = "Typst-Handout bauen" })
   end,
 })
 
