@@ -13,6 +13,47 @@
 -- # tags are suggested from existing task tags found in the current Kanban board
 -- (unique, case-insensitive match).
 
+---------------------------------------------------------------------------
+-- Symlink für neue Kanban-Boards im zentralen iCloud-Verzeichnis erstellen
+---------------------------------------------------------------------------
+
+local function create_icloud_symlink(file)
+  local icloud_dir = "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/kanban-icloud"
+
+  -- Prüfen, ob das iCloud-Verzeichnis existiert.
+  if vim.fn.isdirectory(icloud_dir) ~= 1 then
+    vim.notify("Kanban-iCloud-Verzeichnis existiert nicht:\n" .. icloud_dir, vim.log.levels.ERROR)
+    return
+  end
+
+  -- Absoluten Pfad zur Originaldatei ermitteln.
+  local source = vim.fn.fnamemodify(file, ":p")
+
+  -- Symlink mit demselben Dateinamen im iCloud-Verzeichnis erstellen.
+  local link = vim.fs.joinpath(icloud_dir, vim.fn.fnamemodify(file, ":t"))
+
+  -- Existierende Dateien und Symlinks nicht überschreiben.
+  -- getftype erkennt auch defekte Symlinks.
+  if vim.fn.getftype(link) ~= "" then
+    vim.notify("Kanban-iCloud-Link existiert bereits:\n" .. link, vim.log.levels.WARN)
+    return
+  end
+
+  -- Symbolischen Link erstellen.
+  local result = vim.fn.system({
+    "ln",
+    "-s",
+    source,
+    link,
+  })
+
+  if vim.v.shell_error ~= 0 then
+    vim.notify("Kanban-iCloud-Symlink konnte nicht erstellt werden:\n" .. result, vim.log.levels.ERROR)
+    return
+  end
+
+  vim.notify("Kanban-iCloud-Symlink erstellt:\n" .. link, vim.log.levels.INFO)
+end
 return {
   "arakkkkk/kanban.nvim",
 
@@ -41,7 +82,6 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
-
     -- Kanban-Markdown beim Verlassen des Insert-Modus ohne Rückfrage schreiben.
     -- auto-save.nvim speichert erst verzögert und verwendet :write ohne !.
     local autosave_group = vim.api.nvim_create_augroup("KanbanMarkdownAutosave", { clear = true })
@@ -818,6 +858,9 @@ return {
 
           -- Datei speichern.
           vim.cmd("write!")
+
+          -- Symlink im zentralen iCloud-Verzeichnis erstellen.
+          create_icloud_symlink(file)
 
           -- Cursor am Ende der Zeile positionieren.
           vim.api.nvim_win_set_cursor(0, { todo_line + 1, 5 })

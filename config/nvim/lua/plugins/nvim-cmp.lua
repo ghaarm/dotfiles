@@ -228,10 +228,27 @@ return {
       }),
     })
     -- Typst: Tinymist + Zotero-BibTeX-Keys
+    -- cmp.setup.filetype("typst", {
+    --   sources = cmp.config.sources({
+    --     { name = "typst_bib", keyword_length = 1 },
+    --     { name = "nvim_lsp" },
+    --     { name = "luasnip" },
+    --     { name = "buffer", keyword_length = 3 },
+    --     { name = "path" },
+    --   }),
+    -- })
+    -- Typst: Tinymist + Zotero-BibTeX-Keys
     cmp.setup.filetype("typst", {
       sources = cmp.config.sources({
         { name = "typst_bib", keyword_length = 1 },
-        { name = "nvim_lsp" },
+        {
+          name = "nvim_lsp",
+          option = {
+            tinymist = {
+              keyword_pattern = [[\k\+\%(:\k*\)\?]],
+            },
+          },
+        },
         { name = "luasnip" },
         { name = "buffer", keyword_length = 3 },
         { name = "path" },
