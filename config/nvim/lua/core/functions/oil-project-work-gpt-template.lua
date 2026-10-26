@@ -396,10 +396,16 @@ function M.new_project()
       extension = "tex",
     },
     {
-      label = "PROJECT-G'MICS.md",
-      template = "PROJECT-GMICS.md",
+      label = "PROJECT-G'MICS-LATEX.md",
+      template = "PROJECT-GMICS-LATEX.md",
       bilder_latex = true,
       extension = "tex",
+    },
+    {
+      label = "PROJECT-G'MICS-TYPST.md",
+      template = "PROJECT-GMICS-TYPST.md",
+      bilder_latex = true,
+      extension = "typ",
     },
     {
       label = "PROJECT-LATEX.md",
@@ -498,7 +504,14 @@ function M.new_project()
         -- -------------------------------------------
 
         if mainfile_choice.mode == "unset" then
-          create_project(project_name, project_choice.template, project_choice.bilder_latex, project_choice.extension, "unset", nil)
+          create_project(
+            project_name,
+            project_choice.template,
+            project_choice.bilder_latex,
+            project_choice.extension,
+            "unset",
+            nil
+          )
 
           return
         end

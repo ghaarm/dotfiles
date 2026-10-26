@@ -262,3 +262,14 @@ end, { expr = true })
 -- end, { desc = "[P]Open telescope buffers" })
 --
 --
+
+-- Ctrl-h/j/k/l: zum Split in der jeweiligen Richtung wechseln, falls vorhanden.
+-- Ohne benachbarten Split bleibt die normale Ctrl-Tastenfunktion erhalten.
+for _, dir in ipairs({ "h", "j", "k", "l" }) do
+  vim.keymap.set("n", "<C-" .. dir .. ">", function()
+    if vim.fn.winnr(dir) ~= vim.fn.winnr() then
+      return "<C-w>" .. dir
+    end
+    return "<C-" .. dir .. ">"
+  end, { expr = true, desc = "Split-Navigation nach " .. dir })
+end

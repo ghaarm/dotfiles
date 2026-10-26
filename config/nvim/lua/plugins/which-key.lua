@@ -229,6 +229,13 @@ return {
         remap = false,
       },
       {
+        "<leader>tmG",
+        "<cmd>read ~/.config/nvim/templates/project-work-gpt/PROJECT-GMICS-TYPST.md<CR>",
+        desc = "project-gmics-typst.md",
+        nowait = true,
+        remap = false,
+      },
+      {
         "<leader>tml",
         "<cmd>read ~/.config/nvim/templates/project-work-gpt/PROJECT-LATEX.md<CR>",
         desc = "project-latex.md",

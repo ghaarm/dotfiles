@@ -80,7 +80,9 @@
 )
 
 #let titel = "{{INPUT:FOOTER}}"
+
 #let fusszeile = "{{INPUT:FOOTER}}, G. Haarmeyer"
+
 #let untertitel = none
 #let datum = datetime.today().display("[day].[month].[year]")
 #set page(footer: context {
