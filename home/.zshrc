@@ -148,6 +148,8 @@ alias cdcore="cd ~/dotfiles/config/nvim/lua/core && nvim keybindings.lua"
 
 alias cdfunc="cd ~/dotfiles/config/nvim/lua/core/functions && nvim"
 
+alias cdzelli="cd ~/dotfiles/config/zellij && nvim config.kdl"
+
 alias cdparakeet-vocabulary="cd ~/dotfiles/config/macparakeet && nvim"
 
 

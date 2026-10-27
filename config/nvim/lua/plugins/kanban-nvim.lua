@@ -54,6 +54,7 @@ local function create_icloud_symlink(file)
 
   vim.notify("Kanban-iCloud-Symlink erstellt:\n" .. link, vim.log.levels.INFO)
 end
+
 return {
   "arakkkkk/kanban.nvim",
 
@@ -64,6 +65,11 @@ return {
   opts = {
     move_position = "top",
     add_position = "bottom",
+
+    layout = {
+      task_height = 3,
+      task_y_margin = 2,
+    },
 
     markdown = {
       description_folder = "./tasks/",
@@ -82,25 +88,161 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
+
+    ---------------------------------------------------------------------------
+    -- Dynamische Kartenhöhe
+    -- Karten wachsen mit dem Inhalt, maximal 20 Zeilen.
+    -- Bei Platzmangel bleibt der Inhalt innerhalb der Karte scrollbar.
+    ---------------------------------------------------------------------------
+
+    local min_task_height = 1
+    local max_task_height = 20
+
+    ---------------------------------------------------------------------------
+    -- Benötigte Höhe anhand des Inhalts berechnen
+    ---------------------------------------------------------------------------
+
+    local function get_task_height(task, list)
+      local lines = task.lines or {}
+
+      -- Aktuellen Bufferinhalt verwenden.
+      if task.buf_nr and vim.api.nvim_buf_is_valid(task.buf_nr) then
+        lines = vim.api.nvim_buf_get_lines(task.buf_nr, 0, -1, false)
+      end
+
+      -- Tatsächliche Breite des Karteninhalts.
+      local width = math.max(1, list.buf_conf.width - 4)
+
+      local total_height = 0
+
+      for _, line in ipairs(lines) do
+        local display_width = vim.fn.strdisplaywidth(line)
+
+        total_height = total_height + math.max(1, math.ceil(display_width / width))
+      end
+
+      return math.max(min_task_height, math.min(total_height, max_task_height))
+    end
+
+    ---------------------------------------------------------------------------
+    -- Karten innerhalb der Spalte positionieren
+    ---------------------------------------------------------------------------
+
+    local function resize_tasks(k, _)
+      for _, list in ipairs(k.items.lists) do
+        local row = list.buf_conf.row + 4
+
+        -- Unteren Rand der Spalte berücksichtigen.
+        local bottom = list.buf_conf.row + list.buf_conf.height - 1
+
+        for _, task in ipairs(list.tasks) do
+          if task.win_id and vim.api.nvim_win_is_valid(task.win_id) then
+            local desired_height = get_task_height(task, list)
+
+            -- Verbleibenden Platz innerhalb der Spalte berechnen.
+            local available_height = bottom - row - 1
+
+            if available_height >= min_task_height then
+              local height = math.min(desired_height, available_height)
+
+              task.buf_conf.width = list.buf_conf.width - 4
+              task.buf_conf.height = height
+              task.buf_conf.row = row
+              task.buf_conf.col = list.buf_conf.col + 2
+
+              vim.api.nvim_win_set_config(task.win_id, task.buf_conf)
+
+              vim.wo[task.win_id].wrap = true
+              vim.wo[task.win_id].linebreak = true
+              vim.wo[task.win_id].breakindent = false
+
+              -- Innerhalb der Karte kann gescrollt werden.
+              vim.wo[task.win_id].scrolloff = 0
+
+              -- Platz für Kartenhöhe, Rahmen und Abstand.
+              row = row + height + k.ops.layout.task_y_margin + 2
+            end
+          end
+        end
+      end
+    end
+
+    require("kanban.fn.tasks.resize").resize = resize_tasks
+    kanban.fn.tasks.resize = resize_tasks
+
+    ---------------------------------------------------------------------------
+    -- Karten bereits beim Öffnen richtig dimensionieren
+    ---------------------------------------------------------------------------
+
+    local original_task_open = kanban.fn.tasks.open
+
+    kanban.fn.tasks.open = function(k, task)
+      for _, list in ipairs(k.items.lists) do
+        for _, candidate in ipairs(list.tasks) do
+          if candidate == task then
+            task.buf_conf.height = math.min(get_task_height(task, list), math.max(1, list.buf_conf.height - 6))
+            break
+          end
+        end
+      end
+
+      return original_task_open(k, task)
+    end
+
+    ---------------------------------------------------------------------------
+    -- Kartenhöhe während der Bearbeitung aktualisieren
+    ---------------------------------------------------------------------------
+
+    local original_task_autocmd = kanban.fn.tasks.autocmd
+
+    kanban.fn.tasks.autocmd = function(k, task)
+      -- Originale Autocommands beibehalten.
+      original_task_autocmd(k, task)
+
+      -- Zusätzlich die Fensterhöhe bei Textänderungen aktualisieren.
+      vim.api.nvim_create_autocmd({
+        "TextChanged",
+        "TextChangedI",
+        "TextChangedP",
+      }, {
+        buffer = task.buf_nr,
+
+        callback = function()
+          if k.active then
+            resize_tasks(k, 0)
+          end
+        end,
+      })
+    end
+
+    ---------------------------------------------------------------------------
+    -- Kanban-Markdown automatisch speichern
+    ---------------------------------------------------------------------------
+
     -- Kanban-Markdown beim Verlassen des Insert-Modus ohne Rückfrage schreiben.
     -- auto-save.nvim speichert erst verzögert und verwendet :write ohne !.
     local autosave_group = vim.api.nvim_create_augroup("KanbanMarkdownAutosave", { clear = true })
+
     vim.api.nvim_create_autocmd("InsertLeave", {
       group = autosave_group,
       pattern = "*.md",
+
       callback = function(event)
         local buf = event.buf
+
         if not vim.bo[buf].modified or vim.bo[buf].buftype ~= "" then
           return
         end
 
         local header = table.concat(vim.api.nvim_buf_get_lines(buf, 0, 6, false), "\n")
+
         if not header:find("kanban-plugin: basic", 1, true) then
           return
         end
 
         vim.api.nvim_buf_call(buf, function()
           local ok, err = pcall(vim.cmd, "silent write!")
+
           if not ok then
             vim.notify("Kanban-Datei konnte nicht gespeichert werden: " .. err, vim.log.levels.ERROR)
           end
@@ -108,12 +250,17 @@ return {
       end,
     })
 
+    ---------------------------------------------------------------------------
+    -- Prüfen, ob eine Karte Inhalt enthält
+    ---------------------------------------------------------------------------
+
     local function task_has_content(task)
       for _, line in ipairs(task.lines) do
         if not line:match("^%s*$") then
           return true
         end
       end
+
       return false
     end
 
@@ -122,14 +269,17 @@ return {
     ---------------------------------------------------------------------------
 
     local original_save = kanban.fn.tasks.save
+
     kanban.fn.tasks.save = function(k)
       local has_focus = pcall(k.fn.tasks.utils.get_focus, k)
+
       if has_focus then
         original_save(k)
       end
     end
 
     local original_add = kanban.fn.tasks.add
+
     kanban.fn.tasks.add = function(k, list_num, task, position, open)
       if not list_num then
         for i, list in ipairs(k.items.lists) do
@@ -139,6 +289,7 @@ return {
           end
         end
       end
+
       return original_add(k, list_num, task, position, open)
     end
 
@@ -170,29 +321,45 @@ return {
     end
 
     local original_list_add = kanban.fn.lists.add
+
     kanban.fn.lists.add = function(k, title)
       original_list_add(k, title, false)
+
       local buf = k.items.lists[#k.items.lists].buf_nr
+
       vim.keymap.set("n", "<C-o>", "<cmd>KanbanTaskAdd<cr>", { buffer = buf, silent = true })
-      for key, step in pairs({ ["<C-h>"] = -1, ["<C-l>"] = 1 }) do
+
+      for key, step in pairs({
+        ["<C-h>"] = -1,
+        ["<C-l>"] = 1,
+      }) do
         vim.keymap.set("n", key, function()
           local current = list_number(k, buf)
+
           if current then
             focus_list(k, current + step)
           end
-        end, { buffer = buf, silent = true })
+        end, {
+          buffer = buf,
+          silent = true,
+        })
       end
     end
 
     local function remove_blank_cards(k, list)
       for i = #list.tasks, 1, -1 do
         local task = list.tasks[i]
+
         if not task_has_content(task) then
           k.fn.tasks.close(task)
           table.remove(list.tasks, i)
         end
       end
     end
+
+    ---------------------------------------------------------------------------
+    -- Kanban-Board öffnen und leere Platzhalter entfernen
+    ---------------------------------------------------------------------------
 
     local original_open = kanban.kanban_open
 
@@ -218,23 +385,37 @@ return {
       focus_list(kanban, 1)
     end
 
+    ---------------------------------------------------------------------------
+    -- Leere Platzhalter nach dem Löschen entfernen
+    ---------------------------------------------------------------------------
+
     local original_delete = kanban.fn.tasks.delete
+
     kanban.fn.tasks.delete = function(k)
       local focus = k.fn.tasks.utils.get_focus(k)
+
       original_delete(k)
+
       local list = k.items.lists[focus.list_num]
+
       if #list.tasks == 1 and not task_has_content(list.tasks[1]) then
         vim.api.nvim_set_current_win(list.win_id)
         remove_blank_cards(k, list)
       end
     end
 
+    ---------------------------------------------------------------------------
+    -- Navigation in leere Spalten ermöglichen
+    ---------------------------------------------------------------------------
+
     for _, direction in ipairs({ "left", "right" }) do
       local step = direction == "left" and -1 or 1
       local original_move = kanban.fn.tasks.move[direction]
+
       kanban.fn.tasks.move[direction] = function(k)
         local focus = k.fn.tasks.utils.get_focus(k)
         local target = k.items.lists[focus.list_num + step]
+
         if target and #target.tasks == 0 then
           k.fn.tasks.save(k)
           vim.api.nvim_set_current_win(target.win_id)
@@ -256,9 +437,14 @@ return {
       local lines = vim.list_extend({}, k.ops.markdown.header)
 
       for _, list in ipairs(k.items.lists) do
-        vim.list_extend(lines, { "", "## " .. list.title, "" })
+        vim.list_extend(lines, {
+          "",
+          "## " .. list.title,
+          "",
+        })
 
         local written_tasks = 0
+
         for _, task in ipairs(list.tasks) do
           if task_has_content(task) then
             if written_tasks > 0 then
@@ -272,22 +458,27 @@ return {
                 table.insert(lines, "\t" .. line)
               end
             end
+
             written_tasks = written_tasks + 1
           end
         end
       end
 
       table.insert(lines, "")
+
       vim.list_extend(lines, k.ops.markdown.footer)
 
       local file, err = io.open(path, "w")
+
       if not file then
         vim.notify("Kanban konnte nicht gespeichert werden: " .. err, vim.log.levels.ERROR)
         return
       end
+
       for _, line in ipairs(lines) do
         file:write(line, "\n")
       end
+
       file:close()
     end
 
@@ -339,6 +530,7 @@ return {
           attach_mappings = function(prompt_bufnr)
             actions.select_default:replace(function()
               local selection = action_state.get_selected_entry()
+
               actions.close(prompt_bufnr)
 
               if selection then
@@ -354,6 +546,7 @@ return {
         })
         :find()
     end
+
     ---------------------------------------------------------------------------
     -- Workaround: Verbliebene Kanban-Floating-Windows schließen
     ---------------------------------------------------------------------------
@@ -393,6 +586,7 @@ return {
     end
 
     kanban.fn.kwindow.close = kwindow_close.close
+
     ---------------------------------------------------------------------------
     -- Checkbox-Status automatisch an die Kanban-Spalte anpassen
     ---------------------------------------------------------------------------
@@ -424,10 +618,12 @@ return {
         -- Status entsprechend der Zielspalte setzen.
         -- DONE = erledigt, alle anderen Spalten = offen.
         local clone_task = require("kanban.utils").deepcopy(task)
+
         clone_task.check = target_list.title == "DONE" or target_list.title == "Done"
 
         -- Original entfernen und Kopie in Zielspalte einfügen.
         k.fn.tasks.delete(k)
+
         k.fn.tasks.add(k, target_num, clone_task, k.ops.move_position, true)
       end
     end
@@ -592,10 +788,10 @@ return {
         return
       end
 
-      -- Titel der Spalte einfärben
+      -- Titel der Spalte einfärben.
       vim.api.nvim_buf_add_highlight(list.buf_nr, 0, style.title, 1, 0, -1)
 
-      -- Spaltenhintergrund dunkel lassen, Rahmen einfärben
+      -- Spaltenhintergrund dunkel lassen, Rahmen einfärben.
       vim.api.nvim_set_option_value(
         "winhighlight",
         "NormalFloat:ListFloat,FloatBorder:" .. style.border,
@@ -618,6 +814,7 @@ return {
     local function highlight_task(k, task)
       -- Zuerst das normale Highlighting von kanban.nvim ausführen.
       original_task_highlight(k, task)
+
       -------------------------------------------------------------------------
       -- Tags vollständig hervorheben
       -- Unterstützt Umlaute, ß, Bindestriche und Unterstriche
@@ -627,14 +824,14 @@ return {
         local lines = vim.api.nvim_buf_get_lines(task.buf_nr, 0, -1, false)
 
         for i, line in ipairs(lines) do
-          -- Tags am Zeilenanfang
+          -- Tags am Zeilenanfang.
           local tag = line:match("^(#[^%s#]+)")
 
           if tag then
             vim.api.nvim_buf_add_highlight(task.buf_nr, 0, "TaskTag", i - 1, 0, #tag)
           end
 
-          -- Tags nach Leerzeichen
+          -- Tags nach Leerzeichen.
           for start_idx, whitespace, tag_text in line:gmatch("()(%s+)(#[^%s#]+)") do
             local start_col = start_idx - 1 + #whitespace
 
@@ -642,6 +839,7 @@ return {
           end
         end
       end
+
       -------------------------------------------------------------------------
       -- Aktuelle Spalte des Tasks ermitteln
       -------------------------------------------------------------------------
@@ -700,6 +898,7 @@ return {
 
     {
       "<leader>kf",
+
       function()
         local kanban = require("kanban")
 
@@ -715,6 +914,7 @@ return {
         vim.cmd("KanbanOpen telescope")
         kanban.active = false
       end,
+
       desc = "Kanban: Find board",
     },
 
@@ -724,6 +924,7 @@ return {
 
     {
       "<leader>kb",
+
       function()
         local kanban = require("kanban")
 
@@ -731,6 +932,7 @@ return {
         if kanban.active then
           if vim.fn.exists(":KanbanClose") == 2 then
             local board_buf = vim.fn.bufnr(kanban.kanban_md_path or "")
+
             vim.cmd("KanbanClose")
 
             if board_buf > 0 and vim.api.nvim_buf_is_loaded(board_buf) then
@@ -745,8 +947,10 @@ return {
           else
             -- Fehlerhaften Zustand zurücksetzen.
             kanban.active = false
+
             vim.notify("Kein aktives Kanban-Board gefunden. Status zurückgesetzt.", vim.log.levels.WARN)
           end
+
           return
         end
 
@@ -758,7 +962,8 @@ return {
           return
         end
 
-        -- Das Plugin liest die Datei von der Platte, nicht den aktuellen Buffer.
+        -- Das Plugin liest die Datei von der Platte,
+        -- nicht den aktuellen Buffer.
         if vim.bo.modified then
           vim.cmd("write!")
         end
@@ -768,6 +973,7 @@ return {
           args = { file },
         })
       end,
+
       desc = "Kanban: Toggle board",
     },
 
@@ -778,6 +984,7 @@ return {
 
     {
       "<leader>kc",
+
       function()
         local oil = require("oil")
 
@@ -841,18 +1048,6 @@ return {
             return
           end
 
-          -- -- Aufgabe direkt unter der TODO-Überschrift einfügen.
-          -- vim.api.nvim_buf_set_lines(0, todo_line, todo_line, false, { "- [ ] " })
-          --
-          -- -- Datei speichern.
-          -- vim.cmd("write!")
-          --
-          -- -- Cursor hinter der schließenden Klammer positionieren.
-          -- vim.api.nvim_win_set_cursor(0, { todo_line + 1, 5 })
-          --
-          -- -- Im Insert-Modus ein Leerzeichen einfügen.
-          -- vim.cmd("startinsert!")
-          -- vim.api.nvim_feedkeys(" ", "n", false)
           -- Aufgabe direkt unter der TODO-Überschrift einfügen.
           vim.api.nvim_buf_set_lines(0, todo_line, todo_line, false, { "- [ ] " })
 
@@ -869,6 +1064,7 @@ return {
           vim.cmd("startinsert!")
         end)
       end,
+
       desc = "Kanban: Create board in Oil directory",
     },
   },
