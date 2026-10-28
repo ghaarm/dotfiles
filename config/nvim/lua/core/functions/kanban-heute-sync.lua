@@ -354,7 +354,7 @@ function M.add_current_task()
   local insert_at = #lines + 1
 
   for i = section_line + 1, #lines do
-    if lines[i]:match("^##%s+") then
+    if lines[i]:match("^##%s+") or lines[i]:match("^#%s+") or lines[i]:match("^%%%% kanban:settings") then
       insert_at = i
       break
     end
@@ -405,9 +405,313 @@ function M.add_current_task()
 
   notify("Aufgabe nach Heute übernommen: " .. task.lines[1])
 end
+---------------------------------------------------------------------------
+-- Automatische bidirektionale Status-Synchronisierung
+---------------------------------------------------------------------------
+
+local sync_running = false
 
 ---------------------------------------------------------------------------
--- Tastenkürzel
+-- Aufgaben und ihre Positionen aus Markdown lesen
+---------------------------------------------------------------------------
+
+local function parse_tasks(lines)
+  local tasks = {}
+  local section = nil
+  local footer_start = #lines + 1
+
+  for i, line in ipairs(lines) do
+    -- Kanban-Metadaten gehören nicht zu den Aufgaben.
+    if line:match("^%%%% kanban:settings") then
+      footer_start = i
+      break
+    end
+
+    local heading = line:match("^##%s+(.+)$")
+
+    if heading then
+      section = get_section(heading)
+    end
+
+    local checked, title = line:match("^%- %[([ xX])%] (.*)$")
+
+    if checked and section then
+      table.insert(tasks, {
+        title = title,
+        section = section,
+        start_line = i,
+        check = checked:lower() == "x",
+      })
+    end
+  end
+
+  for index, task in ipairs(tasks) do
+    local next_task = tasks[index + 1]
+
+    local last_line = next_task and (next_task.start_line - 1) or (footer_start - 1)
+
+    for i = task.start_line + 1, last_line do
+      if lines[i]:match("^##%s+") or lines[i]:match("^#%s+") then
+        last_line = i - 1
+        break
+      end
+    end
+
+    while last_line > task.start_line and vim.trim(lines[last_line]) == "" do
+      last_line = last_line - 1
+    end
+
+    task.end_line = last_line
+  end
+
+  return tasks
+end
+
+---------------------------------------------------------------------------
+-- Aufgabe eindeutig anhand des Titels finden
+---------------------------------------------------------------------------
+
+local function find_unique_task(tasks, title)
+  local found = nil
+
+  for _, task in ipairs(tasks) do
+    if task.title == title then
+      if found then
+        return nil, "duplicate"
+      end
+
+      found = task
+    end
+  end
+
+  return found
+end
+
+---------------------------------------------------------------------------
+-- Aufgabe zwischen Kanban-Spalten verschieben
+---------------------------------------------------------------------------
+
+local function move_task(lines, task, target_section)
+  if task.section == target_section then
+    return lines
+  end
+
+  -- Zielspalte prüfen, bevor Änderungen vorgenommen werden.
+  if not find_section(lines, target_section) then
+    return nil
+  end
+
+  -- Aufgabeninhalt übernehmen.
+  local task_lines = {}
+
+  for i = task.start_line, task.end_line do
+    table.insert(task_lines, lines[i])
+  end
+
+  -- Checkbox an die Zielspalte anpassen.
+  task_lines[1] = task_lines[1]:gsub("^%- %[[ xX]%]", target_section == "DONE" and "- [x]" or "- [ ]")
+
+  -- Aufgabe aus der bisherigen Spalte entfernen.
+  for i = task.end_line, task.start_line, -1 do
+    table.remove(lines, i)
+  end
+
+  -- Überflüssige Leerzeilen an der alten Position entfernen.
+  -- Maximal zwei aufeinanderfolgende Leerzeilen beibehalten.
+  local function normalize_blank_lines()
+    local i = 1
+    local blanks = 0
+
+    while i <= #lines do
+      if vim.trim(lines[i]) == "" then
+        blanks = blanks + 1
+
+        if blanks > 2 then
+          table.remove(lines, i)
+        else
+          i = i + 1
+        end
+      else
+        blanks = 0
+        i = i + 1
+      end
+    end
+  end
+
+  normalize_blank_lines()
+
+  -- Zielspalte erneut bestimmen.
+  local section_line = find_section(lines, target_section)
+
+  -- Ende der Zielspalte suchen.
+  local section_end = #lines + 1
+
+  for i = section_line + 1, #lines do
+    if lines[i]:match("^##%s+") or lines[i]:match("^#%s+") or lines[i]:match("^%%%% kanban:settings") then
+      section_end = i
+      break
+    end
+  end
+
+  -- Letzte nichtleere Zeile innerhalb der Zielspalte suchen.
+  local last_content = section_line
+
+  for i = section_line + 1, section_end - 1 do
+    if vim.trim(lines[i]) ~= "" then
+      last_content = i
+    end
+  end
+
+  -- Neue Aufgabe direkt hinter dem letzten Inhalt einfügen.
+  local insert_at = last_content + 1
+
+  -- Eine Leerzeile vor der Aufgabe.
+  local new_lines = { "" }
+
+  vim.list_extend(new_lines, task_lines)
+
+  for i = #new_lines, 1, -1 do
+    table.insert(lines, insert_at, new_lines[i])
+  end
+
+  -- Auch nach dem Einfügen überflüssige Leerzeilen entfernen.
+  normalize_blank_lines()
+
+  return lines
+end
+
+---------------------------------------------------------------------------
+-- Ungespeicherte Änderungen schützen
+---------------------------------------------------------------------------
+
+local function can_modify_file(path)
+  local bufnr = vim.fn.bufnr(path)
+
+  if bufnr ~= -1 and vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified then
+    notify(
+      "Synchronisierung übersprungen: Ungespeicherte Änderungen in " .. vim.fn.fnamemodify(path, ":t"),
+      vim.log.levels.WARN
+    )
+
+    return false
+  end
+
+  return true
+end
+
+---------------------------------------------------------------------------
+-- Geöffneten Buffer nach externer Änderung aktualisieren
+---------------------------------------------------------------------------
+
+local function reload_buffer(path)
+  local bufnr = vim.fn.bufnr(path)
+
+  if bufnr == -1 or not vim.api.nvim_buf_is_loaded(bufnr) then
+    return
+  end
+
+  if vim.bo[bufnr].modified then
+    return
+  end
+
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.cmd("silent! edit!")
+  end)
+end
+
+---------------------------------------------------------------------------
+-- Status zwischen Projekt-Kanban und Tages-Kanban synchronisieren
+---------------------------------------------------------------------------
+
+function M.sync_file(changed_path)
+  if sync_running or not changed_path or changed_path == "" then
+    return
+  end
+
+  local changed = normalize_path(changed_path)
+  local today = normalize_path(M.config.today_file)
+
+  local metadata = load_metadata()
+
+  if not metadata then
+    return
+  end
+
+  -- Nur Dateien synchronisieren, die tatsächlich beteiligt sind.
+  local relevant = changed == today
+
+  if not relevant then
+    for _, entry in pairs(metadata) do
+      if entry.source and normalize_path(entry.source) == changed then
+        relevant = true
+        break
+      end
+    end
+  end
+
+  if not relevant then
+    return
+  end
+
+  local changed_lines = read_lines(changed)
+
+  if not changed_lines then
+    return
+  end
+
+  local changed_tasks = parse_tasks(changed_lines)
+
+  sync_running = true
+
+  local ok, err = pcall(function()
+    for _, entry in pairs(metadata) do
+      if entry.source and entry.title then
+        local source = normalize_path(entry.source)
+
+        if changed == today or changed == source then
+          -- Synchronisierungsrichtung bestimmen.
+          local target = changed == today and source or today
+
+          if vim.fn.filereadable(target) == 1 then
+            local target_lines = read_lines(target)
+
+            if target_lines then
+              local target_tasks = parse_tasks(target_lines)
+
+              local current_task, current_error = find_unique_task(changed_tasks, entry.title)
+
+              local target_task, target_error = find_unique_task(target_tasks, entry.title)
+
+              if current_error == "duplicate" or target_error == "duplicate" then
+                notify("Mehrdeutige Aufgabe, nicht synchronisiert: " .. entry.title, vim.log.levels.WARN)
+              elseif current_task and target_task then
+                if current_task.section ~= target_task.section then
+                  if can_modify_file(target) then
+                    local new_lines = move_task(target_lines, target_task, current_task.section)
+
+                    if new_lines and write_lines(target, new_lines) then
+                      reload_buffer(target)
+
+                      notify("Synchronisiert: " .. entry.title .. " → " .. current_task.section)
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end)
+
+  sync_running = false
+
+  if not ok then
+    notify("Fehler bei der Synchronisierung:\n" .. tostring(err), vim.log.levels.ERROR)
+  end
+end
+---------------------------------------------------------------------------
+-- Tastenkürzel und automatische Synchronisierung
 ---------------------------------------------------------------------------
 
 function M.setup()
@@ -416,6 +720,17 @@ function M.setup()
   end, {
     desc = "Kanban: Aufgabe nach Heute übernehmen",
     silent = true,
+  })
+
+  local group = vim.api.nvim_create_augroup("KanbanHeuteSync", { clear = true })
+
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    group = group,
+    pattern = "*.md",
+
+    callback = function(args)
+      M.sync_file(vim.api.nvim_buf_get_name(args.buf))
+    end,
   })
 end
 

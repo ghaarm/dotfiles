@@ -88,7 +88,6 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
-    require("core.functions.kanban-heute-sync").setup()
     ---------------------------------------------------------------------------
     -- Dynamische Kartenhöhe
     -- Karten wachsen mit dem Inhalt, maximal 20 Zeilen.
@@ -480,8 +479,10 @@ return {
       end
 
       file:close()
+      --
+      -- Kanban-Status nach dem Speichern synchronisieren.
+      require("core.functions.kanban-heute-sync").sync_file(path)
     end
-
     ---------------------------------------------------------------------------
     -- Telescope: Nur Dateinamen statt vollständiger Pfade anzeigen
     ---------------------------------------------------------------------------
@@ -625,6 +626,13 @@ return {
         k.fn.tasks.delete(k)
 
         k.fn.tasks.add(k, target_num, clone_task, k.ops.move_position, true)
+
+        -- Board nach dem Verschieben automatisch speichern.
+        vim.schedule(function()
+          if k.active then
+            vim.cmd("KanbanSave")
+          end
+        end)
       end
     end
 
@@ -776,7 +784,23 @@ return {
         background = "KanbanDoneBackground",
       },
     }
+    ---------------------------------------------------------------------------
+    -- Spaltenstil unabhängig von Zusätzen im Namen ermitteln
+    ---------------------------------------------------------------------------
 
+    local function get_list_style(title)
+      title = vim.trim(title):upper()
+
+      if title:match("^TODO") then
+        return styles["TODO"]
+      elseif title:match("^WIP") then
+        return styles["WIP (max. 3)"]
+      elseif title:match("^DONE") then
+        return styles["DONE"]
+      end
+
+      return nil
+    end
     ---------------------------------------------------------------------------
     -- Spalten
     ---------------------------------------------------------------------------
