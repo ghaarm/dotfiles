@@ -88,7 +88,7 @@ return {
     local kanban = require("kanban")
 
     kanban.setup(opts)
-
+    require("core.functions.kanban-heute-sync").setup()
     ---------------------------------------------------------------------------
     -- Dynamische Kartenhöhe
     -- Karten wachsen mit dem Inhalt, maximal 20 Zeilen.

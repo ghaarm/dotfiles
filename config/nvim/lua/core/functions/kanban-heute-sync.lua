@@ -1,0 +1,422 @@
+local M = {}
+
+---------------------------------------------------------------------------
+-- Konfiguration
+---------------------------------------------------------------------------
+
+M.config = {
+  today_file = vim.fn.expand(
+    "~/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/kanban-icloud/kanban-heute.md"
+  ),
+}
+
+---------------------------------------------------------------------------
+-- Hilfsfunktionen
+---------------------------------------------------------------------------
+
+local function notify(message, level)
+  vim.notify("Kanban Heute: " .. message, level or vim.log.levels.INFO)
+end
+
+local function normalize_path(path)
+  path = vim.fn.fnamemodify(path, ":p")
+  return vim.uv.fs_realpath(path) or path
+end
+
+local function read_lines(path)
+  if vim.fn.filereadable(path) ~= 1 then
+    return nil
+  end
+
+  return vim.fn.readfile(path)
+end
+
+local function write_lines(path, lines)
+  local ok, result = pcall(vim.fn.writefile, lines, path)
+
+  if not ok or result ~= 0 then
+    notify("Datei konnte nicht geschrieben werden:\n" .. path, vim.log.levels.ERROR)
+    return false
+  end
+
+  return true
+end
+
+local function metadata_path()
+  return M.config.today_file:gsub("%.md$", "-sync.json")
+end
+
+local function load_metadata()
+  local path = metadata_path()
+
+  if vim.fn.filereadable(path) ~= 1 then
+    return {}
+  end
+
+  local ok, data = pcall(function()
+    return vim.json.decode(table.concat(vim.fn.readfile(path), "\n"))
+  end)
+
+  if not ok or type(data) ~= "table" then
+    notify("Ungültige Sync-Metadaten.", vim.log.levels.ERROR)
+    return nil
+  end
+
+  return data
+end
+
+local function save_metadata(data)
+  return write_lines(metadata_path(), {
+    vim.json.encode(data),
+  })
+end
+
+---------------------------------------------------------------------------
+-- Kanban-Spalten
+---------------------------------------------------------------------------
+
+local function get_section(list_name)
+  local title = vim.trim(list_name):upper()
+
+  if title:match("^DONE") then
+    return "DONE"
+  end
+
+  if title:match("^WIP") then
+    return "WIP"
+  end
+
+  if title:match("^TODO") then
+    return "TODO"
+  end
+
+  return nil
+end
+
+local function find_section(lines, section)
+  for i, line in ipairs(lines) do
+    local title = line:match("^##%s+(.+)$")
+
+    if title and get_section(title) == section then
+      return i
+    end
+  end
+
+  return nil
+end
+
+---------------------------------------------------------------------------
+-- Aufgabe aus Markdown ermitteln
+---------------------------------------------------------------------------
+
+local function get_markdown_task()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local source = vim.api.nvim_buf_get_name(bufnr)
+
+  if source == "" or not source:match("%.md$") then
+    return nil
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+  local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+
+  -- Anfang der Aufgabe suchen.
+  local task_start = nil
+
+  for i = cursor_line, 1, -1 do
+    if lines[i]:match("^%- %[.%] ") then
+      task_start = i
+      break
+    end
+
+    -- Nicht über eine Abschnittsüberschrift hinaus suchen.
+    if lines[i]:match("^##%s+") then
+      break
+    end
+  end
+
+  if not task_start then
+    notify("Cursor steht auf keiner Kanban-Aufgabe.", vim.log.levels.WARN)
+    return nil
+  end
+
+  -- Zugehörige Spalte ermitteln.
+  local list_name = nil
+
+  for i = task_start, 1, -1 do
+    local title = lines[i]:match("^##%s+(.+)$")
+
+    if title then
+      list_name = title
+      break
+    end
+  end
+
+  if not list_name then
+    notify("Keine Kanban-Spalte gefunden.", vim.log.levels.WARN)
+    return nil
+  end
+
+  -- Ende der Aufgabe suchen.
+  local task_end = task_start
+
+  for i = task_start + 1, #lines do
+    local line = lines[i]
+
+    if line:match("^%- %[.%] ") or line:match("^##%s+") or line:match("^#%s+") then
+      break
+    end
+
+    task_end = i
+  end
+
+  -- Leerzeilen am Ende entfernen.
+  while task_end > task_start and vim.trim(lines[task_end]) == "" do
+    task_end = task_end - 1
+  end
+
+  local first_line = lines[task_start]
+
+  local checked = first_line:match("^%- %[xX%] ") ~= nil
+
+  local title = first_line:match("^%- %[.%] (.*)$")
+
+  if not title or vim.trim(title) == "" then
+    notify("Leere Aufgabe.", vim.log.levels.WARN)
+    return nil
+  end
+
+  local task_lines = { title }
+
+  for i = task_start + 1, task_end do
+    local line = lines[i]
+
+    -- Eine Ebene Markdown-Einrückung entfernen.
+    line = line:gsub("^\t", "", 1)
+    line = line:gsub("^    ", "", 1)
+
+    table.insert(task_lines, line)
+  end
+
+  return {
+    source = normalize_path(source),
+    list_name = list_name,
+    lines = task_lines,
+    check = checked,
+    position = task_start,
+  }
+end
+
+---------------------------------------------------------------------------
+-- Aufgabe aus grafischem Kanban-Board ermitteln
+---------------------------------------------------------------------------
+
+local function get_board_task()
+  local ok, k = pcall(require, "kanban")
+
+  if not ok or not k.active then
+    return nil
+  end
+
+  local focus_ok, focus = pcall(k.fn.tasks.utils.get_focus, k)
+
+  if not focus_ok or not focus then
+    return nil
+  end
+
+  local list = k.items.lists[focus.list_num]
+  local task = list and list.tasks[focus.task_num]
+
+  if not task then
+    return nil
+  end
+
+  local task_lines = task.lines
+
+  if task.buf_nr and vim.api.nvim_buf_is_valid(task.buf_nr) then
+    task_lines = vim.api.nvim_buf_get_lines(task.buf_nr, 0, -1, false)
+  end
+
+  return {
+    source = normalize_path(k.kanban_md_path),
+    list_name = list.title,
+    lines = vim.deepcopy(task_lines),
+    check = task.check,
+  }
+end
+
+---------------------------------------------------------------------------
+-- Aktuelle Aufgabe ermitteln
+---------------------------------------------------------------------------
+
+local function get_current_task()
+  -- Zuerst normale Markdown-Datei prüfen.
+  local task = get_markdown_task()
+
+  if task then
+    return task
+  end
+
+  -- Anschließend grafisches Kanban-Board prüfen.
+  task = get_board_task()
+
+  if task then
+    return task
+  end
+
+  notify("Keine Kanban-Aufgabe gefunden.", vim.log.levels.WARN)
+
+  return nil
+end
+
+---------------------------------------------------------------------------
+-- Aufgabenidentität
+---------------------------------------------------------------------------
+
+local function task_key(task)
+  return table.concat({
+    task.source,
+    task.list_name,
+    table.concat(task.lines, "\n"),
+  }, "\n")
+end
+
+---------------------------------------------------------------------------
+-- Aufgabe nach Heute übernehmen
+---------------------------------------------------------------------------
+
+function M.add_current_task()
+  local task = get_current_task()
+
+  if not task then
+    return
+  end
+
+  local today = normalize_path(M.config.today_file)
+
+  if task.source == today then
+    notify("Aufgabe befindet sich bereits im Tages-Kanban.")
+    return
+  end
+
+  if vim.fn.filereadable(today) ~= 1 then
+    notify("Tages-Kanban existiert nicht:\n" .. today, vim.log.levels.ERROR)
+    return
+  end
+
+  local section = get_section(task.list_name)
+
+  if not section then
+    notify("Unbekannte Kanban-Spalte: " .. task.list_name, vim.log.levels.ERROR)
+    return
+  end
+
+  -- Verhindern, dass eine extern geänderte Datei einen
+  -- bereits geöffneten, ungespeicherten Buffer überschreibt.
+  local today_bufnr = vim.fn.bufnr(today)
+
+  if today_bufnr ~= -1 and vim.api.nvim_buf_is_loaded(today_bufnr) and vim.bo[today_bufnr].modified then
+    notify("Tages-Kanban enthält ungespeicherte Änderungen. Bitte zuerst speichern.", vim.log.levels.WARN)
+    return
+  end
+
+  local metadata = load_metadata()
+
+  if not metadata then
+    return
+  end
+
+  local key = task_key(task)
+
+  for _, entry in pairs(metadata) do
+    if entry.key == key then
+      notify("Aufgabe wurde bereits übernommen.")
+      return
+    end
+  end
+
+  local lines = read_lines(today)
+
+  if not lines then
+    notify("Tages-Kanban konnte nicht gelesen werden.", vim.log.levels.ERROR)
+    return
+  end
+
+  local section_line = find_section(lines, section)
+
+  if not section_line then
+    notify("Zielspalte " .. section .. " nicht gefunden.", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Ende der Zielspalte bestimmen.
+  local insert_at = #lines + 1
+
+  for i = section_line + 1, #lines do
+    if lines[i]:match("^##%s+") then
+      insert_at = i
+      break
+    end
+  end
+
+  -- Neue Markdown-Aufgabe erstellen.
+  local new_lines = {
+    (task.check and "- [x] " or "- [ ] ") .. task.lines[1],
+  }
+
+  for i = 2, #task.lines do
+    table.insert(new_lines, "\t" .. task.lines[i])
+  end
+
+  table.insert(new_lines, "")
+
+  -- Aufgabe in die passende Spalte einfügen.
+  for i = #new_lines, 1, -1 do
+    table.insert(lines, insert_at, new_lines[i])
+  end
+
+  if not write_lines(today, lines) then
+    return
+  end
+
+  -- Herkunft dokumentieren.
+  local id = tostring(vim.uv.hrtime())
+
+  metadata[id] = {
+    key = key,
+    source = task.source,
+    source_list = task.list_name,
+    title = task.lines[1],
+    position = task.position,
+  }
+
+  if not save_metadata(metadata) then
+    notify("Aufgabe übernommen, aber Sync-Metadaten konnten nicht gespeichert werden.", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Bereits geladenen, unveränderten Tages-Buffer aktualisieren.
+  if today_bufnr ~= -1 and vim.api.nvim_buf_is_loaded(today_bufnr) then
+    vim.api.nvim_buf_call(today_bufnr, function()
+      vim.cmd("edit!")
+    end)
+  end
+
+  notify("Aufgabe nach Heute übernommen: " .. task.lines[1])
+end
+
+---------------------------------------------------------------------------
+-- Tastenkürzel
+---------------------------------------------------------------------------
+
+function M.setup()
+  vim.keymap.set("n", "<leader>kh", function()
+    M.add_current_task()
+  end, {
+    desc = "Kanban: Aufgabe nach Heute übernehmen",
+    silent = true,
+  })
+end
+
+return M
