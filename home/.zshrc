@@ -312,7 +312,11 @@ alias cdwomo="cd /Users/g/Library/Mobile Documents/com~apple~CloudDocs/@Tabea & 
 alias cdat="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/atmungstherapie-knn && nvim" 
 # alias projtemp="cd ~/.config/nvim/templates" 
 
-
+kanban() {
+  aerospace move-node-to-workspace --focus-follows-window X
+  zellij attach kanban
+}
+#
 # Example aliases
 # alias zshconfig="mate ~/.zshrc" 
 # alias ohmyzsh="mate ~/.oh-my-zsh" 

@@ -68,7 +68,7 @@ return {
 
     layout = {
       task_height = 3,
-      task_y_margin = 2,
+      task_y_margin = 0,
     },
 
     markdown = {
