@@ -66,9 +66,17 @@ local function load_metadata()
 end
 
 local function save_metadata(data)
-  return write_lines(metadata_path(), {
-    vim.json.encode(data),
-  })
+  local json = vim.json.encode(data)
+
+  -- JSON mit jq lesbar formatieren.
+  local result = vim.fn.systemlist({ "jq", "--indent", "2", "." }, json)
+
+  if vim.v.shell_error ~= 0 then
+    notify("JSON konnte nicht formatiert werden. Ist jq installiert?", vim.log.levels.ERROR)
+    return false
+  end
+
+  return write_lines(metadata_path(), result)
 end
 
 ---------------------------------------------------------------------------
@@ -104,7 +112,36 @@ local function find_section(lines, section)
 
   return nil
 end
+---------------------------------------------------------------------------
+-- Einfügeposition innerhalb einer Kanban-Spalte bestimmen
+---------------------------------------------------------------------------
 
+local function find_task_insert_position(lines, section)
+  local section_line = find_section(lines, section)
+
+  if not section_line then
+    return nil
+  end
+
+  local section_end = #lines + 1
+
+  for i = section_line + 1, #lines do
+    if lines[i]:match("^##%s+") or lines[i]:match("^#%s+") or lines[i]:match("^%%%% kanban:settings") then
+      section_end = i
+      break
+    end
+  end
+
+  local last_content = section_line
+
+  for i = section_line + 1, section_end - 1 do
+    if vim.trim(lines[i]) ~= "" then
+      last_content = i
+    end
+  end
+
+  return last_content + 1
+end
 ---------------------------------------------------------------------------
 -- Aufgabe aus Markdown ermitteln
 ---------------------------------------------------------------------------
@@ -381,7 +418,7 @@ function M.add_current_task()
   end
 
   -- Herkunft dokumentieren.
-  local id = tostring(vim.uv.hrtime())
+  local id = os.date("%Y%m%d-%H%M%S") .. "-" .. tostring(math.random(1000, 9999))
 
   metadata[id] = {
     key = key,
@@ -661,6 +698,29 @@ function M.sync_file(changed_path)
 
   local changed_tasks = parse_tasks(changed_lines)
 
+  -- Verknüpfungen entfernen, deren Aufgabe im Projekt gelöscht wurde.
+  -- Nur prüfen, wenn tatsächlich ein Projekt-Kanban gespeichert wurde.
+  if changed ~= today then
+    local metadata_changed = false
+
+    for id, entry in pairs(metadata) do
+      if entry.source and normalize_path(entry.source) == changed then
+        local existing, err = find_unique_task(changed_tasks, entry.title)
+
+        if not existing and err ~= "duplicate" then
+          metadata[id] = nil
+          metadata_changed = true
+
+          notify("Verknüpfung entfernt: " .. entry.title)
+        end
+      end
+    end
+
+    if metadata_changed and not save_metadata(metadata) then
+      return
+    end
+  end
+
   sync_running = true
 
   local ok, err = pcall(function()
@@ -711,8 +771,370 @@ function M.sync_file(changed_path)
   end
 end
 ---------------------------------------------------------------------------
+-- Heute-Aufgabe einem Projekt-Kanban zuordnen
+---------------------------------------------------------------------------
+
+function M.move_current_task()
+  local kanban = require("kanban")
+  local today = normalize_path(M.config.today_file)
+
+  -- Bei aktivem grafischem Board zuerst die dortige Aufgabe ermitteln.
+  local task
+
+  if kanban.active then
+    task = get_board_task()
+  else
+    task = get_markdown_task()
+  end
+
+  if not task then
+    notify("Keine Kanban-Aufgabe ausgewählt.", vim.log.levels.WARN)
+    return
+  end
+
+  if task.source ~= today then
+    notify("Diese Funktion ist nur im Tages-Kanban verfügbar.", vim.log.levels.WARN)
+    return
+  end
+
+  local section = get_section(task.list_name)
+
+  if not section then
+    notify("Unbekannte Kanban-Spalte.", vim.log.levels.ERROR)
+    return
+  end
+
+  local title = task.lines[1]
+
+  if not title or vim.trim(title) == "" then
+    notify("Aufgabe hat keinen Titel.", vim.log.levels.WARN)
+    return
+  end
+
+  -- Grafisches Board vor der weiteren Verarbeitung speichern.
+  if kanban.active then
+    local ok, err = pcall(vim.cmd, "KanbanSave")
+
+    if not ok then
+      notify("Tages-Kanban konnte nicht gespeichert werden:\n" .. tostring(err), vim.log.levels.ERROR)
+      return
+    end
+  else
+    local bufnr = vim.api.nvim_get_current_buf()
+
+    if vim.bo[bufnr].modified then
+      local ok, err = pcall(vim.cmd, "write")
+
+      if not ok then
+        notify("Tages-Kanban konnte nicht gespeichert werden:\n" .. tostring(err), vim.log.levels.ERROR)
+        return
+      end
+    end
+  end
+
+  local metadata = load_metadata()
+
+  if not metadata then
+    return
+  end
+
+  -- Bereits zugeordnete Aufgaben erkennen.
+  -- Veraltete Zuordnungen automatisch entfernen.
+
+  local metadata_changed = false
+
+  for id, entry in pairs(metadata) do
+    if entry.title == title then
+      local source = entry.source and normalize_path(entry.source)
+      local source_lines = source and read_lines(source)
+
+      if not source_lines then
+        notify("Projektdatei nicht erreichbar. Zuordnung bleibt bestehen.", vim.log.levels.WARN)
+        return
+      end
+
+      local source_tasks = parse_tasks(source_lines)
+      local existing, err = find_unique_task(source_tasks, title)
+
+      if err == "duplicate" then
+        notify("Aufgabe ist im Projekt mehrfach vorhanden. Zuordnung bleibt bestehen.", vim.log.levels.WARN)
+        return
+      end
+
+      if existing then
+        notify(
+          "Aufgabe ist bereits einem Projekt zugeordnet:\n" .. vim.fn.fnamemodify(source, ":t"),
+          vim.log.levels.WARN
+        )
+        return
+      end
+
+      -- Aufgabe wurde im Projekt gelöscht:
+      -- veraltete Verknüpfung entfernen.
+      metadata[id] = nil
+      metadata_changed = true
+    end
+  end
+
+  if metadata_changed then
+    if not save_metadata(metadata) then
+      return
+    end
+  end
+
+  -- Mehrdeutige Aufgabentitel im Tages-Kanban verhindern.
+  local today_lines = read_lines(today)
+
+  if not today_lines then
+    notify("Tages-Kanban konnte nicht gelesen werden.", vim.log.levels.ERROR)
+    return
+  end
+
+  local today_tasks = parse_tasks(today_lines)
+  local _, duplicate_error = find_unique_task(today_tasks, title)
+
+  if duplicate_error == "duplicate" then
+    notify("Aufgabentitel ist im Tages-Kanban nicht eindeutig.", vim.log.levels.WARN)
+    return
+  end
+
+  -------------------------------------------------------------------------
+  -- Verfügbare Projekt-Kanbans ermitteln
+  -------------------------------------------------------------------------
+
+  local directory = vim.fn.fnamemodify(M.config.today_file, ":h")
+
+  local files = vim.fn.globpath(directory, "kanban-*.md", false, true)
+
+  local projects = {}
+  local seen = {}
+
+  for _, file in ipairs(files) do
+    local path = normalize_path(file)
+
+    if path ~= today and not seen[path] then
+      seen[path] = true
+
+      table.insert(projects, {
+        name = vim.fn.fnamemodify(file, ":t"),
+        path = path,
+      })
+    end
+  end
+
+  table.sort(projects, function(a, b)
+    return a.name:lower() < b.name:lower()
+  end)
+
+  if #projects == 0 then
+    notify("Keine Projekt-Kanbans gefunden.", vim.log.levels.WARN)
+    return
+  end
+
+  -------------------------------------------------------------------------
+  -- Projekt auswählen
+  -------------------------------------------------------------------------
+
+  vim.ui.select(projects, {
+    prompt = "Aufgabe in Projekt übernehmen:",
+
+    format_item = function(item)
+      return item.name:gsub("^kanban%-", ""):gsub("%.md$", "")
+    end,
+  }, function(selection)
+    if not selection then
+      return
+    end
+
+    local target = selection.path
+
+    if not can_modify_file(target) then
+      return
+    end
+
+    local lines = read_lines(target)
+
+    if not lines then
+      notify("Projekt-Kanban konnte nicht gelesen werden.", vim.log.levels.ERROR)
+      return
+    end
+
+    local existing_tasks = parse_tasks(lines)
+    local existing = find_unique_task(existing_tasks, title)
+
+    if existing then
+      notify("Aufgabe existiert bereits im Zielprojekt.", vim.log.levels.WARN)
+      return
+    end
+
+    local insert_at = find_task_insert_position(lines, section)
+
+    if not insert_at then
+      notify("Zielspalte " .. section .. " nicht gefunden.", vim.log.levels.ERROR)
+      return
+    end
+
+    -----------------------------------------------------------------------
+    -- Aufgabe im Projekt-Kanban erstellen
+    -----------------------------------------------------------------------
+
+    local new_lines = {
+      "",
+      (section == "DONE" and "- [x] " or "- [ ] ") .. title,
+    }
+
+    for i = 2, #task.lines do
+      table.insert(new_lines, "\t" .. task.lines[i])
+    end
+
+    for i = #new_lines, 1, -1 do
+      table.insert(lines, insert_at, new_lines[i])
+    end
+
+    if not write_lines(target, lines) then
+      return
+    end
+
+    -----------------------------------------------------------------------
+    -- Synchronisierungsverknüpfung erstellen
+    -----------------------------------------------------------------------
+
+    -- Herkunft dokumentieren.
+    local id = os.date("%Y%m%d-%H%M%S") .. "-" .. tostring(math.random(1000, 9999))
+
+    metadata[id] = {
+      key = task_key({
+        source = target,
+        list_name = task.list_name,
+        lines = task.lines,
+      }),
+
+      source = target,
+      source_list = task.list_name,
+      title = title,
+    }
+
+    if not save_metadata(metadata) then
+      notify(
+        "Aufgabe wurde ins Projekt übernommen, aber die Synchronisierung konnte nicht eingerichtet werden.",
+        vim.log.levels.ERROR
+      )
+      return
+    end
+
+    reload_buffer(target)
+
+    notify("Aufgabe zugeordnet: " .. title .. " → " .. selection.name)
+  end)
+end
+
+---------------------------------------------------------------------------
+-- Tages-Kanban zurücksetzen
+---------------------------------------------------------------------------
+
+function M.reset_today()
+  local kanban = require("kanban")
+  local today = normalize_path(M.config.today_file)
+
+  -- Verhindern, dass ein noch geöffnetes grafisches Board
+  -- später den zurückgesetzten Inhalt überschreibt.
+  if kanban.active and normalize_path(kanban.kanban_md_path or "") == today then
+    notify("Bitte zuerst das grafische Tages-Kanban schließen.", vim.log.levels.WARN)
+    return
+  end
+
+  if not can_modify_file(today) then
+    return
+  end
+
+  local confirmation = vim.fn.confirm(
+    "Tages-Kanban wirklich zurücksetzen?\n\n"
+      .. "Alle Aufgaben werden aus Heute entfernt.\n"
+      .. "Die Projekt-Kanbans bleiben unverändert.",
+    "&Zurücksetzen\n&Abbrechen",
+    2
+  )
+
+  if confirmation ~= 1 then
+    return
+  end
+
+  local lines = read_lines(today)
+
+  if not lines then
+    notify("Tages-Kanban konnte nicht gelesen werden.", vim.log.levels.ERROR)
+    return
+  end
+
+  -------------------------------------------------------------------------
+  -- Header und Footer erhalten
+  -------------------------------------------------------------------------
+
+  local first_section = nil
+  local footer_start = nil
+
+  for i, line in ipairs(lines) do
+    if not first_section and line:match("^##%s+") then
+      first_section = i
+    end
+
+    if line:match("^%%%% kanban:settings") then
+      footer_start = i
+      break
+    end
+  end
+
+  if not first_section or not footer_start then
+    notify("Kanban-Struktur unvollständig. Reset abgebrochen.", vim.log.levels.ERROR)
+    return
+  end
+
+  local new_lines = {}
+
+  -- Bestehenden Header übernehmen.
+  for i = 1, first_section - 1 do
+    table.insert(new_lines, lines[i])
+  end
+
+  -- Leere Standardspalten erstellen.
+  vim.list_extend(new_lines, {
+    "## TODO",
+    "",
+    "## WIP (max. 3)",
+    "",
+    "## DONE",
+    "",
+    "",
+  })
+
+  -- Bestehenden Footer übernehmen.
+  for i = footer_start, #lines do
+    table.insert(new_lines, lines[i])
+  end
+
+  -------------------------------------------------------------------------
+  -- Tages-Kanban und Metadaten zurücksetzen
+  -------------------------------------------------------------------------
+
+  if not write_lines(today, new_lines) then
+    return
+  end
+
+  if not save_metadata({}) then
+    notify(
+      "Tages-Kanban wurde geleert, aber die Sync-Metadaten konnten nicht zurückgesetzt werden.",
+      vim.log.levels.ERROR
+    )
+    return
+  end
+
+  reload_buffer(today)
+
+  notify("Tages-Kanban wurde zurückgesetzt.")
+end ---------------------------------------------------------------------------
 -- Tastenkürzel und automatische Synchronisierung
 ---------------------------------------------------------------------------
+---
 
 function M.setup()
   vim.keymap.set("n", "<leader>kh", function()
@@ -722,7 +1144,23 @@ function M.setup()
     silent = true,
   })
 
-  local group = vim.api.nvim_create_augroup("KanbanHeuteSync", { clear = true })
+  vim.keymap.set("n", "<leader>km", function()
+    M.move_current_task()
+  end, {
+    desc = "Kanban: Heute-Aufgabe einem Projekt zuordnen",
+    silent = true,
+  })
+
+  vim.keymap.set("n", "<leader>kr", function()
+    M.reset_today()
+  end, {
+    desc = "Kanban: Heute zurücksetzen",
+    silent = true,
+  })
+
+  local group = vim.api.nvim_create_augroup("KanbanHeuteSync", {
+    clear = true,
+  })
 
   vim.api.nvim_create_autocmd("BufWritePost", {
     group = group,
