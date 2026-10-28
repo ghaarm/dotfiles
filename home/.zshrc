@@ -317,6 +317,11 @@ kanban() {
   zellij attach kanban
 }
 #
+work() {
+  aerospace move-node-to-workspace --focus-follows-window C
+  zellij attach work
+}
+#
 # Example aliases
 # alias zshconfig="mate ~/.zshrc" 
 # alias ohmyzsh="mate ~/.oh-my-zsh" 

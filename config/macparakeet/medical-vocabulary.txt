@@ -1,4 +1,10 @@
+AE-COPD
 Argipressin
+Antiinfektivum
+Antiinfektiva
+antiinfektiver
+antiinfektive
+antiinfektiven
 Angiotensin II
 Bronchoskopie
 Delir
@@ -7,6 +13,7 @@ ECMO
 Norepinephrin
 PaCO2
 PEEP
+QCare
 RSI
 Tracheostoma
 Vasopressor
