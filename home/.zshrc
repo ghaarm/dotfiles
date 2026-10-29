@@ -316,7 +316,13 @@ kanban() {
   aerospace move-node-to-workspace --focus-follows-window X
   zellij attach kanban
 }
-#
+
+next() {
+  aerospace move-node-to-workspace --focus-follows-window G
+  zellij attach next
+}
+
+
 work() {
   aerospace move-node-to-workspace --focus-follows-window C
   zellij attach work

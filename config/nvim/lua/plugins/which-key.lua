@@ -41,7 +41,9 @@ return {
   -- },
   config = function(_, opts)
     local wk = require("which-key")
+    wk.setup(opts)
     wk.add({
+      { "<leader>k", group = "KANBAN" },
       {
         "<leader>t",
         group = "TEMPLATES",
@@ -383,7 +385,6 @@ return {
       { "<leader><leader>", group = "quick" }, -- macht den Prefix sichtbar
       { "<leader><leader>x", desc = "Source current file" },
     })
-    -- wk.setup(opts.setup)
     -- wk.register(opts.defaults)
   end,
 }

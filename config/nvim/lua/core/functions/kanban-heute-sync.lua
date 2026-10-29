@@ -1,4 +1,6 @@
 local M = {}
+local next_action = require("core.functions.kanban-next-action")
+local next_context
 
 ---------------------------------------------------------------------------
 -- Konfiguration
@@ -32,10 +34,25 @@ local function read_lines(path)
 end
 
 local function write_lines(path, lines)
-  local ok, result = pcall(vim.fn.writefile, lines, path)
+  local target = vim.uv.fs_realpath(path) or path
+  local temporary = target .. ".kanban-sync-" .. tostring(vim.uv.hrtime())
+  local ok, result = pcall(vim.fn.writefile, lines, temporary)
 
   if not ok or result ~= 0 then
+    vim.fn.delete(temporary)
     notify("Datei konnte nicht geschrieben werden:\n" .. path, vim.log.levels.ERROR)
+    return false
+  end
+
+  local stat = vim.uv.fs_stat(target)
+  if stat then
+    vim.uv.fs_chmod(temporary, stat.mode % 4096)
+  end
+
+  local renamed, err = vim.uv.fs_rename(temporary, target)
+  if not renamed then
+    vim.fn.delete(temporary)
+    notify("Datei konnte nicht ersetzt werden:\n" .. path .. "\n" .. tostring(err), vim.log.levels.ERROR)
     return false
   end
 
@@ -162,6 +179,9 @@ local function get_markdown_task()
   local task_start = nil
 
   for i = cursor_line, 1, -1 do
+    if lines[i]:match("^%%%% kanban:settings") then
+      break
+    end
     if lines[i]:match("^%- %[.%] ") then
       task_start = i
       break
@@ -201,7 +221,8 @@ local function get_markdown_task()
   for i = task_start + 1, #lines do
     local line = lines[i]
 
-    if line:match("^%- %[.%] ") or line:match("^##%s+") or line:match("^#%s+") then
+    if line:match("^%- %[.%] ") or line:match("^##%s+") or line:match("^#%s+")
+      or line:match("^%%%% kanban:settings") then
       break
     end
 
@@ -361,6 +382,28 @@ function M.add_current_task()
   local metadata = load_metadata()
 
   if not metadata then
+    return
+  end
+
+  local action, action_error = next_action.action_from_task(task)
+  if action_error then
+    notify("Projektkarte enthält mehrere Next-Felder.", vim.log.levels.WARN)
+    return
+  end
+  if action then
+    local ok, kanban = pcall(require, "kanban")
+    if ok and kanban.active and normalize_path(kanban.kanban_md_path or "") == task.source then
+      local saved, err = pcall(vim.cmd, "KanbanSave")
+      if not saved then
+        notify("Projekt-Kanban konnte nicht gespeichert werden: " .. tostring(err), vim.log.levels.ERROR)
+        return
+      end
+      metadata = load_metadata()
+      if not metadata then
+        return
+      end
+    end
+    next_action.add(task, next_context(metadata))
     return
   end
 
@@ -622,6 +665,13 @@ end
 ---------------------------------------------------------------------------
 
 local function can_modify_file(path)
+  local ok, kanban = pcall(require, "kanban")
+  if ok and kanban.active and kanban.kanban_md_path
+    and normalize_path(kanban.kanban_md_path) == normalize_path(path) then
+    notify("Synchronisierung übersprungen: Grafisches Board ist geöffnet. Bitte schließen und erneut speichern.", vim.log.levels.WARN)
+    return false
+  end
+
   local bufnr = vim.fn.bufnr(path)
 
   if bufnr ~= -1 and vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].modified then
@@ -654,6 +704,20 @@ local function reload_buffer(path)
   vim.api.nvim_buf_call(bufnr, function()
     vim.cmd("silent! edit!")
   end)
+end
+
+next_context = function(metadata)
+  return {
+    today = normalize_path(M.config.today_file),
+    metadata = metadata,
+    notify = notify,
+    read_lines = read_lines,
+    write_lines = write_lines,
+    save_metadata = save_metadata,
+    can_modify_file = can_modify_file,
+    reload_buffer = reload_buffer,
+    find_task_insert_position = find_task_insert_position,
+  }
 end
 
 ---------------------------------------------------------------------------
@@ -704,7 +768,7 @@ function M.sync_file(changed_path)
     local metadata_changed = false
 
     for id, entry in pairs(metadata) do
-      if entry.source and normalize_path(entry.source) == changed then
+      if entry.type ~= "next_action" and entry.source and normalize_path(entry.source) == changed then
         local existing, err = find_unique_task(changed_tasks, entry.title)
 
         if not existing and err ~= "duplicate" then
@@ -725,7 +789,7 @@ function M.sync_file(changed_path)
 
   local ok, err = pcall(function()
     for _, entry in pairs(metadata) do
-      if entry.source and entry.title then
+      if entry.type ~= "next_action" and entry.source and entry.title then
         local source = normalize_path(entry.source)
 
         if changed == today or changed == source then
@@ -762,6 +826,7 @@ function M.sync_file(changed_path)
         end
       end
     end
+    next_action.sync(changed, next_context(metadata))
   end)
 
   sync_running = false
@@ -805,6 +870,11 @@ function M.move_current_task()
   end
 
   local title = task.lines[1]
+
+  if next_action.has_marker(title) then
+    notify("Diese Next Action ist bereits mit ihrer Projektkarte verknüpft.", vim.log.levels.WARN)
+    return
+  end
 
   if not title or vim.trim(title) == "" then
     notify("Aufgabe hat keinen Titel.", vim.log.levels.WARN)
@@ -1169,6 +1239,26 @@ function M.setup()
     callback = function(args)
       M.sync_file(vim.api.nvim_buf_get_name(args.buf))
     end,
+  })
+end
+
+-- Grafische Kanban-Karten sind eigene, kurzlebige Buffer. Die lokale
+-- Registrierung macht die vorhandenen Aktionen dort für WhichKey sichtbar.
+function M.attach_board_task_keymaps(bufnr)
+  vim.keymap.set("n", "<leader>kh", M.add_current_task, {
+    buffer = bufnr,
+    desc = "Kanban: Aufgabe nach Heute übernehmen",
+    silent = true,
+  })
+  vim.keymap.set("n", "<leader>km", M.move_current_task, {
+    buffer = bufnr,
+    desc = "Kanban: Heute-Aufgabe einem Projekt zuordnen",
+    silent = true,
+  })
+  vim.keymap.set("n", "<leader>kr", M.reset_today, {
+    buffer = bufnr,
+    desc = "Kanban: Heute zurücksetzen",
+    silent = true,
   })
 end
 

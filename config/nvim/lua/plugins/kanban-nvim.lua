@@ -115,6 +115,7 @@ return {
       local total_height = 0
 
       for _, line in ipairs(lines) do
+        line = line:gsub(" <!%-%- kanban%-next%-action:[%da-f]+ %-%->$", "")
         local display_width = vim.fn.strdisplaywidth(line)
 
         total_height = total_height + math.max(1, math.ceil(display_width / width))
@@ -185,7 +186,19 @@ return {
         end
       end
 
-      return original_task_open(k, task)
+      local result = original_task_open(k, task)
+      if task.buf_nr and vim.api.nvim_buf_is_valid(task.buf_nr) then
+        require("core.functions.kanban-heute-sync").attach_board_task_keymaps(task.buf_nr)
+      end
+      -- Hide the persistent ID without changing the Markdown or the editor buffer.
+      if task.win_id and vim.api.nvim_win_is_valid(task.win_id) then
+        vim.wo[task.win_id].conceallevel = 2
+        vim.wo[task.win_id].concealcursor = "nivc"
+        vim.api.nvim_win_call(task.win_id, function()
+          vim.fn.matchadd("Conceal", " <!-- kanban-next-action:[0-9a-f]\\+ -->", 10, -1, { conceal = "" })
+        end)
+      end
+      return result
     end
 
     ---------------------------------------------------------------------------
