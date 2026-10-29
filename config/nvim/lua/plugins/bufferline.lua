@@ -27,7 +27,7 @@ return {
         -- entspricht 1gt, 2gt, ...
         for i, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
           if tabpage == tab.tabnr then
-            return i .. " " .. name
+            return i .. name
           end
         end
 
