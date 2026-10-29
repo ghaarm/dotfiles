@@ -16,9 +16,14 @@ return {
       -- Die Nummer entspricht der Position für 1gt, 2gt, ...
       name_formatter = function(tab)
         local name = tab.name
+        local win = vim.api.nvim_tabpage_get_win(tab.tabnr)
+        local buf = vim.api.nvim_win_get_buf(win)
+        local project = require("core.functions.winbar").kanban_project_name(buf)
 
-        -- Bei Oil den aktuellen Ordnernamen anzeigen
-        if tab.path:match("^oil://") then
+        -- Board-Projektname oder bei Oil den aktuellen Ordnernamen anzeigen.
+        if project then
+          name = project
+        elseif tab.path:match("^oil://") then
           local path = tab.path:gsub("^oil://", ""):gsub("/$", "")
           name = vim.fn.fnamemodify(path, ":t")
         end

@@ -139,6 +139,7 @@ return {
   config = function()
     local lualine = require("lualine")
     local lazy_status = require("lazy.status")
+    local kanban_project_name = require("core.functions.winbar").kanban_project_name
 
     -- IMPORTANT: Define this before lualine.setup()
     local function possession_name()
@@ -214,6 +215,11 @@ return {
           "%=",
           {
             function()
+              local project = kanban_project_name(vim.api.nvim_get_current_buf())
+              if project then
+                return project
+              end
+
               local filepath = vim.fn.expand("%:p")
               if not filepath or filepath == "" then
                 return ""
@@ -274,7 +280,22 @@ return {
       inactive_sections = {
         lualine_a = {},
         lualine_b = {},
-        lualine_c = { "filename" },
+        lualine_c = {
+          {
+            function()
+              return kanban_project_name(vim.api.nvim_get_current_buf()) or ""
+            end,
+            cond = function()
+              return kanban_project_name(vim.api.nvim_get_current_buf()) ~= nil
+            end,
+          },
+          {
+            "filename",
+            cond = function()
+              return kanban_project_name(vim.api.nvim_get_current_buf()) == nil
+            end,
+          },
+        },
         lualine_x = {},
         lualine_y = {},
         lualine_z = {},

@@ -3,6 +3,39 @@
 local M = {}
 local dir_levels = 1
 
+function M.kanban_project_name(buf)
+  local kanban = package.loaded.kanban
+  if not kanban or not kanban.active or not kanban.items or not kanban.kanban_md_path then
+    return nil
+  end
+
+  local items = kanban.items
+  local belongs_to_board = items.kwindow and items.kwindow.buf_nr == buf
+  if not belongs_to_board then
+    for _, list in ipairs(items.lists or {}) do
+      if list.buf_nr == buf then
+        belongs_to_board = true
+        break
+      end
+      for _, task in ipairs(list.tasks or {}) do
+        if task.buf_nr == buf then
+          belongs_to_board = true
+          break
+        end
+      end
+      if belongs_to_board then
+        break
+      end
+    end
+  end
+  if not belongs_to_board then
+    return nil
+  end
+
+  local name = vim.fs.basename(kanban.kanban_md_path):gsub("^kanban%-", ""):gsub("%.md$", "")
+  return name
+end
+
 -- local function tail_path(path, n_dirs)
 --   if path == "" then
 --     return "[No Name]"
@@ -63,6 +96,11 @@ function M.render()
   -- Alpha-Startseite ausblenden
   if ft == "alpha" or ft == "oil" then
     return ""
+  end
+
+  local project = M.kanban_project_name(bufnr)
+  if project then
+    return "%=" .. " " .. project
   end
 
   -- unbenannten/leeren Buffer ausblenden

@@ -602,6 +602,60 @@ return {
     kanban.fn.kwindow.close = kwindow_close.close
 
     ---------------------------------------------------------------------------
+    -- Kanban-Scratch-Buffer nach dem regulären Schließen vollständig entfernen
+    ---------------------------------------------------------------------------
+
+    local function owned_scratch_buffer(buf)
+      return buf and vim.api.nvim_buf_is_valid(buf)
+        and vim.bo[buf].buftype == "nofile"
+        and vim.api.nvim_buf_get_name(buf) == ""
+    end
+
+    local function delete_unloaded_board_buffer(buf)
+      -- :bdelete im Plugin entlädt den Buffer nur. Ausschließlich die gerade
+      -- geschlossene, eindeutig zugeordnete Kanban-Komponente wird gelöscht.
+      if buf and vim.api.nvim_buf_is_valid(buf) and not vim.api.nvim_buf_is_loaded(buf) then
+        vim.api.nvim_buf_delete(buf, { force = false })
+      end
+    end
+
+    local original_task_close = kanban.fn.tasks.close
+    kanban.fn.tasks.close = function(task)
+      local buf = owned_scratch_buffer(task.buf_nr) and task.buf_nr or nil
+      original_task_close(task)
+      delete_unloaded_board_buffer(buf)
+    end
+
+    local original_list_close = kanban.fn.lists.close
+    kanban.fn.lists.close = function(list)
+      local buf = owned_scratch_buffer(list.buf_nr) and list.buf_nr or nil
+      original_list_close(list)
+      delete_unloaded_board_buffer(buf)
+    end
+
+    local original_lists_close_all = kanban.fn.lists.close_all
+    kanban.fn.lists.close_all = function(k)
+      local buffers = {}
+      for _, list in ipairs(k.items.lists) do
+        if owned_scratch_buffer(list.buf_nr) then
+          buffers[#buffers + 1] = list.buf_nr
+        end
+      end
+      original_lists_close_all(k)
+      for _, buf in ipairs(buffers) do
+        delete_unloaded_board_buffer(buf)
+      end
+    end
+
+    local close_with_float_cleanup = kanban.fn.kwindow.close
+    kanban.fn.kwindow.close = function(k)
+      local board_buf = k.items.kwindow.buf_nr
+      local buf = owned_scratch_buffer(board_buf) and board_buf or nil
+      close_with_float_cleanup(k)
+      delete_unloaded_board_buffer(buf)
+    end
+
+    ---------------------------------------------------------------------------
     -- Checkbox-Status automatisch an die Kanban-Spalte anpassen
     ---------------------------------------------------------------------------
 
