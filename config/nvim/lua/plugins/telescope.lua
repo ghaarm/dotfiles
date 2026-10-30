@@ -77,20 +77,42 @@ return {
         },
       },
       -- um im picker buffer zu löschen
+      -- pickers = {
+      --   buffers = {
+      --     sort_lastused = true,
+      --     ignore_current_buffer = false,
+      --     previewer = true,
+      --     mappings = {
+      --       n = {
+      --         ["dd"] = actions.delete_buffer,
+      --       },
+      --       -- i = {
+      --       --   ["<C-d>"] = actions.delete_buffer, -- optional
+      --       -- },
+      --       i = {
+      --         ["dd"] = actions.delete_buffer, -- optional
+      --       },
+      --     },
+      --   },
+      -- },
+      -- OIL Buffer ausblenden
       pickers = {
         buffers = {
           sort_lastused = true,
           ignore_current_buffer = false,
           previewer = true,
+
+          -- Oil-Buffer ausblenden
+          file_ignore_patterns = {
+            "^oil://",
+          },
+
           mappings = {
             n = {
               ["dd"] = actions.delete_buffer,
             },
-            -- i = {
-            --   ["<C-d>"] = actions.delete_buffer, -- optional
-            -- },
             i = {
-              ["dd"] = actions.delete_buffer, -- optional
+              ["dd"] = actions.delete_buffer,
             },
           },
         },
@@ -357,15 +379,31 @@ return {
     end, {
       desc = "Find MEMO and NOTEs in current file",
     })
-    keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Fuzzy find open buffers" })
+    keymap.set("n", "<leader>fb", function()
+      builtin.buffers({
+        sort_lastused = true,
+        ignore_current_buffer = false,
+        previewer = true,
 
-    -- keymap.set("n", "<leader>fb", function()
-    --   builtin.buffers({
-    --     sort_lastused = true,
-    --     ignore_current_buffer = false,
-    --     previewer = true,
-    --   })
-    -- end, { desc = "Fuzzy find open buffers" })
+        path_display = function(_, path)
+          -- Nur Oil-Pfade verändern.
+          if not path:match("^oil://") then
+            return require("telescope.utils").path_smart(path)
+          end
+
+          -- oil:// entfernen.
+          local clean = path:gsub("^oil://", ""):gsub("/+$", "")
+
+          -- Letzte drei Verzeichnisse ermitteln.
+          local parts = vim.split(clean, "/", { plain = true, trimempty = true })
+          local start = math.max(1, #parts - 2)
+
+          return "oil://…/" .. table.concat(vim.list_slice(parts, start), "/")
+        end,
+      })
+    end, {
+      desc = "Fuzzy find open buffers",
+    })
     keymap.set("n", "<leader>fB", "<cmd>Telescope bibtex<cr>", { desc = "Search BibTeX entries" })
     keymap.set("i", "<D-i>", "<cmd>Telescope bibtex<cr>", { desc = "Open Telescope BibTeX search" }) -- D steht für die Command taste
 
