@@ -75,7 +75,15 @@ keymap.set("i", "jl", "<ESC>", { desc = "Exit insert mode with jj" })
 -- keymap.set("i", "tn", "<ESC>", { desc = "Exit insert mode with jj" })
 
 keymap.set("n", "<leader><leader>n", ":source $MYVIMRC<CR>", { desc = "Reload Neovim Config" })
+vim.keymap.set("n", "<leader><leader>r", "<cmd>restart<CR>", { desc = "Restart Neovim" })
 
+vim.keymap.set("n", "<leader>e", function()
+  if vim.bo.filetype == "oil" then
+    require("oil.actions").refresh.callback()
+  else
+    vim.cmd("edit")
+  end
+end, { desc = "Reload buffer / Refresh Oil" })
 ---------------------------------------------------------------------------
 -- NAVIGATION
 ---------------------------------------------------------------------------

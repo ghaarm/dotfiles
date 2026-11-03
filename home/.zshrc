@@ -195,6 +195,8 @@ alias cdtypst="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'
 
 alias cdwork="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud && nvim"
 
+alias cdclaudework="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-claude-icloud && nvim"
+
 alias cdwork-proj="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/work-gpt-icloud/projects-work-gpt && nvim"
 
 

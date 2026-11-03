@@ -6,29 +6,24 @@ return {
     vim.o.timeoutlen = 500
   end,
   opts = {
-    -- defaults = {
-    --   preset = "classic",
-    --   notify = true,
-    --   plugins = {
-    --     marks = true,     -- shows a list of your marks on ' and `
-    --     registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-    --     -- the presets plugin, adds help for a bunch of default keybindings in Neovim
-    --     -- No actual key bindings are created
-    --     spelling = {
-    --       enabled = true,   -- enabling this will show WhichKey when pressing z= to select spelling suggestions
-    --       suggestions = 20, -- how many suggestions should be shown in the list?
-    --     },
-    --     presets = {
-    --       operators = false,    -- adds help for operators like d, y, ...
-    --       motions = false,      -- adds help for motions
-    --       text_objects = false, -- help for text objects triggered after entering an operator
-    --       windows = false,      -- default bindings on <c-w>
-    --       nav = false,          -- misc bindings to work with windows
-    --       z = false,            -- bindings for folds, spelling and others prefixed with z
-    --       g = false,            -- bindings for prefixed with g
-    --     },
-    --   },
-    -- },
+    preset = "classic",
+    plugins = {
+      marks = true,
+      registers = true,
+      spelling = {
+        enabled = true, -- z= nutzt dann wieder das native Neovim-Menü
+        suggestions = 10,
+      },
+      presets = {
+        operators = false,
+        motions = false,
+        text_objects = false,
+        windows = false,
+        nav = false,
+        z = false,
+        g = false,
+      },
+    },
   },
   -- keys = {
   --   {
@@ -166,7 +161,7 @@ return {
       },
       -- TOUYING TYPST Präambel
       {
-        "<leader>tbp",
+        "<leader>tbf",
         function()
           vim.cmd.tabedit(
             vim.fn.fnameescape(
@@ -385,6 +380,5 @@ return {
       { "<leader><leader>", group = "quick" }, -- macht den Prefix sichtbar
       { "<leader><leader>x", desc = "Source current file" },
     })
-    -- wk.register(opts.defaults)
   end,
 }

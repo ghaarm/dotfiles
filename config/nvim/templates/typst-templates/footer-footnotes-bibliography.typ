@@ -88,15 +88,25 @@
 
 #let datum = datetime.today().display("[year]-[month]-[day]")
 
+// #set page(footer: context {
+//   line(length: 100%, stroke: 0.4pt)
+//   v(2pt)
+//   link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]
+//   h(1fr)
+//   // [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
+//   [#fusszeile, Stand: #datetime.today().display("[year]-[month]-[day]"), S. #counter(page).display()]
+// })
+
 #set page(footer: context {
   line(length: 100%, stroke: 0.4pt)
   v(2pt)
   link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]
   h(1fr)
-  // [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
-  [#fusszeile, Stand: #datetime.today().display("[year]-[month]-[day]"), S. #counter(page).display()]
+  [
+    #fusszeile, Stand: #datetime.today().display("[year]-[month]-[day]"),
+    S. #counter(page).display("1/1", both: true)
+  ]
 })
-
 #align(center)[
   #text(size: 17pt, weight: "regular", titel)
 
