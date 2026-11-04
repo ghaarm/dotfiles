@@ -1,6 +1,6 @@
 -- um pdfviewer zu setzen https://github.com/R-nvim/R.nvim/issues/112
 
-vim.g.maplocalleader = ","
+vim.g.R_filetypes = { "r", "rmd", "rnoweb" }
 
 vim.api.nvim_set_keymap("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true })
 
