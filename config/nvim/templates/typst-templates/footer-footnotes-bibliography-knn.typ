@@ -85,14 +85,18 @@
 
 #let untertitel = none
 #let datum = datetime.today().display("[day].[month].[year]")
+
 #set page(footer: context {
   line(length: 100%, stroke: 0.4pt)
   v(2pt)
 
   h(1fr)
-  [#fusszeile, Stand: #datetime.today().display("[day].[month].[year]"), S. #counter(page).display()]
+  [
+    #fusszeile, Stand: #datetime.today().display("[day].[month].[year]"),
+    S. #counter(page).display("1/1", both: true)
+  ]
 })
-#set text(font: "Calibri")
+#set text(font: "Calibri", size: 10.5pt)
 #align(center)[
   #text(size: 17pt, weight: "bold", titel)
   #if untertitel != none { parbreak(); text(size: 12pt, untertitel) }
@@ -109,7 +113,7 @@
   #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
 ]
 
-#outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
+// #outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
 #outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
 
 // ============================================================
