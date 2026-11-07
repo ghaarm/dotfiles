@@ -93,6 +93,16 @@ return {
     end
 
     local function update_typst_inputs()
+      local was_running = preview_running
+
+      -- Alte Vorschau zuerst beenden
+      if was_running then
+        vim.cmd("TypstPreviewStop")
+        close_typst_chrome_window()
+        preview_running = false
+      end
+
+      -- Neue Parameter an Tinymist übergeben
       require("typst-preview").setup(vim.tbl_deep_extend("force", opts, {
         extra_args = {
           "--input=handout=" .. tostring(handout),
@@ -100,12 +110,12 @@ return {
         },
       }))
 
-      if preview_running then
-        vim.cmd("TypstPreviewStop")
+      -- Vorschau mit neuen Parametern starten
+      if was_running then
         vim.cmd("TypstPreview")
+        preview_running = true
       end
     end
-
     local function toggle_typst_handout()
       handout = not handout
       update_typst_inputs()

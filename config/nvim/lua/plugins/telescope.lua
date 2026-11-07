@@ -192,8 +192,22 @@ return {
         hidden = false,
         no_ignore = false,
         no_ignore_parent = false,
+
+        -- Nur die letzten zwei Ordner und den Dateinamen anzeigen
+        path_display = function(_, path)
+          local parts = vim.split(path, "/", {
+            plain = true,
+            trimempty = true,
+          })
+
+          local start = math.max(1, #parts - 2)
+
+          return table.concat(vim.list_slice(parts, start), "/")
+        end,
       })
-    end, { desc = "Fuzzy find files in cwd" })
+    end, {
+      desc = "Fuzzy find files in cwd",
+    })
 
     keymap.set("n", "<leader>fp", function()
       require("telescope.builtin").find_files({

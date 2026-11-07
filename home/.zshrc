@@ -359,7 +359,6 @@ setopt hist_verify
 # source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-
 # Befehle
 alias pianmac="qmk compile -kb beekeeb/piantor_pro -km piantor_colemak"
 
@@ -379,6 +378,11 @@ alias cd="z"
 
 # ---- fzf keybindings für fuzzy finder ----
 eval "$(fzf --zsh)"
+
+# Atuin nach fzf laden, damit Ctrl-R die Atuin-Suche öffnet.
+if (( $+commands[atuin] )); then
+  eval "$(atuin init zsh)"
+fi
 
 # -- Use fd instead of fzf --
 
