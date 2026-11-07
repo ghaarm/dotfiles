@@ -1,0 +1,257 @@
+\documentclass{article}
+
+\input{/Users/g/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/R Statistik, icloud/Latex, icloud/Latex Projekte/@Vorlagen-Latex/preamble-footnotes-bibliographie-neu.tex}
+
+\usepackage{textgreek}
+
+\usepackage{titlesec} % kann z.B. subsubsubsubsections erstellen, kann Schriftgröße, Schriftart und Farbe von Titeln anpassen.
+
+\titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.3ex plus .2ex}
+
+
+%========================== KOPF - UND FUßZEILE ============================
+\usepackage{fancyhdr} % für Fußzeilen
+\renewcommand{\headrulewidth}{0pt} % Entfernt die Linie unter der Kopfzeile
+%
+\renewcommand{\footrulewidth}{0.4pt} % Fügt eine Linie oberhalb der Fußzeile auf jeder Seite ein
+
+\pagestyle{fancy} % definiert den style "fancy"
+\fancyhf{} % Löscht die aktuellen Einstellungen für Kopf- und Fußzeile
+
+\rfoot{\hfill G'MICS Prokinetika, G. Haarmeyer, Stand: \today, S.  \thepage} % Zentrale Fußzeile mit Datum und Seitenzahl rechts
+\lfoot{\hyperlink{toc}{Zurück zum Inhaltsverzeichnis}} % Linke Seite der Fußzeile
+%========================== 
+
+%========================== TITEL ============================
+\usepackage{titling}
+% \setlength{\droptitle}{-1cm} % Ändert den vertikalen Abstand zwischen Titel oberen Rand der Seite
+% Define a new command for the subtitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+  \par\large#1\end{center}
+}
+}
+
+\title{G'MICS Prokinetika}
+% \title{____\vspace{-0.5cm}} %vspace rücht Datum näher an den Titel
+\subtitle{- nur für den persönlichen Gebrauch -}
+
+\date{\today} % wenn leer kein Datum
+
+\begin{document}
+\maketitle % Erstellt das Titelblatt
+\thispagestyle{fancy} % Ermöglicht die Fußzeile auf der Titelseite
+\hypertarget{toc}{}
+% \vspace-1.5cm}
+% Anpassen der Überschriftsabstände
+
+%-------------------------- INHALTSVERZEICHNIS ----------------------------  
+% Hyperlinks schwarz für das Inhaltsverzeichnis
+% \hypersetup{linkcolor=black}
+
+\tableofcontents % Erzeugt das Inhaltsverzeichnis
+% \listoftables
+\listoffigures
+% Hyperlinks dunkelrot für den Rest des Dokuments
+\hypersetup{
+  linkcolor = red!70!black,
+  citecolor = black, % Farbe für Zitate
+  urlcolor = blue    % Farbe für URL-Links
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% BEGINN DOKUMENT
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+% \section*{Kernpunkte} % Sternchen nach section macht dass die Section nicht nummeriert wird und auch nicht im Inhaltsverzeichnis erscheint
+\section{Kernpunkte ()} % Sternchen nach section macht dass die Section nicht nummeriert wird und auch nicht im Inhaltsverzeichnis erscheint
+\begin{enumerate}
+  \item Erythromycin ist als Prokinetikum wirksamer als MCP und sollte das primär genutzte Prokinetikum sein.
+  \item Der \enquote{beste} prokinetische Effekt ist wenn man Erythromycin und MCP kombiniert.
+  \item MCP sollte aufgrund seiner Nebenwirkungen nur für 5 konsekutive Tage genutzt werden.
+  \item Erythromycin verliert nach 3 Tagen einen großen Anteil seiner Wirkung, kann aber bis zu 7 Tagen gegeben werden.
+  \item Gastrale Residualvolumina (GRV (\enquote{Reflux})) bis zu 500 ml pro Messung können toleriert werden, eine prokinetische Therapie sollte ab 500 ml pro Messung begonnen werden ohne die enterale Ernährung zu reduzieren.
+  \item Bei einem GRV von \ignore{≥}$\geq$ 800 ml sollte die enterale Ernährungslaufrate um 50~\% reduziert werden.
+  \item Neostigmin hat in Dosierungen von 1 mg i.v. positive Auswirkungen auf das GRV.  
+  \item \uline{Vorgehen:}
+    \begin{itemize}
+      \item[-] Opiate so niedrig wie möglich dosieren (Sufentanil-Ziel um 10 - 20 µg/h)
+      \item[-] Erythromycin und MCP kombiniert beginnen: 
+        \begin{itemize}
+          \item[-] Erythromycin 50 mg i.v. 3x/Tag
+          \item[-] MCP 10 mg i.v. 3x/Tag
+            \begin{itemize}
+              \item[-] Reduktion bei akuter Nierenschädigung/chronischer Nierenerkrankung entsprechend eGFR:\footnote{\cite{MCPratiopharm10Mg}, S. 2} \href{https://dosing.de/popup_niere.php?monoid=450}{dosing.de, Stand 25.01.2026}
+              \item[-] eGFR 15 - 60 ml/min: MCP 5 mg 3x/Tag (Reduktion um 50 \%)
+              \item[-] eGFR \ignore{≤}$\leq$ 15 ml/min: MCP 7,5 mg 1x/Tag (Reduktion um 75 \%)
+            \end{itemize}
+        \end{itemize}
+      \item[-] Wenn nach Tag 3 keine Besserung der enteralen Nahrungsverträglichkeit eingetreten ist 1 - 2,5 mg Neostigmin i.v. in 100 ml NaCl 0,9~\% über 30 Minuten geben (bis zu 3x Tag).
+      \item[-] Parallel ab Tag 3 NJS planen (Aufklärung).
+      \item[-] Wenn ab Tag 5 keine Besserung der enteralen Nahrungsverträglichkeit eingetreten ist NJS anmelden.
+    \end{itemize}
+\end{enumerate}
+
+\begin{multicols}{2}
+  \section{Allgemein}%
+  \label{sec:Allgemein}
+
+  Eine Intoleranz der enteralen Ernährung ist mit einem verlängerten Intensivaufenthalt und einer höheren Sterblichkeit assoziiert.\footnote{\cite{elke2015GastricResidualVolume}, S. 60}
+
+  Eine frühe enterale Ernährung beeinflusst die funktionale, immunologische und strukturelle Integrität des GI-Traktes, der das größte immunologische Organ des Körpers ist. Eine enterale Ernährung, fördert die Sekretion von IgA, verringert den oxidativen Stress und verringert ein SIRS, die einen Effekt auf das Outcome haben.\footnote{\cite{mcclave2009PhysiologicResponseAssociated}, S. 305, 314}
+  Paper Reintam Blaser
+
+
+  \section{\enquote{Reflux}, Gastrales Residualvolumen GRV}%
+  % \label{sec:\enquote{Reflux}, Gastrales Residualvolumen GRV}
+  % \section{\texorpdfstring{\enquote{Reflux}, Gastrales Residualvolumen GRV}}%
+  \label{sec:Reflux Gastrales Residualvolumen GRV}
+  Das im alltäglichen intensivmedizinischen Kontext benutzte Wort \enquote{Reflux} ist für das was damit gemeint ist ungenau und irreführend. Im englischen wird  \enquote{gastric residual volume} (GRV) benutzt und meint damit das Residualvolumen im Magen. Die Tatsache, dass im Magen Flüssigkeit ist, heisst nicht dass diese einen Reflux bewirkt. Der \enquote{Reflux} bei Patient:innen mit einer Magensonde wird meist nur festgestellt, weil die Magensonde auf \enquote{Ablauf} ist. Wenn die Patient:innen keine Magensonde hätten würde man den \enquote{Reflux} ggf. gar nicht feststellen.
+
+  Zaloga hat bereits 2005 in seinem Kommentar \enquote{The Myth of gastric residual volume} die fehlende Evidenz, die fehlende Definition ab wann ein GRV \enquote{nicht mehr tolerierbar ist} und die fehlende Standardisierung der GRV Messung thematisiert.\footnote{\cite{zaloga2005MythGastricResidual}, S. 449, 450} 
+
+  5 Jahre später zeigten Montejo et al. 2010, dass eine GRV bis 500 ml pro Messung nicht mit mehr gastrointestinalen Komplikationen, Pneumonien, Beatmungstagen oder der Länge des Intensivaufenthalts assoziiert waren, verglichen mit einem Cut off von 200 ml pro Messung.\footnote{\cite{montejo2010GastricResidualVolume}, S. 1386}
+
+  Und noch mal 3 Jahre später haben Reignier et al. 2013 in einer Studie (NUTRIREA 1) mit 452 mechanisch beatmeten Patient:innen, in der sie \uline{keine} GRV-Kontrollen mit GRV-Kontrollen alle 6 h verglichen wurden. Es gab keine Unterschiede hinsichtlich des Auftretens einer VAP, ICU assoziierten Infektionen, Dauer der mechanischen Beatmung, Dauer des Intensivaufenthalts oder Sterblichkeit.\footnote{\cite{reignier2013EffectNotMonitoring}, S. 249}   
+
+  Dies wurde durch eine Meta-Analyse von Feng et al. 2023 in der 7 RCTs (n = 1240 Patient:innen) bestätigt. Wenn kein Monitoring des GRV durchgeführt wurde, trat zwar vermehrt Erbrechen auf, aber es gab keinen signifikanten Unterschied zwischen abdominaler Distension, Durchfall, VAPs, Dauer der mechanischen Beatmung, Dauer des Intensivaufenthalts und der Sterblichkeit.\footnote{\cite{feng2023MonitoringGastricResidual}, S. 1}  
+ 
+  In dem oben genannten Kommentar von Zaloga 2025 hatte dieser als kleine Veranschaulichung die GRVs von 12 Patient:innen, die ein neues Infiltrat entwickelt hatten und mechanisch beatmet waren, dargestellt. Die dargestellten GRVs sind Mittelwerte der letzten 24 h vor dem neuem Infiltrat. Alle gemittelten GRVs waren $<$ 200 ml (s. Abb. \ref{fig:Durchschnittliche GRVs 24 h vor neuem Infiltrat bei MV}).
+
+% \begin{center}
+%     \includegraphics[width=0.5\textwidth]{./bilder/zaloga-2005-grv-s-449.png}
+%     \caption{Durchschnittliche GRVs 24 h vor neuem Infiltrat bei MV\footnote{\cite{zaloga2005MythGastricResidual}, S. 449}}
+%     \label{fig:Durchschnittliche GRVs 24 h vor neuem Infiltrat bei MV}
+% \end{center}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./bilder/zaloga-2005-grv-s-449.png}
+    \caption{Durchschnittliche GRVs 24 h vor neuem Infiltrat bei MV\footnote{\cite{zaloga2005MythGastricResidual}, S. 449}}
+    \label{fig:Durchschnittliche GRVs 24 h vor neuem Infiltrat bei MV}
+  \end{figure}
+  
+  Elke, der Erstautor der S2k-Leitlinie der DGEM für Ernährung von Intensivpatient:innen schrieb, 2015 das eine GRV-Messung auf internistischen Intensivstationen wahrscheinlich nicht notwendig ist, wenn folgende Kriterien erfüllt sind:\footnote{\cite{elke2015GastricResidualVolume}, S. 69}
+  \begin{enumerate}
+    \item Es gibt ein erfahrenes Pflegeteam. 
+    \item Es gibt etablierte SOPs für die Ernährung mit anderen Sicherheitskriterien wie halbaufrechte, Position im Bett oder eine oropharyngeale Hygiene. 
+    \item Es gibt proaktive Strategien, um das Risiko (von Aspirationen, abdominaler Distension) zu reduzieren prophylaktische prokinetische Therapie die jejunale Ernährung. 
+  \end{enumerate}
+
+  Eine GRV-Messung ist sinnvoll bei Patienten, die ein hohes Risiko für eine GI-Dysfunktion haben, zum Beispiel kritisch kranke (schwere Pankreatitis) oder chirurgische Patient:innen. 
+
+  Ab einem GRV von \ignore{≥}$\geq$ 800 ml pro Messung sollte die enterale Ernährungslaufrate um 50~\% reduziert werden.\footnote{\cite{tarcukovic2022MyEvidencebasedNutrition}, ab Min. 14:20}
+
+  Wie wichtig ein erfahrenes Pflegeteam ist, zeigt eine Umfrage von vier Intensivstationen im United Kingdom, in der 78,2~\% der Pflegekräfte angegeben haben, dass sie besorgt (51,2~\%) oder sehr besorgt wären (27~\%), wenn sie keine GRV-Messung durchführen würden.\footnote{\cite{tume2024NursesDecisionmakingGastric}, S. 1}
+
+  Die ESPEN Guideline 2023 für Intensivpatient:innen empfiehlt eine prokinetische Therapie zu erwägen wenn das GRV \ignore{≥}$\geq$ 500 ml/in 6 h ist und keine abdominelle Komplikation vorliegt.\footnote{\cite{singer2023ESPENPracticalPartially}, S. 1686} 
+
+  \section{Opioide reduzieren}%
+  \label{sec:Opioide reduzieren}
+
+  In einer Studie von Nguyen et al. 2013 von 248 mechanisch beatmeten Patient:innen zeigte, dass ein Opioidverbrauch von im Durchschnitt 20,83 ± 27,46 mg Hydromorphon-Äquivalent i.v. pro Tag ein Risikofaktor für das Entwickeln einer GI-Dysfunktion war.\footnote{\cite{nguyen2013ImpairedGastrointestinalTransit}, S. 537.e13}
+
+  20,83 ± 27,46 mg Hydromorphon-Äquivalent i.v. pro Tag entsprechen ungefähr einer Laufrate von 10 - 20 µg Sufentanil pro Stunde.\footnote{\cite{freye2002OpioideMedizin}, S. 64}
+
+  \section{Prokinetika}%
+  \label{sec:Prokinetika}
+
+  \subsection{MCP, Metoclopramid}%
+  \label{sub:MCP, Metoclopramid}
+  MCP erhöht die gastrale Motilität über muskarinerge Rezeptoren.\footnote{\cite{rahat-dahmardeh2021ComparingEffectNeostigmine}, S. 5} Die übliche Dosis als Prokinetikum ist 10 mg 2 - 3x/Tag.\footnote{\cite{singer2023ESPENPracticalPartially}, S. 1686} MCP ist in seiner prokinetischen Wirkung Erythromycin unterlegen und sollte entsprechend der EMA wegen der Nebenwirkungen nur max. 5 Tage gegeben werden (vgl. Abschnitt \ref{sub:Erythromycin}) 
+
+  \begin{itemize}
+    \item[-] Reduktion bei akuter Nierenschädigung/chronischer Nierenerkrankung entsprechend eGFR:\footnote{\cite{MCPratiopharm10Mg}, S. 2} \href{https://dosing.de/popup_niere.php?monoid=450}{dosing.de, Stand 25.01.2026}
+    \item[-] eGFR 15 - 60 ml/min: MCP 5 mg 3x/Tag (Reduktion um 50 \%)
+    \item[-] eGFR \ignore{≤}$\leq$ 15 ml/min: MCP 7,5 mg 1x/Tag (Reduktion um 75 \%)
+  \end{itemize}
+
+  \subsection{Erythromycin}%
+  \label{sub:Erythromycin}
+  Erythromycin verstärkt die Amplitude der Kontraktionen im Antrum, erhöht aber nicht der Frequenz der Kontraktionen (Dosis 1-3 mg/kg/h).\footnote{\cite{annese1992ErythromycinAcceleratesGastric}, S. 825} 
+
+  Nguyen et al. haben in ihrer Studie von 2007 (n = 107) nachgewiesen, dass Erythromycin (200 mg 2x Tag) in seiner prokinetischen Wirkung effektiver war als MCP. Der Effekt von beiden Medikamenten hat allerdings schnell nachgelassen (s. auch Abb. \ref{fig:Erfolg der enteralen Ernährung, Erythromycin vs. MCP}):\footnote{\cite{nguyen2007ErythromycinMoreEffective}, S. 483, 485} 
+
+  Erythromycin: 
+  \begin{itemize}
+    \item[-] Tag 1 = 87~\%
+    \item[-] Tag 3 = 47~\%    
+    \item[-] Tag 3 = 47~\%    
+  \end{itemize}
+
+  MCP:
+  \begin{itemize}
+    \item[-] Tag 1 = 62~\%
+    \item[-] Tag 3 = 27~\%
+    \item[-] Tag 7 = 16~\%
+  \end{itemize}
+
+  Der beste prokinetische Effekt trat auf, wenn Erythromycin mit MCP kombiniert wurde, dann konnte auch ein anhaltender Effekt von \ignore{≥}$\geq$ 5 Tagen nachgewiesen werden (s. Abb. \ref{fig:Erfolg der enteralen Ernährung, Erythromycin kombiniert mit MCP}). 
+
+  Aus der Studie von Nguyen 2007 kann auch nachvollzogen werden warum es sinnvoll sein kann Erythromycin länger als 3 Tage als Prokinetikum zu geben. An Tag 7 bestand immerhin noch eine Effektivität von 31~\%, die höher war als die Effektivität von MCP an Tag 3 (27~\%). 
+
+  Eine kleinere Studie (n = 20) von MacLaren et al. 2008 ergab ebenfalls Hinweise, dass Erythromycin wirksamer ist als MCP.\footnote{\cite{maclaren2008ErythromycinVsMetoclopramide}, S. 412}
+
+  Wenn nur ein Prokinetikum benutzt wird, sollte nach der aktuellen ESPEN Leitlinie von 2023 bei Intensivpatient:innen primär Erythromycin verwendet werden.\footnote{\cite{singer2023ESPENPracticalPartially}, S. 1686}
+
+  In der S2k DGEM Leitlinie zur Ernährung von Intensivpatient:innen ist MCP aufgrund der Zulassungseinschränkung durch die EMA von 2013 aufgrund von Dyskinesien und Konvulsionen auf max. 5 Tage beschränkt. Erythromycin sollte laut der S2k Leitlinie auf 3 Tage beschränkt werden.\footnote{\cite{elke2019DGEMS2kLeitlinieKlinische}, S. 376} 
+
+  Die Dosierung von Erythromycin wird nach der ESPEN Leitlinie von 2023 mit 3 - 10 mg/kg/Tag angegeben.\footnote{\cite{singer2023ESPENPracticalPartially}, S. 1686} TDM Messungen aus der Klinik haben allerdings gezeigt, dass mit einer Standarddosierung von 250 mg i.v. 3x/Tag sehr hohe Serumspiegel vom Erythromycin erreicht werden. So dass nach TDM die aktuelle Dosisempfehlung 50~mg i.v. 3x/Tag sind.
+
+
+\end{multicols}
+
+\begin{multicols}{2}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{./bilder/nguyen-2007-erythromycin-s-486-mcp-vs-erythromycin.png}
+    \caption{Erfolg der enteralen Ernährung, Erythromycin vs. MCP\footnote{\cite{nguyen2007ErythromycinMoreEffective}, S. 486}}
+  \label{fig:Erfolg der enteralen Ernährung Erythromycin vs. MCP}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{./bilder/nguyen-2007-erythromycin-s-488-mcp-kombiniert-erythromycin.png}
+  \caption{Erfolg der enteralen Ernährung, Erythromycin kombiniert mit MCP\footnote{\cite{nguyen2007ErythromycinMoreEffective}, S. 488}}
+\label{fig:Erfolg der enteralen Ernährung Erythromycin kombiniert mit MCP}
+\end{figure}
+
+\end{multicols}
+
+\begin{multicols}{2}
+
+  \subsection{Neostigmin}%
+  \label{sub:Neostigmin}
+
+  Eine interessante kanadische Studie von Parthasarathy et al. 2015, in der die Wirkung von 1 mg Neostigmin i.v. bei 28 Patient:innen mit Störungen der oberen GI-Motilität mittels antroduodenaler Manometrie untersucht wurde, zeigte, dass Neostigmin im Antrum die Frequenz der Kontraktionen erhöht (im Gegensatz zu Erythromycin), nicht aber die Amplitude der Kontraktionen beeinflusst. Im Dünndarm hingegen erhöht Neostigmin sowohl die Frequenz als auch die Amplitude der Kontraktionen. Neben der Manometrie wurde auch die gastrointestinale Transitzeit mittels Szintigraphie gemessen.\footnote{\cite{parthasarathy2015EffectNeostigmineGastroduodenal}, S. 1738, 1743, 1744}
+
+  % Die Halbwertszeit nach i.v. Applikation wird von Parthasarathy et al. mit 47 - 60 Min. (im Durchschnitt 53 Min.) angegeben,\footnote{\cite{parthasarathy2015EffectNeostigmineGastroduodenal}, S. 1738}, in der zitierten Primärliteratur geben Cronelly et al. die Halbwertzeit allerdings mit 80 Min. ± 48 an.\footnote{\cite{cronnelly1979RenalFunctionPharmacokinetics}, S. 225}
+  Die Halbwertszeit nach i.v. Applikation liegt zwischen 24 - 80 Minuten.\footnote{\cite{NeostigCarinopharm05Mga}, S. 2}
+
+  Interessanterweise haben insb. iranische Ärzt:innen Studien zu Neostigmin durchgeführt (Aghadavoudi et al. 2013, Baradari et al 2016, Farzanegan et al 2021, Rahat-Dahmardeh et al. 2021). Die Studien ähneln sich in Aufbau, Methodik und Aussage sehr und sind tlw. was die Aussagen und Abbildungen betrifft nicht einfach zu lesen, decken sich aber mit anderen Studien von Seyam et al. 2025 und Parthasarathy et al. 2025).
+  Neostigmin wurde dabei in unterschiedlichen Dosierungen von 1 mg\footnote{\cite{aghadavoudi2013EvaluationIntravenousNeostigmine}, S. 751}\textsuperscript{,}\footnote{\cite{seyam2025EffectTwoDifferent}, S. 2}, 2 mg\footnote{\cite{seyam2025EffectTwoDifferent}, S. 2} und 2,5 mg\footnote{\cite{baradari2016DoubleblindRandomizedClinical}, S. 386}\textsuperscript{,}\footnote{\cite{farzanegan2021MeasurementGastricResidual}, S. 313}\textsuperscript{,}\footnote{\cite{rahat-dahmardeh2021ComparingEffectNeostigmine}, S. 2} in 100 ml NaCl 0,9 \% über 30 Min. verabreicht und gegen MCP und oder NaCl verglichen. 
+
+  Seyam et al. 2025, die Neostigmin in der Dosis 1 und 2 mg gegen MCP getestet haben, allerdings kann in dem Paper nicht nachvollzogen werden in welcher Zeit und mit wie viel NaCl das Neostigmin appliziert wurde.\footnote{\cite{seyam2025EffectTwoDifferent}, S. 2} Aghadavoudi et al 2013 haben initial 1 mg Neostigmin wie oben beschrieben appliziert und danach 0,5 mg in 50 ml NaCl 0,9 \% über 15 Min. alle 4 bis 24 h verabreicht.   
+  % (Baradari 2016 und Farzanegan 2021 Rahat-Dahmardeh 2021 2,5 mg; Aghadavoudi 2013 1 mg Bolus dann 0,5 mg)
+
+  Aghadavoudi et al. 2013 war die einzige iranische Studie in der bei Intensivpatient:innen kein signifikanter Effekt für Neostigmin vs. Placebo (NaCl) nachgewiesen wurde.\footnote{\cite{aghadavoudi2013EvaluationIntravenousNeostigmine}, S. 750} 
+  In den übrigen iranischen Studien als auch der ägyptischen Studie von Seyam et al. 2025 war Neostigmin in seiner prokinetischen Wirkung (Reduktion des GRV) MCP überlegen.\footnote{\cite{baradari2016DoubleblindRandomizedClinical}, S. 387}\textsuperscript{,}\footnote{\cite{farzanegan2021MeasurementGastricResidual}, S. 315}\textsuperscript{,}\footnote{\cite{rahat-dahmardeh2021ComparingEffectNeostigmine}, S. 3}\textsuperscript{,}\footnote{\cite{seyam2025EffectTwoDifferent}, S. 3}
+
+  In der Studie von Baradari et al. 2016 waren nur mechanisch beatmete Pat. eingeschlossen (n = 60).\footnote{\cite{baradari2016DoubleblindRandomizedClinical}, S. 385}
+
+  Diese Ergebnisse zusammen mit der oben erwähnten kanadischen Studie von Parthasarathy et al. 2015, die eine direkte antroduodenale Druckmessung nach Neostigmin durchgeführt haben, lassen die Wirksamkeit von Neostigmin als Prokinetikum im oberen GI-Trakt nachvollziehbar erscheinen. 
+
+  \subsection{Ondansetron}%
+  \label{sub:Ondansetron}
+  Farzanengan et al. haben 2021 bei 40 Patient:innen die Wirkung von Neostigmin, MCP und Ondansetron auf das GRV verglichen. Ondansetron wurde mit 8 mg 3x/Tag verabreicht und hatte einen gering besseren Effekt als MCP.\footnote{\cite{farzanegan2021MeasurementGastricResidual}, S. 315} Obwohl Netzer et al. 2002 bereits bei Gesunden keinen Effekt von Ondansetron auf die Magenentleerung nachgewiesen haben,\footnote{\cite{netzer2002DoesIntravenousOndansetron}, S. 121} hatten Farzanengan et al. Ondansetron untersucht, weil es im Tiermodell die Magenentleerung beschleunigt hatte.\footnote{\cite{farzanegan2021MeasurementGastricResidual}, S. 316}    
+\end{multicols}
+\vspace{20 mm} % Fügt einen vertikalen Abstand ein
+% Drucken des Literaturverzeichnisses
+\printbibliography
+
+\end{document}

@@ -100,13 +100,14 @@
 #set page(footer: context {
   line(length: 100%, stroke: 0.4pt)
   v(2pt)
-  link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]
+  {{INPUT:TOC-LINK}}
   h(1fr)
   [
     #fusszeile, Stand: #datetime.today().display("[year]-[month]-[day]"),
     S. #counter(page).display("1/1", both: true)
   ]
 })
+// TYLAX:TITLE:START
 #align(center)[
   #text(size: 17pt, weight: "regular", titel)
 
@@ -122,6 +123,7 @@
   }
 ]
 #v(1em) // Abstand zum Inhaltsverzeichnis
+// TYLAX:TITLE:END
 
 #[
   #show outline.entry: set text(fill: linkrot)
@@ -129,11 +131,11 @@
   #show outline.entry.where(level: 1): set outline.entry(fill: none)
   #show outline.entry.where(level: 1): set block(above: 1em)
 
-  #outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>
+  // TYLAX:TOC
 ]
 
-#outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")
-#outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")
+// TYLAX:LOT
+// TYLAX:LOF
 
 
 // ============================================================
@@ -143,6 +145,7 @@
 // TYLAX:CONTENT
 
 #v(20mm)
+#set heading(outlined: false)
 #bibliography(
   "/Users/g/Library/texmf/bibtex/bib/Zotero.bib",
   title: [Literatur],

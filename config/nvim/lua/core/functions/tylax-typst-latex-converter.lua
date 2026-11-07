@@ -14,87 +14,17 @@
 --   - Oil wird nach der Konvertierung aktualisiert
 
 local M = {}
+local processing = require("core.functions.tylax-processing")
 
 local template_path =
   vim.fs.joinpath(vim.fn.stdpath("config"), "templates", "typst-templates", "footer-footnotes-bibliography-tylax.typ")
 
 -- ---------------------------------------------------------
--- 1. Typst-Nachbearbeitung
--- ---------------------------------------------------------
-
-local function postprocess_typst(content)
-  local count_labels = 0
-  local count_lengths = 0
-
-  -- Ungültige Labels und Referenzen korrigieren
-  local updated = content:gsub("<([^<>\r\n]+)>", function(label)
-    if not label:find("[,%s]") then
-      return "<" .. label .. ">"
-    end
-
-    -- Nur typische Label-Bezeichner berücksichtigen
-    if not label:match("^[%a][%w_%-]*") then
-      return "<" .. label .. ">"
-    end
-
-    local fixed = label:gsub("[,%s]+", "-"):gsub("%-+", "-"):gsub("%-$", "")
-
-    if fixed ~= label then
-      count_labels = count_labels + 1
-    end
-
-    return "<" .. fixed .. ">"
-  end)
-
-  -- Fehlerhafte Längenangaben in #v() korrigieren
-  -- Beispiel: #v(20 mm) → #v(20mm)
-  local valid_units = {
-    mm = true,
-    cm = true,
-    pt = true,
-    em = true,
-    ["in"] = true,
-  }
-
-  updated = updated:gsub("#v%(%s*(%d+%.?%d*)%s+(%a+)%s*%)", function(value, unit)
-    if valid_units[unit] then
-      count_lengths = count_lengths + 1
-      return "#v(" .. value .. unit .. ")"
-    end
-
-    return "#v(" .. value .. " " .. unit .. ")"
-  end)
-
-  return updated, count_labels, count_lengths
-end
-
--- ---------------------------------------------------------
--- 2. Typst-Vorlage einlesen und Inhalt einsetzen
+-- Typst-Vorlage einlesen und Inhalt einsetzen
 -- ---------------------------------------------------------
 -- Titel aus LaTeX oder Dateinamen ermitteln
-local function get_title(input, basename)
-  local file = io.open(input, "rb")
-
-  if file then
-    local tex = file:read("*a") or ""
-    file:close()
-
-    -- Einfache LaTeX-Titel übernehmen
-    local title = tex:match("\\title%s*%{([^{}]+)%}")
-
-    if title and not title:find("\\", 1, true) then
-      return vim.trim(title)
-    end
-  end
-
-  -- Fallback: Titel aus Dateinamen erzeugen
-  local title = basename:gsub("%-ext$", ""):gsub("^gmics%-", "G'MICS "):gsub("[-_]", " ")
-
-  title = title:gsub("^G'MICS (%l)", function(c)
-    return "G'MICS " .. c:upper()
-  end)
-
-  return title
+local function get_title(basename)
+  return basename:gsub("[-_]", " ")
 end
 
 -- Text für Typst-Zeichenketten maskieren
@@ -102,7 +32,7 @@ local function escape_typst_string(value)
   return value:gsub("\\", "\\\\"):gsub('"', '\\"'):gsub("[\r\n]+", " ")
 end
 
-local function merge_template(converted, input, basename)
+local function merge_template(converted, basename, options)
   local file, err = io.open(template_path, "rb")
 
   if not file then
@@ -113,7 +43,7 @@ local function merge_template(converted, input, basename)
   file:close()
 
   -- Titel und Footer automatisch festlegen
-  local title = get_title(input, basename)
+  local title = options.title or get_title(basename)
   local footer = title
 
   template = template:gsub("{{INPUT:TITLE}}", function()
@@ -123,6 +53,22 @@ local function merge_template(converted, input, basename)
   template = template:gsub("{{INPUT:FOOTER}}", function()
     return escape_typst_string(footer)
   end)
+  template = template:gsub("{{INPUT:TOC%-LINK}}", function()
+    return options.toc and 'link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]' or ''
+  end)
+
+  local toc = options.toc and '#outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>' or ''
+  local lot = options.lot and '#outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")' or ''
+  local lof = options.lof and '#outline(target: figure.where(kind: image), title: "Abbildungsverzeichnis")' or ''
+  template = template:gsub("// TYLAX:TOC", function() return toc end)
+  template = template:gsub("// TYLAX:LOT", function() return lot end)
+  template = template:gsub("// TYLAX:LOF", function() return lof end)
+  if not options.maketitle then
+    template = template:gsub("// TYLAX:TITLE:START.-// TYLAX:TITLE:END", "")
+  else
+    template = template:gsub("// TYLAX:TITLE:START", "")
+    template = template:gsub("// TYLAX:TITLE:END", "")
+  end
 
   -- Einfügemarke für den konvertierten Text
   local marker = "// TYLAX:CONTENT"
@@ -133,8 +79,10 @@ local function merge_template(converted, input, basename)
   end
 
   local merged = template:sub(1, start_pos - 1) .. converted .. "\n\n" .. template:sub(end_pos + 1)
-
-  return merged
+  local bibliography = template:match('#bibliography%s*%(%s*"([^"]+)"')
+  local warnings
+  merged, warnings = processing.resolve_bibliography(merged, bibliography)
+  return merged, nil, warnings
 end
 
 -- ---------------------------------------------------------
@@ -169,8 +117,22 @@ function M.latex_to_typst()
   end
 
   -- CLI überprüfen
-  if vim.fn.executable("t2l") ~= 1 then
+  local t2l = vim.fn.executable("t2l") == 1 and "t2l" or vim.fn.expand("~/.cargo/bin/t2l")
+  if vim.fn.executable(t2l) ~= 1 then
     vim.notify("Tylax (t2l) ist nicht installiert oder nicht im PATH.", vim.log.levels.ERROR)
+    return
+  end
+
+  local source_file, source_err = io.open(input, "rb")
+  if not source_file then
+    vim.notify("LaTeX-Datei kann nicht gelesen werden: " .. tostring(source_err), vim.log.levels.ERROR)
+    return
+  end
+  local source = source_file:read("*a")
+  source_file:close()
+  local prepared, options = processing.prepare(source)
+  if not prepared then
+    vim.notify("LaTeX-Dokument: " .. options, vim.log.levels.ERROR)
     return
   end
 
@@ -189,8 +151,7 @@ function M.latex_to_typst()
   -- -------------------------------------------------------
 
   vim.system({
-    "t2l",
-    input,
+    t2l,
     "--direction",
     "l2t",
     "--full-document",
@@ -200,6 +161,7 @@ function M.latex_to_typst()
   }, {
     cwd = dir,
     text = true,
+    stdin = prepared,
   }, function(result)
     vim.schedule(function()
       -- Konvertierungsfehler behandeln
@@ -219,13 +181,13 @@ function M.latex_to_typst()
       -- 5. Automatische Nachbearbeitung
       -- ---------------------------------------------------
 
-      local corrected_content, count_labels, count_lengths = postprocess_typst(converted)
+      local corrected_content, counts = processing.postprocess(converted)
 
       -- ---------------------------------------------------
       -- 6. Inhalt in Typst-Vorlage einsetzen
       -- ---------------------------------------------------
 
-      local merged, err = merge_template(corrected_content, input, basename)
+      local merged, err, bibliography_warnings = merge_template(corrected_content, basename, options)
 
       if not merged then
         vim.notify(err, vim.log.levels.ERROR)
@@ -261,11 +223,20 @@ function M.latex_to_typst()
         string.format(
           "Erstellt: %s.typ\n%d Labelkorrekturen\n%d Längenkorrekturen",
           basename,
-          count_labels,
-          count_lengths
+          counts.labels,
+          counts.lengths
         ),
         vim.log.levels.INFO
       )
+      if result.stderr and result.stderr ~= "" then
+        vim.notify("Tylax-Warnungen:\n" .. result.stderr, vim.log.levels.WARN)
+      end
+      for _, warning in ipairs(options.warnings) do
+        vim.notify("Tylax: " .. warning, vim.log.levels.WARN)
+      end
+      for _, warning in ipairs(bibliography_warnings) do
+        vim.notify("Tylax: " .. warning, vim.log.levels.WARN)
+      end
 
       -- ---------------------------------------------------
       -- 7. Oil aktualisieren
