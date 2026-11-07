@@ -54,6 +54,10 @@ return {
         replace = { cmd = "sd" },
       },
     })
+    vim.keymap.set("n", "<leader>sP", function()
+      spectre.toggle()
+    end, { desc = "Spectre umschalten" })
+
     -- -- Key mappings for Spectre
     -- vim.keymap.set("n", "<leader>S", '<cmd>lua require("spectre").toggle()<CR>', {
     --   desc = "Toggle Spectre",
