@@ -32,6 +32,29 @@ local function escape_typst_string(value)
   return value:gsub("\\", "\\\\"):gsub('"', '\\"'):gsub("[\r\n]+", " ")
 end
 
+local function replace_template_input(template, name, value)
+  local marker = "{{INPUT:" .. name .. "}}"
+  local parts = {}
+  local start = 1
+
+  while true do
+    local first, last = template:find(marker, start, true)
+    if not first then
+      break
+    end
+    parts[#parts + 1] = template:sub(start, first - 1)
+    parts[#parts + 1] = value
+    start = last + 1
+  end
+
+  if #parts == 0 then
+    return nil, "Einfügemarke fehlt: " .. marker
+  end
+
+  parts[#parts + 1] = template:sub(start)
+  return table.concat(parts)
+end
+
 local function merge_template(converted, basename, options)
   local file, err = io.open(template_path, "rb")
 
@@ -46,16 +69,14 @@ local function merge_template(converted, basename, options)
   local title = options.title or get_title(basename)
   local footer = title
 
-  template = template:gsub("{{INPUT:TITLE}}", function()
-    return escape_typst_string(title)
-  end)
-
-  template = template:gsub("{{INPUT:FOOTER}}", function()
-    return escape_typst_string(footer)
-  end)
-  template = template:gsub("{{INPUT:TOC%-LINK}}", function()
-    return options.toc and 'link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]' or ''
-  end)
+  template, err = replace_template_input(template, "TITLE", escape_typst_string(title))
+  if not template then return nil, err end
+  template, err = replace_template_input(template, "FOOTER", escape_typst_string(footer))
+  if not template then return nil, err end
+  template, err = replace_template_input(
+    template, "TOC-LINK", options.toc and 'link(<inhaltsverzeichnis>)[Zurück zum Inhaltsverzeichnis]' or ''
+  )
+  if not template then return nil, err end
 
   local toc = options.toc and '#outline(title: "Inhaltsverzeichnis") <inhaltsverzeichnis>' or ''
   local lot = options.lot and '#outline(target: figure.where(kind: table), title: "Tabellenverzeichnis")' or ''
@@ -79,6 +100,10 @@ local function merge_template(converted, basename, options)
   end
 
   local merged = template:sub(1, start_pos - 1) .. converted .. "\n\n" .. template:sub(end_pos + 1)
+  local unresolved = merged:match("{{INPUT:[^}]+}}")
+  if unresolved then
+    return nil, "Nicht ersetzte Einfügemarke in der Typst-Vorlage: " .. unresolved
+  end
   local bibliography = template:match('#bibliography%s*%(%s*"([^"]+)"')
   local warnings
   merged, warnings = processing.resolve_bibliography(merged, bibliography)

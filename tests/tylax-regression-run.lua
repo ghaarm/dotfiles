@@ -15,6 +15,10 @@ end
 require("core.functions.tylax-typst-latex-converter").latex_to_typst()
 local output = dir .. "/" .. entry:gsub("%.tex$", ".typ")
 assert(vim.wait(30000, function() return vim.uv.fs_stat(output) ~= nil end, 50), "Keine Typst-Ausgabe")
+local generated = assert(io.open(output, "rb"))
+local content = generated:read("*a")
+generated:close()
+assert(not content:find("{{INPUT:", 1, true), "Nicht ersetzte Typst-Einfügemarke")
 for _, notice in ipairs(notices) do
   assert(notice.level ~= vim.log.levels.ERROR, notice.message)
 end
