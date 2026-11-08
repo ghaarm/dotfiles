@@ -48,11 +48,27 @@ return {
   },
 
   config = function(_, opts)
-    require("typst-preview").setup(opts)
-
-    local preview_running = false
     local handout = false
     local transparent = false
+
+    -- Tinymist liest diese Werte bei jedem Start der Vorschau neu ein.
+    opts.extra_args = function()
+      return {
+        "--input=handout=" .. tostring(handout),
+        "--input=transparent=" .. tostring(transparent),
+      }
+    end
+    require("typst-preview").setup(opts)
+
+    -- Auch eine mit :TypstPreview gestartete Vorschau erkennen.
+    local function preview_is_running()
+      local path = vim.api.nvim_buf_get_name(0)
+      if path == "" then
+        return false
+      end
+      local main_file = require("typst-preview.config").opts.get_main_file(path)
+      return require("typst-preview.servers").get(main_file) ~= nil
+    end
     --
     -- Schließt nur Chrome-Fenster mit einer lokalen Typst-Preview.
     -- Chrome selbst wird nicht beendet.
@@ -75,13 +91,11 @@ return {
     -- Startet bzw. stoppt die Typst-Vorschau.
     -- Beim Stoppen wird zusätzlich das zugehörige Chrome-Fenster geschlossen.
     local function toggle_typst_preview()
-      if preview_running then
+      if preview_is_running() then
         vim.cmd("TypstPreviewStop")
         close_typst_chrome_window()
-        preview_running = false
       else
         vim.cmd("TypstPreview")
-        preview_running = true
       end
     end
 
@@ -89,35 +103,27 @@ return {
     local function stop_typst_preview()
       vim.cmd("TypstPreviewStop")
       close_typst_chrome_window()
-      preview_running = false
     end
 
     local function update_typst_inputs()
-      local was_running = preview_running
+      local was_running = preview_is_running()
 
       -- Alte Vorschau zuerst beenden
       if was_running then
         vim.cmd("TypstPreviewStop")
         close_typst_chrome_window()
-        preview_running = false
       end
 
-      -- Neue Parameter an Tinymist übergeben
-      require("typst-preview").setup(vim.tbl_deep_extend("force", opts, {
-        extra_args = {
-          "--input=handout=" .. tostring(handout),
-          "--input=transparent=" .. tostring(transparent),
-        },
-      }))
-
-      -- Vorschau mit neuen Parametern starten
+      -- Vorschau mit den aktuellen Parametern starten.
       if was_running then
         vim.cmd("TypstPreview")
-        preview_running = true
       end
     end
     local function toggle_typst_handout()
       handout = not handout
+      if not handout then
+        transparent = true
+      end
       update_typst_inputs()
 
       vim.notify("Typst Handout: " .. (handout and "AN" or "AUS"), vim.log.levels.INFO)
