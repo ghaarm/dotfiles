@@ -1,7 +1,7 @@
 # Touying-Folien nach ernaehrung-icu-vortrag.typ.
 # Benötigt #slide und #quelle aus der KN-Touying-Präambel.
 # Für Textflächen #centered-items einmal in der Präambel definieren
-# (Snippet centered-items-definition). Die bisherigen frame-beamer-Trigger bleiben erhalten.
+# (Snippet centered-items-definition). Die bisherigen slide-Trigger bleiben erhalten.
 
 snippet frame "Normale Touying-Folie" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
@@ -17,7 +17,7 @@ snippet slide "Normale Touying-Folie" b
     #quelle([${4:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-basic "Einfache Touying-Folie" b
+snippet slide-basic "Einfache Touying-Folie" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #centered-items(height: 105mm)[
@@ -26,7 +26,7 @@ snippet frame-beamer-basic "Einfache Touying-Folie" b
     #quelle([${4:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-bullets "Touying-Folie mit Stichpunkten" b
+snippet slide-bullets "Touying-Folie mit Stichpunkten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #centered-items(height: 105mm)[#item-by-item[
@@ -37,7 +37,7 @@ snippet frame-beamer-bullets "Touying-Folie mit Stichpunkten" b
     #quelle([${6:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-enumerate "Touying-Folie mit nummerierter Liste" b
+snippet slide-enumerate "Touying-Folie mit nummerierter Liste" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #centered-items(height: 105mm)[#item-by-item[
@@ -48,7 +48,7 @@ snippet frame-beamer-enumerate "Touying-Folie mit nummerierter Liste" b
     #quelle([${6:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-2col "Touying-Folie mit zwei Spalten" b
+snippet slide-2col "Touying-Folie mit zwei Spalten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -60,7 +60,7 @@ snippet frame-beamer-2col "Touying-Folie mit zwei Spalten" b
     #quelle([${5:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-2col-bullets "Touying-Folie mit Stichpunkten in zwei Spalten" b
+snippet slide-2col-bullets "Touying-Folie mit Stichpunkten in zwei Spalten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -78,7 +78,7 @@ snippet frame-beamer-2col-bullets "Touying-Folie mit Stichpunkten in zwei Spalte
     #quelle([${7:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-compare "Vergleich in zwei Spalten" b
+snippet slide-compare "Vergleich in zwei Spalten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -90,7 +90,7 @@ snippet frame-beamer-compare "Vergleich in zwei Spalten" b
     #quelle([${7:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-img-left "Bild links, Text rechts" b
+snippet slide-img-left "Bild links, Text rechts" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -105,7 +105,7 @@ snippet frame-beamer-img-left "Bild links, Text rechts" b
     #quelle([${6:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-img-right "Text links, Bild rechts" b
+snippet slide-img-right "Text links, Bild rechts" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -120,7 +120,7 @@ snippet frame-beamer-img-right "Text links, Bild rechts" b
     #quelle([${6:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-img-top "Bild oben, Text unten" b
+snippet slide-img-top "Bild oben, Text unten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #align(center)[#image("${3:bild.png}", width: 100%, height: 75mm, fit: "contain")]
@@ -129,7 +129,7 @@ snippet frame-beamer-img-top "Bild oben, Text unten" b
     #quelle([${5:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-2img-text "Zwei Bilder oben, Text unten" b
+snippet slide-2img-text "Zwei Bilder oben, Text unten" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -143,7 +143,7 @@ snippet frame-beamer-2img-text "Zwei Bilder oben, Text unten" b
     #quelle([${6:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-2img "Zwei Bilder nebeneinander" b
+snippet slide-2img "Zwei Bilder nebeneinander" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: ${2:18pt})
     #grid(
@@ -161,13 +161,13 @@ snippet frame-beamer-2img "Zwei Bilder nebeneinander" b
     #quelle([${7:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-plain-img "Bildfolie" b
+snippet slide-plain-img "Bildfolie" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #align(center + horizon)[#image("${2:bild.png}", width: 100%, height: 105mm, fit: "contain")]
     #quelle([${3:Bildquelle}])
   ]${0}
 
-snippet frame-beamer-section "Abschnittsfolie" b
+snippet slide-section "Abschnittsfolie" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Abschnitt}]))[
     #box(width: 100%, height: 108mm)[
       #align(center + horizon)[#text(size: 29pt, weight: "bold")[${2:Kernaussage}]]
@@ -225,14 +225,14 @@ snippet takehome-beamer "Kernaussage" b
     *Kernaussage:* ${1:Text}
   ]${0}
 
-snippet frame-beamer-formula "Folie mit großer Formel" b
+snippet slide-formula "Folie mit großer Formel" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: 18pt)
     #align(center + horizon)[#text(size: 30pt)[$ ${2:a + b} $]]
     #quelle([${3:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-formula-example "Formel mit Beispiel" b
+snippet slide-formula-example "Formel mit Beispiel" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: 18pt)
     #align(center)[#text(size: 30pt)[$ ${2:a + b} $]]
@@ -247,7 +247,7 @@ snippet frame-beamer-formula-example "Formel mit Beispiel" b
     #quelle([${9:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-takehome "Folie mit Kernaussage" b
+snippet slide-takehome "Folie mit Kernaussage" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Folientitel}]))[
     #set text(size: 18pt)
     #centered-items(height: 90mm)[${2:Inhalt}]
@@ -255,7 +255,7 @@ snippet frame-beamer-takehome "Folie mit Kernaussage" b
     #quelle([${4:Quellenangabe}])
   ]${0}
 
-snippet frame-beamer-final "Schlussfolie" b
+snippet slide-final "Schlussfolie" b
   #slide(title: text(size: 22pt, weight: "regular", [${1:Zusammenfassung}]))[
     #set text(size: 18pt)
     #centered-items(height: 105mm)[#item-by-item[

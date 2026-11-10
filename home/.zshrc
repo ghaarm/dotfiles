@@ -334,7 +334,17 @@ work() {
   aerospace move-node-to-workspace --focus-follows-window C
   zellij attach work
 }
-#
+
+claude() {
+  aerospace move-node-to-workspace --focus-follows-window C
+  zellij attach claude
+}
+
+shiny() {
+  aerospace move-node-to-workspace --focus-follows-window G
+  zellij attach shiny
+}
+
 # Example aliases
 # alias zshconfig="mate ~/.zshrc" 
 # alias ohmyzsh="mate ~/.oh-my-zsh" 
