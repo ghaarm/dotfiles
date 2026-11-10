@@ -3,7 +3,9 @@ layout {
     pane size=1 borderless=true {
       plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
         format_left   "#[bg=#3B4252,fg=#D8DEE9,bold] Zellij ({session}) {tabs}"
+        // format_left   "#[bg=#3B4252,fg=#D8DEE9,bold] Zellij ({session}) {tabs}" // Hintergrund etwas dunkler
         format_right  ""
+        // format_space  "#[bg=#2E3440]" // etwas dunkler
         format_space  "#[bg=#3B4252]"
 
         tab_normal    "#[bg=#D8DEE9,fg=#3B4252]#[bg=#D8DEE9,fg=#2E3440,bold] {index}{name} #[bg=#3B4252,fg=#D8DEE9]"
