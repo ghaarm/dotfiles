@@ -1,1 +1,1 @@
-require("core.functions.bild-preview-mac").set_image_keymaps(0)
+require("core.functions.oil-bild-preview-mac").set_image_keymaps(0)
