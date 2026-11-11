@@ -420,11 +420,33 @@ function M.is_supported_image_path(path)
 end
 
 function M.open_excalidraw_in_preview(path)
-  local fullpath = vim.loop.fs_realpath(path) or vim.fs.normalize(path)
+  local fullpath = vim.uv.fs_realpath(path) or vim.fs.normalize(path)
 
   if vim.fn.filereadable(fullpath) ~= 1 then
     vim.notify("Excalidraw-Datei nicht gefunden:\n" .. fullpath, vim.log.levels.ERROR)
     return
+  end
+
+  local filename = vim.fn.fnamemodify(fullpath, ":t:r")
+  local hash = vim.fn.sha256(fullpath):sub(1, 12)
+  local cache_dir = vim.fs.joinpath(vim.fn.stdpath("cache"), "excalidraw", hash)
+
+  vim.fn.mkdir(cache_dir, "p")
+
+  local output = vim.fs.joinpath(cache_dir, filename .. "-excalidraw.png")
+
+  -- Änderungszeiten der Quelldatei und der PNG prüfen
+  local source_stat = vim.uv.fs_stat(fullpath)
+  local output_stat = vim.uv.fs_stat(output)
+
+  if source_stat and output_stat then
+    local source_mtime = source_stat.mtime.sec + source_stat.mtime.nsec / 1e9
+    local output_mtime = output_stat.mtime.sec + output_stat.mtime.nsec / 1e9
+
+    if output_mtime >= source_mtime then
+      M.open_path_in_preview(output)
+      return
+    end
   end
 
   if vim.fn.executable("excalidraw") ~= 1 then
@@ -432,22 +454,40 @@ function M.open_excalidraw_in_preview(path)
     return
   end
 
-  local output = vim.fn.tempname() .. ".png"
+  -- Quelle zuerst lokal kopieren, um das Rendering aus iCloud zu vermeiden
+  local local_source = vim.fs.joinpath(cache_dir, hash .. ".excalidraw")
 
   vim.system({
-    "excalidraw",
-    "render",
+    "cp",
     fullpath,
-    "--out",
-    output,
-  }, { text = true }, function(result)
-    vim.schedule(function()
-      if result.code ~= 0 then
-        vim.notify("Excalidraw-Rendering fehlgeschlagen:\n" .. (result.stderr or ""), vim.log.levels.ERROR)
-        return
-      end
+    local_source,
+  }, { text = true }, function(copy_result)
+    if copy_result.code ~= 0 then
+      vim.schedule(function()
+        vim.notify("Excalidraw-Kopie fehlgeschlagen:\n" .. (copy_result.stderr or ""), vim.log.levels.ERROR)
+      end)
+      return
+    end
 
-      M.open_path_in_preview(output)
+    -- Ausschließlich die lokale Kopie rendern
+
+    vim.system({
+      "excalidraw",
+      "render",
+      local_source,
+      "--browser-path",
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "--out",
+      output,
+    }, { text = true }, function(render_result)
+      vim.schedule(function()
+        if render_result.code ~= 0 then
+          vim.notify("Excalidraw-Rendering fehlgeschlagen:\n" .. (render_result.stderr or ""), vim.log.levels.ERROR)
+          return
+        end
+
+        M.open_path_in_preview(output)
+      end)
     end)
   end)
 end
