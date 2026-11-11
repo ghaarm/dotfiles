@@ -316,38 +316,41 @@ alias cdat="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/at
 
 conf() {
   aerospace move-node-to-workspace --focus-follows-window T
-  zellij attach conf
+  zellij attach --force-run-commands conf
 }
 
 kanban() {
   aerospace move-node-to-workspace --focus-follows-window X
-  zellij attach kanban
+  zellij attach --force-run-commands kanban
 }
 
 next() {
   aerospace move-node-to-workspace --focus-follows-window G
-  zellij attach next
+  zellij attach --force-run-commands next
 }
 
 
 work() {
   aerospace move-node-to-workspace --focus-follows-window C
-  zellij attach work
+  zellij attach --force-run-commands work
 }
 
 claude() {
   aerospace move-node-to-workspace --focus-follows-window C
-  zellij attach claude
+  zellij attach --force-run-commands claude
 }
 
 shiny() {
   aerospace move-node-to-workspace --focus-follows-window G
-  zellij attach shiny
+  zellij attach --force-run-commands shiny
 }
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc" 
 # alias ohmyzsh="mate ~/.oh-my-zsh" 
+
+# alias Befehle generell
+alias rm="rmtrash"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

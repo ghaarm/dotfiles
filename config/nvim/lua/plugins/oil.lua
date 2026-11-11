@@ -47,7 +47,7 @@ return {
         -- ["<leader>ga"] = function()
         ["ga"] = function()
           local oil = require("oil")
-          local image_preview = require("core.functions.bild-preview-mac")
+          local image_preview = require("core.functions.oil-bild-preview-mac")
           local entry = oil.get_cursor_entry()
           local dir = oil.get_current_dir()
 
@@ -63,8 +63,13 @@ return {
 
           local fullpath = vim.fs.normalize(vim.fs.joinpath(dir, entry.name))
 
+          if fullpath:lower():match("%.excalidraw$") then
+            image_preview.open_excalidraw_in_preview(fullpath)
+            return
+          end
+
           if not image_preview.is_supported_image_path(fullpath) then
-            vim.notify("Nur PNG- und JPEG-Dateien werden unterstützt.", vim.log.levels.INFO)
+            vim.notify("Nur PNG-, JPEG- und Excalidraw-Dateien werden unterstützt.", vim.log.levels.INFO)
             return
           end
 
@@ -72,7 +77,7 @@ return {
         end,
         ["<CR>"] = function()
           local oil = require("oil")
-          local image_preview = require("core.functions.bild-preview-mac")
+          local image_preview = require("core.functions.oil-bild-preview-mac")
           local entry = oil.get_cursor_entry()
 
           if not entry then
@@ -83,6 +88,11 @@ return {
           local path = vim.fs.normalize(vim.fs.joinpath(dir, entry.name))
           local lower_path = path:lower()
 
+          -- Excalidraw-Dateien rendern und in Preview öffnen
+          if entry.type ~= "directory" and lower_path:match("%.excalidraw$") then
+            image_preview.open_excalidraw_in_preview(path)
+            return
+          end
           -- Bilder mit Preview im Bearbeitungsmodus öffnen
           if entry.type ~= "directory" and image_preview.is_supported_image_path(lower_path) then
             image_preview.open_path_in_preview(path)
