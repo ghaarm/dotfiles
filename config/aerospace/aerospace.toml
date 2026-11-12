@@ -72,7 +72,9 @@ inner.horizontal = 6
 inner.vertical =   6
 outer.left =       6
 outer.bottom =     6
-outer.top =        46
+# Oberer Abstand: Philips = 46 px; MacBook (und andere Monitore) = letzte Zahl unten.
+# Wenn Fenster am MacBook hinter SketchyBar liegen, die 12 unten etwas erhöhen.
+outer.top =        [{ monitor."PHL 345B1C" = 46 }, 12]
 outer.right =      6
 
 # 'main' binding mode declaration
