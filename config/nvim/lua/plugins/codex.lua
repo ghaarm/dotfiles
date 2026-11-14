@@ -23,7 +23,7 @@ return {
     width = 0.8,
     height = 0.8,
     model = nil,
-    autoinstall = true,
+    autoinstall = false,
     panel = false,
     use_buffer = false,
   },
