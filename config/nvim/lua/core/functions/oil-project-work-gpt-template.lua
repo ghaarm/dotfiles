@@ -470,6 +470,12 @@ local project_types = {
     extension = "tex",
   },
   {
+    label = "PROJECT-MD.md",
+    template = "PROJECT-MD.md",
+    bilder_latex = false,
+    extension = "md",
+  },
+  {
     label = "PROJECT-G'MICS-LATEX.md",
     template = { "PROJECT-GMICS-LATEX.md", "PROJECT-GMICS.md" },
     bilder_latex = true,
