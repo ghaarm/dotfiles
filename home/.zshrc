@@ -227,11 +227,14 @@ alias cdphd="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/p
 
 alias cdscan="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/@Tabea\ \&\ Golo\ iCloud/@Scans && y" 
 
+alias cdnaomi='cd "/Users/g/Library/Mobile Documents/com~apple~CloudDocs/@Tabea & Golo iCloud/Naomi (直美)" && nvim'
+
+
 alias cdsteuer="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/@Tabea\ \&\ Golo\ iCloud/steuer-icloud && nvim" 
 
 alias cddown="/Users/g/Library/Mobile\ Documents/com~apple~CloudDocs/\#Downloads\ iCloud && yazi"
 
-alias cdgit="/Users/g/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/GitHub,\ iCloud"
+  alias cdgit="/Users/g/Library/Mobile\ Documents/com~apple~CloudDocs/'!Docs iCloud'/GitHub,\ iCloud"
 
 alias cdessen="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/@Tabea\ \&\ Golo\ iCloud/Rezepte\ Essen\ Golo" 
 
@@ -352,6 +355,149 @@ shiny() {
 # alias Befehle generell
 alias rm="rmtrash"
 
+######
+# Befehle FD FZF
+
+# Gemeinsames Neovim-Cache-Verzeichnis
+NVIM_INDEX_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/${NVIM_APPNAME:-nvim}"
+
+fpick() {
+  local source="$1"
+  local mode="${2:-all}"
+  local query="${3:-}"
+  local root index selected rel
+  local -a fd_args
+
+  case "$source" in
+    icloud)
+      root="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+      index="$NVIM_INDEX_CACHE/icloud-directories.txt"
+      fd_args=(--hidden --no-ignore --exclude .git)
+      ;;
+
+    local)
+      root="$HOME"
+      index="$NVIM_INDEX_CACHE/local-directories.txt"
+      fd_args=(--exclude .git --exclude Library)
+      ;;
+
+    dracoon)
+      root="$HOME/Library/Application Support/DRACOON/Volumes.noindex/DRACOON.localized"
+      index="$NVIM_INDEX_CACHE/dracoon-directories.txt"
+      fd_args=(--hidden --no-ignore --exclude .git)
+      ;;
+
+    *)
+      echo "Unbekannte Quelle: $source" >&2
+      return 1
+      ;;
+  esac
+
+  [[ -d "$root" ]] || {
+    echo "Verzeichnis nicht gefunden: $root" >&2
+      return 1
+  }
+
+  # Für die Ordnersuche muss der Index vorhanden sein
+  if [[ "$mode" != "f" && ! -r "$index" ]]; then
+    echo "Index nicht gefunden: $index" >&2
+    return 1
+  fi
+
+  case "$mode" in
+    d)
+      # Ordner ausschließlich aus dem bestehenden Index
+      selected=$(fzf --prompt="Ordner > " \
+        --query="$query" \
+        --delimiter='/' \
+        --with-nth=-3.. < "$index"
+      ) || return
+      selected="$root/$selected"
+      ;;
+
+    f)
+      # Dateien live über fd suchen
+      selected=$(
+        fd --absolute-path --type f "${fd_args[@]}" . "$root" |
+          fzf --prompt="Dateien > " \
+          --query="$query" \
+          --delimiter='/' \
+          --with-nth=-4.. 
+        ) || return
+        ;;
+
+      all)
+        # Indexierte Ordner + aktuell vorhandene Dateien
+        selected=$(
+          {
+            while IFS= read -r rel; do
+              print -r -- "$root/$rel"
+            done < "$index"
+
+            fd --absolute-path --type f "${fd_args[@]}" . "$root"
+          } | fzf --prompt="Dateien / Ordner > " \
+            --query="$query" \
+            --delimiter='/' \
+            --with-nth=-4..
+          ) || return
+          ;;
+
+        *)
+          echo "Modus muss all, d oder f sein" >&2
+          return 1
+          ;;
+      esac
+
+      [[ -n "$selected" ]] || return
+
+      # Ordner -> hineinwechseln und Neovim und Oil öffnen
+      if [[ -d "$selected" ]]; then
+        builtin cd -- "$selected" || return 1
+        nvim -c 'lua require("oil").open(vim.fn.getcwd())'
+        return
+      fi
+
+      [[ -f "$selected" ]] || {
+        echo "Datei oder Ordner nicht mehr vorhanden: $selected" >&2
+              return 1
+      }
+
+      # Datei -> abhängig von der Dateiendung öffnen
+      case "${selected:l}" in
+        *.pdf)
+          sioyek "$selected" >/dev/null 2>&1 &!
+          ;;
+
+        *.png|*.jpg|*.jpeg)
+          open -a Preview "$selected"
+          ;;
+
+        *.md|*.txt|*.tex|*.typ|*.lua|*.ts|*.tsx|*.js|*.jsx|*.svelte|*.css|*.html|*.json|*.yaml|*.yml|*.toml|*.py|*.sh|*.zsh|*.r)
+          nvim -- "$selected"
+          ;;
+
+        *)
+          open "$selected"
+          ;;
+      esac
+}
+
+# Kurzbefehle
+# Ordner
+fdd() { fpick icloud d "$*"; }
+fdl() { fpick local d "$*"; }
+fdr() { fpick dracoon d "$*"; }
+
+# Dateien
+ffd() { fpick icloud f "$*"; }
+ffl() { fpick local f "$*"; }
+ffr() { fpick dracoon f "$*"; }
+
+# Dateien und Ordner
+fdocs()    { fpick icloud all "$*"; }
+flocal()   { fpick local all "$*"; }
+fdracoon() { fpick dracoon all "$*"; }
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -376,6 +522,58 @@ setopt hist_verify
 alias pianmac="qmk compile -kb beekeeb/piantor_pro -km piantor_colemak"
 
 alias pianwin="qmk compile -kb beekeeb/piantor_pro -km piantor_win"
+
+# Ploopy A+ – 180°-Konfiguration kompilieren
+ploopy180() {
+  local SOURCE_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/qmk-icloud"
+  local QMK_DIR="/private/tmp/ploopy-qmk-build"
+  local KEYMAP="ploopy-mac-180"
+
+  rsync -a \
+    "$SOURCE_DIR/$KEYMAP/" \
+    "$QMK_DIR/keyboards/ploopyco/aplus/keymaps/$KEYMAP/" &&
+
+    PATH="/private/tmp/arm-gnu-toolchain/Payload/bin:$PATH" \
+    make -C "$QMK_DIR" "ploopyco/aplus/rev2_001:$KEYMAP" &&
+
+    cp "$QMK_DIR/ploopyco_aplus_rev2_001_${KEYMAP}.uf2" \
+    "$SOURCE_DIR/"
+}
+
+# Ploopy A+ – 90°-Konfiguration kompilieren
+ploopy90() {
+  local SOURCE_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/qmk-icloud"
+  local QMK_DIR="/private/tmp/ploopy-qmk-build"
+  local KEYMAP="ploopy-mac-90"
+
+  rsync -a \
+    "$SOURCE_DIR/$KEYMAP/" \
+    "$QMK_DIR/keyboards/ploopyco/aplus/keymaps/$KEYMAP/" &&
+
+    PATH="/private/tmp/arm-gnu-toolchain/Payload/bin:$PATH" \
+    make -C "$QMK_DIR" "ploopyco/aplus/rev2_001:$KEYMAP" &&
+
+    cp "$QMK_DIR/ploopyco_aplus_rev2_001_${KEYMAP}.uf2" \
+    "$SOURCE_DIR/"
+}
+
+
+# Ploopy A+ – 120°-Konfiguration kompilieren
+ploopy120() {
+  local SOURCE_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/!Docs iCloud/qmk-icloud"
+  local QMK_DIR="/private/tmp/ploopy-qmk-build"
+  local KEYMAP="ploopy-mac-120"
+
+  rsync -a \
+    "$SOURCE_DIR/$KEYMAP/" \
+    "$QMK_DIR/keyboards/ploopyco/aplus/keymaps/$KEYMAP/" &&
+
+    PATH="/private/tmp/arm-gnu-toolchain/Payload/bin:$PATH" \
+    make -C "$QMK_DIR" "ploopyco/aplus/rev2_001:$KEYMAP" &&
+
+    cp "$QMK_DIR/ploopyco_aplus_rev2_001_${KEYMAP}.uf2" \
+    "$SOURCE_DIR/"
+}
 
 
 # ---- Eza (better ls) -----
@@ -452,12 +650,12 @@ esac
 #
 # for yazi https://www.josean.com/posts/how-to-use-yazi-file-manager
 function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
 }
 
 export EDITOR=nvim
@@ -486,22 +684,22 @@ export LDFLAGS="-L/opt/homebrew/opt/cbc/lib -L/opt/homebrew/opt/clp/lib -L/opt/h
 
 # Mac setup for pomo
 alias pomo25="timer 25m && terminal-notifier -message 'Pomodoro'\
-        -title 'Work Timer is up! Take a Break 😊'\
-        -appIcon '~/Pictures/pumpkin.png'\
-        -sound Crystal"
+  -title 'Work Timer is up! Take a Break 😊'\
+  -appIcon '~/Pictures/pumpkin.png'\
+  -sound Crystal"
 alias pomo50="timer 50m && terminal-notifier -message 'Pomodoro'\
-        -title 'Work Timer is up! Take a Break 😊'\
-        -appIcon '~/Pictures/pumpkin.png'\
-        -sound Crystal"
-        
+  -title 'Work Timer is up! Take a Break 😊'\
+  -appIcon '~/Pictures/pumpkin.png'\
+  -sound Crystal"
+
 alias rest10="timer 10m && terminal-notifier -message 'Pomodoro'\
-        -title 'Break is over! Get back to work 😬'\
-        -appIcon '~/Pictures/pumpkin.png'\
-        -sound Crystal"
+  -title 'Break is over! Get back to work 😬'\
+  -appIcon '~/Pictures/pumpkin.png'\
+  -sound Crystal"
 alias rest5="timer 5m && terminal-notifier -message 'Pomodoro'\
-        -title 'Break is over! Get back to work 😬'\
-        -appIcon '~/Pictures/pumpkin.png'\
-        -sound Crystal"
+  -title 'Break is over! Get back to work 😬'\
+  -appIcon '~/Pictures/pumpkin.png'\
+  -sound Crystal"
 
 parakeet() {
   if pgrep -x MacParakeet >/dev/null; then
